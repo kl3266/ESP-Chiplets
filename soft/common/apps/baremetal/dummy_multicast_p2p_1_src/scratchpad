@@ -1,0 +1,332 @@
+/*
+ * Copyright (c) 2011-2023 Columbia University, System Level Design Group
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * Baremetal device driver for DUMMY
+ *
+ * Select Scatter-Gather in ESP configuration
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <esp_accelerator.h>
+#include <esp_probe.h>
+#include "dummy_multicast_p2p.h"
+
+typedef long long unsigned u64;
+typedef unsigned u32;
+typedef u64 token_t;
+
+#define SLD_DUMMY   0x042
+#define DEV_NAME "sld,dummy_stratus"
+#define TRIALS 1
+
+#define TOKENS_REG 0x40
+#define BATCH_REG 0x44
+
+// User defined registers
+//#define TOKENS 512
+//#define BATCH 256
+#define mask 0x0LL
+
+// Control the number of consumers
+//#define NUM_MULTICAST 16
+//#define NUM_MULTICAST 16
+
+#define CACHELINE_SIZE 256
+
+// MCAST Select the source ID
+//#define SOURCE_DEV_ID 7
+//#define SOURCE_DEV_ID 7
+
+/* Size of the contiguous chunks for scatter/gather */
+#define CHUNK_SHIFT 20
+#define CHUNK_SIZE BIT(CHUNK_SHIFT)
+
+//#define MCAST_PACKET 1
+
+static uintptr_t uncached_area_ptr_1 = 0x88000000;
+static uintptr_t uncached_area_ptr_2 = 0x90000000;
+static uintptr_t uncached_area_ptr_3 = 0xA0000000;
+static uintptr_t uncached_area_ptr_4 = 0xB0000000;
+
+void *aligned_malloc_mem(int size, int mem_n) {
+//#ifndef __riscv
+//	void *mem = malloc(size + CACHELINE_SIZE + sizeof(void*));
+//#else
+	void *mem;
+	if (mem_n == 1) {
+		mem = (void *) uncached_area_ptr_1;
+		uncached_area_ptr_1 += size + CACHELINE_SIZE + sizeof(void*);
+	} else if (mem_n == 2) {
+		mem = (void *) uncached_area_ptr_2;
+		uncached_area_ptr_2 += size + CACHELINE_SIZE + sizeof(void*);
+	} else if (mem_n == 3) {
+		mem = (void *) uncached_area_ptr_3;
+		uncached_area_ptr_3 += size + CACHELINE_SIZE + sizeof(void*);
+	} else if (mem_n == 4) {
+		mem = (void *) uncached_area_ptr_4;
+		uncached_area_ptr_4 += size + CACHELINE_SIZE + sizeof(void*);
+	}
+//#endif
+
+	void **ptr = (void**) ((uintptr_t) (mem + CACHELINE_SIZE + sizeof(void*)) & ~(CACHELINE_SIZE-1));
+	ptr[-1] = mem;
+	return ptr;
+}
+
+static int validate_dummy(token_t *mem, int batch, int tokens)
+{
+    int i, j;
+    int rtn = 0;
+    for (j = 0; j < batch; j++)
+        for (i = 0; i < tokens; i++)
+            if (mem[i + j * tokens] != (mask | (token_t) (i + j * tokens))) {
+                printf("[%d, %d]: %llu\n", j, i, mem[i + j * tokens]);
+                rtn++;
+            }
+    return rtn;
+}
+
+static void init_buf(token_t *mem, int batch, int tokens)
+{
+    int i, j;
+    for (j = 0; j < batch; j++)
+        for (i = 0; i < tokens; i++) {
+            mem[i + j * tokens] = (mask | (token_t) (i + j * tokens));
+//            printf("mem[%d]=%d\n", i+j*tokens, mem[i+j*tokens]);
+        }
+}
+
+void p2p_setup(struct esp_device* dev, int p2p_store, int mcast_ndests, int p2p_load, struct esp_device* p2p_src, int mcast_packet, int mcast_packet_size){
+    esp_p2p_reset(dev);
+    if (p2p_store) {
+        esp_p2p_enable_dst(dev);
+        esp_p2p_set_mcast_ndests(dev, mcast_ndests);
+        esp_p2p_set_mcast_packet(dev, mcast_packet);
+        esp_p2p_set_mcast_packet_size(dev, mcast_packet_size);
+    }
+    if (p2p_load) {
+        esp_p2p_enable_src(dev);
+        esp_p2p_set_y(dev, 0, esp_get_y(p2p_src));
+        esp_p2p_set_x(dev, 0, esp_get_x(p2p_src));
+        esp_p2p_set_mcast_packet(dev, mcast_packet);
+        esp_p2p_set_mcast_packet_size(dev, mcast_packet_size);
+    }
+}
+
+static inline uint64_t get_counter()
+{
+    uint64_t counter;
+    asm volatile (
+	"li t0, 0;"
+	"csrr t0, mcycle;"
+	"mv %0, t0"
+	: "=r" ( counter )
+	:
+	: "t0"
+        );
+    return counter;
+} 
+
+//int main(int argc, char * argv[])
+int test(int BATCH, int TOKENS, int MCAST_PACKET, int NUM_MULTICAST, unsigned COHERENCE)
+{
+	int n, trial, errors = 0;
+	int ndev = 30;
+//  int ndev;
+        int num_multicast = NUM_MULTICAST;
+        long long total_count = 0;
+for (int source_dev_id = 0; source_dev_id < 1; source_dev_id++) {
+//    struct esp_device *devs = NULL;
+    unsigned coherence;
+    long long start, end;
+
+//    printf("Scanning device tree...\n");
+//	ndev = probe(&devs, VENDOR_SLD, SLD_DUMMY, DEV_NAME);
+//	if (!ndev) {
+//		printf("Error: %s device not found!\n", DEV_NAME);//		exit(EXIT_FAILURE);
+//		exit(EXIT_FAILURE);
+//	}
+    struct esp_device devs[30];
+    for (int i = 0; i < ndev; i++)
+      devs[i].addr = 0x60010000 + i * 0x200;
+
+    int dummy_buf_size = TOKENS * BATCH * sizeof(token_t);
+    int nchunk = (dummy_buf_size % CHUNK_SIZE == 0) ?
+			(dummy_buf_size / CHUNK_SIZE) :
+			(dummy_buf_size / CHUNK_SIZE) + 1;
+    nchunk *= ndev;
+
+    token_t **memtest = (token_t**)aligned_malloc(sizeof(token_t *) * nchunk);
+
+    memtest[0]  = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 1);
+    memtest[1]  = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 1);
+    memtest[2]  = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 1);
+    memtest[3]  = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 2);
+    memtest[4]  = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 2);
+    memtest[5]  = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 2);
+    memtest[6]  = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 1);
+    memtest[7]  = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 1);
+    memtest[8]  = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 2);
+    memtest[9]  = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 2);
+    memtest[10] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 1);   
+    memtest[11] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 1);
+    memtest[12] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 2);
+    memtest[13] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 2);
+    memtest[14] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 2);
+    memtest[15] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 3);
+    memtest[16] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 3);
+    memtest[17] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 3);
+    memtest[18] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 4);
+    memtest[19] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 4);   
+    memtest[20] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 3);
+    memtest[21] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 3);
+    memtest[22] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 4);
+    memtest[23] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 4);
+    memtest[24] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 3);
+    memtest[25] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 3);
+    memtest[26] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 3);
+    memtest[27] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 4);
+    memtest[28] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 4);   
+    memtest[29] = aligned_malloc_mem(sizeof(token_t) * dummy_buf_size, 4);
+    
+    // Alocate and populate page table
+    unsigned **ptable = (unsigned **) aligned_malloc(nchunk * sizeof(unsigned *));
+    for (int i = 0; i < nchunk; i++) { /*  */
+    	ptable[i] = (unsigned *)  &memtest[i][0];
+//      printf("ptable[%d] = %d\n", i, ptable[i]);
+//      printf("&memtest[%d][0] = %d\n", i, &memtest[i][0]);
+//      printf("&memtest[%d] = %d\n", i, &memtest[i]);
+    }
+    
+//    struct esp_device devs[ndev];
+//    for (int i = 0; i < ndev; i++) {
+//        devs[i].addr = 0x60010000 + i * 0x200;
+//    }
+
+//    int devices[30] = {10, 11, 7, 3, 15, 1, 6, 14, 18, 5, 9, 13, 17, 4, 8, 12, 16, 0, 2};
+//    int devices[30] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29};
+    int devices[30] = {12, 11, 17, 22, 13, 14, 27, 10, 16, 15, 7, 8, 18, 3, 2, 21, 19, 9, 23, 26, 6, 20, 29, 5, 0, 24, 1, 4, 25, 28}; // balanced memory and shortest distance
+//    int tmp0;
+//    tmp0 = devices[0];
+//    devices[0] = devices[source_dev_id];
+//    devices[source_dev_id] = tmp0;
+
+    int i;
+
+    // Check if scatter-gather DMA is disabled
+    if (ioread32(&devs[i], PT_NCHUNK_MAX_REG) == 0) {
+//        printf("  -> scatter-gather DMA is disabled. Abort.\n");
+        return 0;
+    }
+
+    if (ioread32(&devs[i], PT_NCHUNK_MAX_REG) < nchunk/ndev) {
+//        printf("  -> Not enough TLB entries available. Abort.\n");
+        return 0;
+    }
+
+    // Allocate memory (will be contigous anyway in baremetal)
+    coherence = COHERENCE;
+
+    // Initialize input: write floating point hex values (simpler to debug)
+    init_buf(&memtest[devices[0]][0], BATCH, TOKENS);
+
+    //Alocate and populate page table
+//    ptable = aligned_malloc(nchunk * sizeof(unsigned *));
+//    for (i = 0; i < nchunk; i++)
+//        ptable[i] = (unsigned *) &mem[i * (CHUNK_SIZE / sizeof(token_t))];
+
+    for (int i = 0; i < num_multicast + 1; i++) {
+        // Configure device
+        iowrite32(&devs[devices[i]], COHERENCE_REG, coherence);
+        if (i == 0) {
+            p2p_setup(&devs[devices[i]], 1, num_multicast, 0, NULL, MCAST_PACKET, 4);
+        }
+        else
+            p2p_setup(&devs[devices[i]], 0, 0, 1, &devs[devices[0]], 0, 0);
+
+        iowrite32(&devs[devices[i]], PT_ADDRESS_REG, (unsigned long) ptable[devices[i]]);
+//        iowrite32(&devs[devices[i]], PT_ADDRESS_REG, (unsigned long) ptable);
+        iowrite32(&devs[devices[i]], PT_NCHUNK_REG, 1);
+        iowrite32(&devs[devices[i]], PT_SHIFT_REG, CHUNK_SHIFT);
+        iowrite32(&devs[devices[i]], SRC_OFFSET_REG, 0x0);
+        iowrite32(&devs[devices[i]], DST_OFFSET_REG, 0x0);
+
+        // Accelerator-specific registers
+        iowrite32(&devs[devices[i]], TOKENS_REG, TOKENS);
+        iowrite32(&devs[devices[i]], BATCH_REG, BATCH);
+    }
+
+    // Flush for non-coherent DMA
+    esp_flush(coherence);
+
+    // Start accelerator
+    start = get_counter();
+
+    for (int i = 0; i < num_multicast + 1; i++) {
+        iowrite32(&devs[devices[i]], CMD_REG, CMD_MASK_START);
+    }
+
+    unsigned done = 0;
+
+    while (!done) {
+        done = STATUS_MASK_DONE;
+        for (int i = 0; i < num_multicast + 1; i++){
+            done &= (ioread32(&devs[devices[i]], STATUS_REG) & STATUS_MASK_DONE);
+        }
+    }
+
+    end = get_counter();
+//    printf("Total cycles = %lld\n", end - start);
+    total_count += (end - start);
+    for (int i = 0; i < num_multicast + 1; i++) {
+        iowrite32(&devs[devices[i]], CMD_REG, 0x0);
+    }
+
+    // Validation
+    for (int i = 0; i < num_multicast + 1; i++) {
+        int error_increment = 0;
+        error_increment = validate_dummy(&memtest[devices[i]][0], BATCH, TOKENS);
+        if (error_increment != 0)
+          printf("Device %d Fail for %d Inputs\n", devices[i], error_increment);
+        errors += error_increment;
+    }
+    printf("Total Errors %d\n", errors);
+    if (!errors)
+      printf("Source %d, PASS\n", devices[0]);
+    else
+      printf("Source %d, FAIL\n", devices[0]);
+
+    aligned_free(ptable);
+    aligned_free(memtest);
+
+}
+	return total_count;
+}
+int main()
+{
+    int count[2][5][6];
+    int k, l = 0;
+    for (int u = 0; u < 2; u++) {
+        for (int i = 1; i <= 256; i*=4) {
+            for (int j = 2; j <= 32; ) {
+                count[u][k][l] = test(i, 16, u, j, ACC_COH_NONE);
+                l++;
+                if (j==16)
+                  j+=1;
+                else
+                  j*=2;
+            }
+            l=0;
+            k++;
+        }
+        k, l=0;
+    }
+    for (int u = 0; u < 2; u++)
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 6; j++)
+                printf("%d\n", count[u][i][j]);
+}
