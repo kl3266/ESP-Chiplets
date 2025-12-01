@@ -1,0 +1,12 @@
+556263		// ppid
+556276		// pid
+haagendazs	// host name
+bdw_work/trace/hls.dummy.BASIC_DMA64.s.trace		// log file
+2		// state ( 0=unrun 1=running 2=success 3=failed 4=unknown 5=queued
+0		// exit status
+0		// quiet
+0		// background
+1764623315	// start time: Mon Dec  1 16:08:35 2025
+1764623395	// end time:   Mon Dec  1 16:09:55 2025
+make --no-print-directory -f Makefile -j1 CWBExec_hlsc=1 bdw_work/modules/dummy/BASIC_DMA64/dummy_rtl.cpp bdw_work/modules/dummy/BASIC_DMA64/dummy_rtl.v bdw_work/modules/dummy/BASIC_DMA64/stratus_hls.bdr
+-

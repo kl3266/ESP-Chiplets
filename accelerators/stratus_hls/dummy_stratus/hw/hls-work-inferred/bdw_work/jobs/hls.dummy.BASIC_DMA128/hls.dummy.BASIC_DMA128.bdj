@@ -1,0 +1,12 @@
+565762		// ppid
+565775		// pid
+haagendazs	// host name
+bdw_work/trace/hls.dummy.BASIC_DMA128.trace		// log file
+2		// state ( 0=unrun 1=running 2=success 3=failed 4=unknown 5=queued
+0		// exit status
+0		// quiet
+0		// background
+1764623534	// start time: Mon Dec  1 16:12:14 2025
+1764623535	// end time:   Mon Dec  1 16:12:15 2025
+make --no-print-directory -f Makefile CWBExec_hls=1 hlsc_dummy_BASIC_DMA128
+-

@@ -1,0 +1,537 @@
+<?xml version="1.0"?>
+<lib_catalogue>
+	<tool_log>
+		<tool_name>Memory Model Generator</tool_name>
+		<tool_kind>ModelGenerator</tool_kind>
+		<tool_tech>NONE</tool_tech>
+		<version>24.02-s004</version>
+		<user>kevin</user>
+		<hostname>haagendazs.cs.columbia.edu</hostname>
+		<cwd></cwd>
+		<output_dir></output_dir>
+		<exit_status>-1</exit_status>
+	</tool_log>
+	<name>memlib</name>
+	<lib_type>MEMORY</lib_type>
+	<param_table>
+	</param_table>
+	<source_file>
+		<path>c_parts/dummy_plm.cc</path>
+		<file_kind>RTL_C</file_kind>
+		<module_name>dummy_plm</module_name>
+	</source_file>
+	<source_file>
+		<path>c_parts/dummy_plm.h</path>
+		<file_kind>RTL_H</file_kind>
+		<module_name>dummy_plm</module_name>
+	</source_file>
+	<source_file>
+		<path>dummy_plm.bdm</path>
+		<file_kind>MEM_WRAP</file_kind>
+		<module_name>dummy_plm</module_name>
+	</source_file>
+	<module>
+		<name>dummy_plm</name>
+		<source_path>c_parts/dummy_plm.cc</source_path>
+		<crc>0</crc>
+		<vendor_model>/home/kevin/nov_submission/esp/rtl/techmap/inferred/mem/SRAM_1024x16.v</vendor_model>
+		<vendor_wrapper>/home/kevin/nov_submission/esp/tech/inferred/memgen/dummy_stratus/dummy_plm.v</vendor_wrapper>
+		<resource_kind>RAM</resource_kind>
+		<area>32</area>
+		<delay>0.2</delay>
+		<setup_time>0.06</setup_time>
+		<slack>0</slack>
+		<latency>1</latency>
+		<pipelined>0</pipelined>
+		<stallable>0</stallable>
+		<word_count>512</word_count>
+		<port>
+			<name>CLK</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<clock/>
+			<port_kind>clock</port_kind>
+		</port>
+		<port>
+			<name>WE0</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<port_kind>we</port_kind>
+			<access_port>0</access_port>
+		</port>
+		<port>
+			<name>CE0</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>0</access_port>
+		</port>
+		<port>
+			<name>WEM0</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<access_port>0</access_port>
+		</port>
+		<port>
+			<name>D0</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>data</port_kind>
+			<access_port>0</access_port>
+		</port>
+		<port>
+			<name>A0</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>0</access_port>
+		</port>
+		<port>
+			<name>WE1</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<port_kind>we</port_kind>
+			<access_port>1</access_port>
+		</port>
+		<port>
+			<name>CE1</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>1</access_port>
+		</port>
+		<port>
+			<name>WEM1</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<access_port>1</access_port>
+		</port>
+		<port>
+			<name>D1</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>data</port_kind>
+			<access_port>1</access_port>
+		</port>
+		<port>
+			<name>A1</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>1</access_port>
+		</port>
+		<port>
+			<name>WE2</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<port_kind>we</port_kind>
+			<access_port>2</access_port>
+		</port>
+		<port>
+			<name>CE2</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>2</access_port>
+		</port>
+		<port>
+			<name>WEM2</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<access_port>2</access_port>
+		</port>
+		<port>
+			<name>D2</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>data</port_kind>
+			<access_port>2</access_port>
+		</port>
+		<port>
+			<name>A2</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>2</access_port>
+		</port>
+		<port>
+			<name>WE3</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<port_kind>we</port_kind>
+			<access_port>3</access_port>
+		</port>
+		<port>
+			<name>CE3</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>3</access_port>
+		</port>
+		<port>
+			<name>WEM3</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<access_port>3</access_port>
+		</port>
+		<port>
+			<name>D3</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>data</port_kind>
+			<access_port>3</access_port>
+		</port>
+		<port>
+			<name>A3</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>3</access_port>
+		</port>
+		<port>
+			<name>WE4</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<port_kind>we</port_kind>
+			<access_port>4</access_port>
+		</port>
+		<port>
+			<name>CE4</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>4</access_port>
+		</port>
+		<port>
+			<name>WEM4</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<access_port>4</access_port>
+		</port>
+		<port>
+			<name>D4</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>data</port_kind>
+			<access_port>4</access_port>
+		</port>
+		<port>
+			<name>A4</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>4</access_port>
+		</port>
+		<port>
+			<name>WE5</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<port_kind>we</port_kind>
+			<access_port>5</access_port>
+		</port>
+		<port>
+			<name>CE5</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>5</access_port>
+		</port>
+		<port>
+			<name>WEM5</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<access_port>5</access_port>
+		</port>
+		<port>
+			<name>D5</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>data</port_kind>
+			<access_port>5</access_port>
+		</port>
+		<port>
+			<name>A5</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>5</access_port>
+		</port>
+		<port>
+			<name>WE6</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<port_kind>we</port_kind>
+			<access_port>6</access_port>
+		</port>
+		<port>
+			<name>CE6</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>6</access_port>
+		</port>
+		<port>
+			<name>WEM6</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<access_port>6</access_port>
+		</port>
+		<port>
+			<name>D6</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>data</port_kind>
+			<access_port>6</access_port>
+		</port>
+		<port>
+			<name>A6</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>6</access_port>
+		</port>
+		<port>
+			<name>WE7</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<port_kind>we</port_kind>
+			<access_port>7</access_port>
+		</port>
+		<port>
+			<name>CE7</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>7</access_port>
+		</port>
+		<port>
+			<name>WEM7</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<access_port>7</access_port>
+		</port>
+		<port>
+			<name>D7</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>data</port_kind>
+			<access_port>7</access_port>
+		</port>
+		<port>
+			<name>A7</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>7</access_port>
+		</port>
+		<port>
+			<name>CE8</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>8</access_port>
+		</port>
+		<port>
+			<name>Q8</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>out</direction>
+			<port_kind>data</port_kind>
+			<access_port>8</access_port>
+		</port>
+		<port>
+			<name>A8</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>8</access_port>
+		</port>
+		<port>
+			<name>CE9</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>9</access_port>
+		</port>
+		<port>
+			<name>Q9</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>out</direction>
+			<port_kind>data</port_kind>
+			<access_port>9</access_port>
+		</port>
+		<port>
+			<name>A9</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>9</access_port>
+		</port>
+		<port>
+			<name>CE10</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>10</access_port>
+		</port>
+		<port>
+			<name>Q10</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>out</direction>
+			<port_kind>data</port_kind>
+			<access_port>10</access_port>
+		</port>
+		<port>
+			<name>A10</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>10</access_port>
+		</port>
+		<port>
+			<name>CE11</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>11</access_port>
+		</port>
+		<port>
+			<name>Q11</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>out</direction>
+			<port_kind>data</port_kind>
+			<access_port>11</access_port>
+		</port>
+		<port>
+			<name>A11</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>11</access_port>
+		</port>
+		<port>
+			<name>CE12</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>12</access_port>
+		</port>
+		<port>
+			<name>Q12</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>out</direction>
+			<port_kind>data</port_kind>
+			<access_port>12</access_port>
+		</port>
+		<port>
+			<name>A12</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>12</access_port>
+		</port>
+		<port>
+			<name>CE13</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>13</access_port>
+		</port>
+		<port>
+			<name>Q13</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>out</direction>
+			<port_kind>data</port_kind>
+			<access_port>13</access_port>
+		</port>
+		<port>
+			<name>A13</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>13</access_port>
+		</port>
+		<port>
+			<name>CE14</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>14</access_port>
+		</port>
+		<port>
+			<name>Q14</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>out</direction>
+			<port_kind>data</port_kind>
+			<access_port>14</access_port>
+		</port>
+		<port>
+			<name>A14</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>14</access_port>
+		</port>
+		<port>
+			<name>CE15</name>
+			<datatype W="1">bool</datatype>
+			<direction>in</direction>
+			<inactive_value>0</inactive_value>
+			<pref_ctrl/>
+			<port_kind>ce</port_kind>
+			<access_port>15</access_port>
+		</port>
+		<port>
+			<name>Q15</name>
+			<datatype W="64">sc_uint</datatype>
+			<direction>out</direction>
+			<port_kind>data</port_kind>
+			<access_port>15</access_port>
+		</port>
+		<port>
+			<name>A15</name>
+			<datatype W="9">sc_uint</datatype>
+			<direction>in</direction>
+			<port_kind>addr</port_kind>
+			<access_port>15</access_port>
+		</port>
+		<options></options>
+	</module>
+</lib_catalogue>

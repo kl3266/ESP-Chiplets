@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<report_catalogue>
+	<report_file>
+		<report_def>
+			<name>scheduler</name>
+			<summary>Reports all of the operations scheduled in each thread.</summary>
+			<unprintable/>
+			<node_kind>hls_config</node_kind>
+		</report_def>
+		<path>scheduler.rpt</path>
+		<object>hls_config:hls_work_inferred/dummy/BASIC_DMA64</object>
+		<silent/>
+		<time>Mon Dec  1 16:09:44 2025</time>
+		<hostname>haagendazs</hostname>
+		<user>kevin</user>
+		<version>24.02-s004</version>
+	</report_file>
+</report_catalogue>

@@ -1,0 +1,2112 @@
+BDW_HLS_CONFIG=BASIC_DMA128 BDW_CYNTH_CONFIG=BASIC_DMA128 \
+	BDW_VRTL_FILE=bdw_work/modules/dummy/BASIC_DMA128/dummy_rtl.v \
+	BDW_CRTL_FILE=bdw_work/modules/dummy/BASIC_DMA128/dummy_rtl.cpp \
+	BDW_MODULE=dummy \
+	BDW_CYNTH_CONFIG=BASIC_DMA128 \
+	BDW_CYNTH_CONFIG_DIR=bdw_work/modules/dummy/BASIC_DMA128 \
+	BDW_HLS_CONFIG=BASIC_DMA128 \
+	BDW_HLS_CONFIG_DIR=bdw_work/modules/dummy/BASIC_DMA128 \
+stratus_hls --logfile=stratus_hls.log -I. -Ibdw_work/wrappers --c++17  -I/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc -I/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/utils -I../src -I./memlib --clock_period=10.000 --default_input_delay=0.100 --default_protocol=off --fpga_part=xc7v2000tflg1925-2 --fpga_tool=vivado --fpga_use_dsp=off --inline_partial_constants=on --lsb_trimming=on --message_detail=2 --output_style_reset_all=on --sched_asap=on --sharing_effort_parts=low --sharing_effort_regs=low -I/opt/cad/stratus/share/stratus/include -DBASIC_DMA128=1 -DBDW_RTL_dummy_BASIC_DMA128=1 -DioConfig_IOCFG_DMA128 -D_p_ioConfig_IOCFG_DMA128 -DioConfig=IOCFG_DMA128 -D_wrap_ioConfig=IOCFG_DMA128 -DDMA_WIDTH=128 -D_wrap_DMA_WIDTH=128 -DHLS_DIRECTIVES_BASIC --clock_period=10.000 --prints=on -I./memlib/c_parts \
+	-d bdw_work/modules/dummy/BASIC_DMA128 -o dummy_rtl.cpp \
+	--hls_module=dummy --hls_config=BASIC_DMA128 --project=project.tcl \
+	-P ./memlib/c_parts \
+	-p memlib \
+	 \
+	 \
+	 \
+	 ../src/dummy.cpp
+
+stratus_hls 24.02-s004  (104273.080414)
+Copyright (c) 2025 Cadence Design Systems, Inc. All rights reserved worldwide.
+
+   NOTE 00251: Using FPGA tool vivado and part xc7v2000tflg1925-2.
+        00481: -D is set to "__x86_64__, STRATUS=1, STRATUS_HLS=1, CYNTHESIZER,
+        00481.   CYNTHHL, BASIC_DMA128=1, BDW_RTL_dummy_BASIC_DMA128=1,
+        00481.   ioConfig_IOCFG_DMA128, _p_ioConfig_IOCFG_DMA128,
+        00481.   ioConfig=IOCFG_DMA128, _wrap_ioConfig=IOCFG_DMA128,
+        00481.   DMA_WIDTH=128, _wrap_DMA_WIDTH=128, HLS_DIRECTIVES_BASIC".
+        00481: -I is set to "., bdw_work/wrappers,
+        00481.   /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc,
+        00481.   /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/utils,
+        00481.   ../src, ./memlib, /opt/cad/stratus/share/stratus/include,
+        00481.   ./memlib/c_parts, /opt/cad/stratus/share/stratus/include,
+        00481.   /opt/cad/stratus/tools.lnx86/stratus/systemc/2.3.3/include".
+        00481: -U is not set.
+        00481: --abort_level is set to "FATAL".
+        00481: --allow_pipeline_loop_expansion is set to "on".
+        00481: --attrib_value is not set.
+        00481: --balance_expr is set to "off".
+        00481: --cachelib is set to "on".
+        00481: --cachelib_dir is not set.
+        00481: --cap_table_file is not set.
+        00481: --characterize_with_driver is not set.
+        00481: --clock_gating_module is not set.
+        00481: --clock_period is set to "10.000".
+        00481: --comm_subexp_elim is set to "off".
+        00481: --constrain_multiport_mem_distance is set to "on".
+        00481: --cycle_slack is set to "0.000".
+        00481: --default_input_delay is set to "0.100".
+        00481: --default_preserve_io is set to "off".
+        00481: --default_protocol is set to "off".
+        00481: --default_stable_input_delay is not set.
+        00481: --detect_stall_loops is set to "off".
+        00481: --dont_ungroup_name is not set.
+        00481: --dont_ungroup_type is set to "none".
+        00481: --dpopt_auto is set to "off".
+        00481: --dpopt_effort is set to "normal".
+        00481: --dpopt_with_enable is set to "off".
+        00481: --eco_baseline is not set.
+        00481: --eco_sharing is set to "off".
+        00481: --factor_expr is set to "off".
+        00481: --fail_level is set to "ERROR".
+        00481: --fixed_reset is set to "off".
+        00481: --flatten_arrays is set to "none".
+        00481: --fpga_dsp_latency is set to "2".
+        00481: --fpga_dsp_min_widths is set to "12,12".
+        00481: --fpga_part is set to "xc7v2000tflg1925-2".
+        00481: --fpga_tool is set to "vivado".
+        00481: --fpga_use_dsp is set to "off".
+        00481: --fuse_loops is set to "on".
+        00481: --global_state_encoding is set to "binary".
+        00481: --help is not set.
+        00481: --hls_config is set to "BASIC_DMA128".
+        00481: --hls_module is set to "dummy".
+        00481: --ignore_cells is not set.
+        00481: --ignore_scan_cells is set to "off".
+        00481: --inline_partial_constants is set to "on".
+        00481: --interconnect_mode is set to "wireload".
+        00481: --lef_library is not set.
+        00481: --logfile is set to "bdw_work/modules/dummy/BASIC_DMA128/stratus_hls.log".
+        00481: --lsb_trimming is set to "on".
+        00481: --message_detail is set to "2".
+        00481: --message_level is not set.
+        00481: --message_log_level is set to "NOTE".
+        00481: --message_suppress is not set.
+        00481: --method_processing is set to "synthesize".
+        00481: --mux_pushing is set to "on".
+        00481: --number_of_routing_layers is not set.
+        00481: --output is set to "dummy_rtl.cpp".
+        00481: --output_dir is set to "bdw_work/modules/dummy/BASIC_DMA128".
+        00481: --output_style_fsm_increment is set to "on".
+        00481: --output_style_mem is set to "array".
+        00481: --output_style_mux is set to "impl_case".
+        00481: --output_style_parts is set to "rtl".
+        00481: --output_style_pipelined_parts is set to "generic".
+        00481: --output_style_reset_all is set to "on".
+        00481: --output_style_reset_all_async is set to "on".
+        00481: --output_style_reset_all_sync is set to "on".
+        00481: --output_style_separate_behaviors is set to "off".
+        00481: --output_style_separate_debug is set to "off".
+        00481: --output_style_separate_memories is set to "off".
+        00481: --output_style_starc is set to "S2.2.2.2".
+        00481: --output_style_structure_only is set to "off".
+        00481: --output_style_two_part_fsm is set to "on".
+        00481: --output_style_ungroup_parts is set to "on".
+        00481: --output_style_verbose_names is set to "off".
+        00481: --part_types_to_estimate is set to "off".
+        00481: --parts_effort is set to "high".
+        00481: --parts_lib is set to "memlib".
+        00481: --parts_lib_file is set to "./memlib/memlib.bdl".
+        00481: --parts_lib_path is set to "./memlib/c_parts".
+        00481: --path_delay_limit is set to "off".
+        00481: --path_delay_limit_unshare_regs is set to "on".
+        00481: --pipelined_parts is set to "on".
+        00481: --port_conns is set to "named".
+        00481: --power is set to "off".
+        00481: --power_clock_gating is set to "off".
+        00481: --power_fsm is set to "off".
+        00481: --power_memory is set to "off".
+        00481: --power_shut_off_port is not set.
+        00481: --prints is set to "on".
+        00481: --project is set to "project.tcl".
+        00481: --qrc_tech_file is not set.
+        00481: --register_fsm_mux_selects is set to "on".
+        00481: --relax_timing is set to "off".
+        00481: --require_pipeline_boundary_wait is set to "on".
+        00481: --rtl_annotation is set to "off".
+        00481: --run_through is set to "rtl".
+        00481: --scale_of_cap_per_unit_len is not set.
+        00481: --scale_of_res_per_unit_len is not set.
+        00481: --sched_analysis is set to "on_failure".
+        00481: --sched_asap is set to "on".
+        00481: --sched_effort is set to "medium".
+        00481: --sched_optim_slack is set to "none".
+        00481: --sharing_effort_parts is set to "low".
+        00481: --sharing_effort_regs is set to "low".
+        00481: --shift_trimming is set to "standard".
+        00481: --simple_index_mapping is set to "off".
+        00481: --split_add is set to "0".
+        00481: --split_multiply is set to "0".
+        00481: --src_file is set to "../src/dummy.cpp".
+        00481: --summary_level is set to "WARNING".
+        00481: --switch_optimizer is set to "on".
+        00481: --synthesize_asserts is set to "off".
+        00481: --synthesize_probes is set to "off".
+        00481: --tech_lib is not set.
+        00481: --trim_interstatement_sign is set to "on".
+        00481: --undef_func is set to "warn".
+        00481: --unroll_loops is set to "off".
+        00481: --unsupported_lib_func is set to "error".
+        00481: --verilog_dialect is set to "1995".
+        00481: --wireload is not set.
+   NOTE 01727: Using Genus 22.14-s059_1.
+   NOTE 01763: Using VIVADO(XILINX) FPGA Tool version 2023.2.
+        01279:   All time values are in "ns".
+   NOTE 01277:   Using a clock period of 10.000ns.
+
+        01425: Loading design and library files:
+
+WARNING 90177: at ../src/dummy.cpp line 75 col 26
+WARNING 90177.   variable "data" was declared but never referenced
+WARNING 90177.                     uint64_t data;
+WARNING 90177.                              ^
+
+WARNING 00608: at ../src/dummy.cpp line 203
+WARNING 00608.   variable "config" was set but never used.
+
+        00967:   Processing library
+        02788:       Using cached results for cyn_reg_estimate
+        01472:       Register Metrics:
+        01702:          Register Type   Area      Delay (ns)
+        01702.         --------------   ----   ---------------
+        01702.         EN SS SC AS AC   LUTs     Prop    Setup
+        01702.         -- -- -- -- --   ----   ------   ------
+        01703:          0  0  0  0  0     1     0.760    0.537
+        01703:          0  0  0  0  1     1     0.760    0.537
+        01703:          0  0  0  1  0     1     0.760    0.537
+        01703:          0  0  0  1  1     5     1.310    0.537
+        01703:          0  0  1  0  0     2     0.760    0.537
+        01703:          0  0  1  0  1     2     0.760    0.580
+        01703:          0  0  1  1  0     2     0.760    0.580
+        01703:          0  0  1  1  1     4     1.310    0.580
+        01703:          0  1  0  0  0     2     0.760    0.537
+        01703:          0  1  0  0  1     2     0.760    0.580
+        01703:          0  1  0  1  0     2     0.760    0.580
+        01703:          0  1  0  1  1     4     1.310    0.580
+        01703:          0  1  1  0  0     2     0.760    0.537
+        01703:          0  1  1  0  1     2     0.760    0.580
+        01703:          0  1  1  1  0     2     0.760    0.580
+        01703:          0  1  1  1  1     4     1.310    0.580
+        01703:          1  0  0  0  0     2     0.760    0.537
+        01703:          1  0  0  0  1     2     0.760    0.580
+        01703:          1  0  0  1  0     2     0.760    0.580
+        01703:          1  0  0  1  1     5     1.321    0.580
+        01703:          1  0  1  0  0     2     0.760    0.537
+        01703:          1  0  1  0  1     2     0.760    0.580
+        01703:          1  0  1  1  0     2     0.760    0.580
+        01703:          1  0  1  1  1     5     1.321    0.580
+        01703:          1  1  0  0  0     2     0.760    0.537
+        01703:          1  1  0  0  1     2     0.760    0.580
+        01703:          1  1  0  1  0     2     0.760    0.580
+        01703:          1  1  0  1  1     5     1.321    0.580
+        01703:          1  1  1  0  0     2     0.760    0.537
+        01703:          1  1  1  0  1     2     0.760    0.580
+        01703:          1  1  1  1  0     2     0.760    0.580
+        01703:          1  1  1  1  1     5     1.321    0.580
+   NOTE 01037:     Characterizing multiplexors up to 1 bits by 33 inputs.
+        02788:       Using cached results for cyn_mux_estimate
+        01429:       Binary Multiplexor Metrics:
+        02077:     Bitwidth    Num Inputs   LUTs    Delay (ns)
+        02078:         1            2        1      1.117
+        02078:         1            3        1      1.117
+        02078:         1            4        1      1.117
+        02078:         1            5        1      1.117
+        02078:         1            8        2      1.239
+        02078:         1            9        2      1.239
+        02078:         1           16        3      1.284
+        02078:         1           17        3      1.284
+        02078:         1           32        3      1.768
+        02078:         1           33        3      1.768
+        01429:       Onehot Multiplexor Metrics:
+        02077:     Bitwidth    Num Inputs   LUTs    Delay (ns)
+        02078:         1            2        1      1.117
+        02078:         1            3        1      1.117
+        02078:         1            4        1      1.117
+        02078:         1            5        1      1.117
+        02078:         1            8        2      1.239
+        02078:         1            9        2      1.239
+        02078:         1           16        3      1.284
+        02078:         1           17        3      1.284
+        02078:         1           32        3      1.768
+        02078:         1           33        3      1.768
+
+        00148: Normalization and optimization:
+   NOTE 00860:   Long int data types are being implemented with 64 bits.
+        02923:   Dissolving function boundaries.
+        02924:   Dissolved 487 function calls.
+        02923:   Dissolving function boundaries.
+        02924:   Dissolved 10 function calls.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_get.h
+   NOTE 00491.   line 315 (in reset_get())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/esp_handshake.hpp
+   NOTE 00491.   line 150 (in reset_req())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 11 (in reset_load_input())
+   NOTE 00491.     called from ../src/dummy.cpp line 20 (in load_input())
+   NOTE 00491.     called from line 13
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 18.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+   NOTE 00491.   line 284 (in reset_put())
+   NOTE 00491.     called from line 297 (in load_input())
+   NOTE 00491.     called from ../src/dummy.cpp line 13
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 18.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_get.h
+   NOTE 00491.   line 404 (in reset_get())
+   NOTE 00491.     called from line 422 (in load_input())
+   NOTE 00491.     called from ../src/dummy.cpp line 13
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 18.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+   NOTE 00491.   line 260 (in put())
+   NOTE 00491.     called from ../src/dummy.cpp line 57 (in load_input())
+   NOTE 00491.     called from line 13
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 47.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_get.h
+   NOTE 00491.   line 352 (in get())
+   NOTE 00491.     called from ../src/dummy.cpp line 79 (in load_input())
+   NOTE 00491.     called from line 13
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 47.
+   NOTE 00491: at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 40 (in load_compute_handshake())
+   NOTE 00491.     called from ../src/dummy.cpp line 90 (in load_input())
+   NOTE 00491.     called from line 13
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 47.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_get.h
+   NOTE 00491.   line 280 (in get())
+   NOTE 00491.     called from line 307 (in load_input())
+   NOTE 00491.     called from ../src/dummy.cpp line 13
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 47.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+   NOTE 00491.   line 284 (in reset_put())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/esp_handshake.hpp
+   NOTE 00491.   line 184 (in reset_ack())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 20 (in reset_compute_kernel())
+   NOTE 00491.     called from ../src/dummy.cpp line 193 (in compute_kernel())
+   NOTE 00491.     called from line 187
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 191.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_get.h
+   NOTE 00491.   line 315 (in reset_get())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/esp_handshake.hpp
+   NOTE 00491.   line 150 (in reset_req())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 21 (in reset_compute_kernel())
+   NOTE 00491.     called from ../src/dummy.cpp line 193 (in compute_kernel())
+   NOTE 00491.     called from line 187
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 191.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+   NOTE 00491.   line 260 (in put())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/esp_handshake.hpp
+   NOTE 00491.   line 188 (in ack())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 54 (in compute_load_handshake())
+   NOTE 00491.     called from ../src/dummy.cpp line 209 (in compute_kernel())
+   NOTE 00491.     called from line 187
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 52.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_get.h
+   NOTE 00491.   line 280 (in get())
+   NOTE 00491.     called from line 307 (in compute_kernel())
+   NOTE 00491.     called from ../src/dummy.cpp line 187
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 64.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+   NOTE 00491.   line 284 (in reset_put())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/esp_handshake.hpp
+   NOTE 00491.   line 184 (in reset_ack())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 29 (in reset_store_output())
+   NOTE 00491.     called from ../src/dummy.cpp line 108 (in store_output())
+   NOTE 00491.     called from line 102
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 106.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+   NOTE 00491.   line 284 (in reset_put())
+   NOTE 00491.     called from line 297 (in store_output())
+   NOTE 00491.     called from ../src/dummy.cpp line 102
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 106.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_put.h
+   NOTE 00491.   line 357 (in reset_put())
+   NOTE 00491.     called from line 381 (in store_output())
+   NOTE 00491.     called from ../src/dummy.cpp line 102
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 106.
+   NOTE 00491: at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 76 (in store_compute_handshake())
+   NOTE 00491.     called from ../src/dummy.cpp line 135 (in store_output())
+   NOTE 00491.     called from line 102
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 134.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+   NOTE 00491.   line 260 (in put())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/esp_handshake.hpp
+   NOTE 00491.   line 188 (in ack())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 78 (in store_compute_handshake())
+   NOTE 00491.     called from ../src/dummy.cpp line 135 (in store_output())
+   NOTE 00491.     called from line 102
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 134.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+   NOTE 00491.   line 260 (in put())
+   NOTE 00491.     called from ../src/dummy.cpp line 145 (in store_output())
+   NOTE 00491.     called from line 102
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 134.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_put.h
+   NOTE 00491.   line 317 (in put())
+   NOTE 00491.     called from ../src/dummy.cpp line 173 (in store_output())
+   NOTE 00491.     called from line 102
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   ../src/dummy.cpp line 134.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+   NOTE 00491.   line 260 (in put())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/esp_handshake.hpp
+   NOTE 00491.   line 188 (in ack())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 78
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 76.
+   NOTE 00491: at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+   NOTE 00491.   line 260 (in put())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/esp_handshake.hpp
+   NOTE 00491.   line 188 (in ack())
+   NOTE 00491.     called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 54
+   NOTE 00491.   This HLS_DEFINE_PROTOCOL directive is ignored because it is
+   NOTE 00491.   within another HLS_DEFINE_PROTOCOL block, starting at
+   NOTE 00491.   /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+   NOTE 00491.   line 52.
+   NOTE 01446:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+   NOTE 01446.     line 153
+   NOTE 01446.     The clocked SC_METHOD 'dma_read_chnl_sync_rcv_back_method'
+   NOTE 01446.     does not have a 'dont_initialize()' invocation. This may
+   NOTE 01446.     lead to a mismatch between the SystemC and Verilog
+   NOTE 01446.     simulation models.
+   NOTE 01446:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+   NOTE 01446.     line 139
+   NOTE 01446.     The clocked SC_METHOD 'dma_write_chnl_sync_snd_back_method'
+   NOTE 01446.     does not have a 'dont_initialize()' invocation. This may
+   NOTE 01446.     lead to a mismatch between the SystemC and Verilog
+   NOTE 01446.     simulation models.
+        02831:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        02831.         line 168
+        02831.         Converting control branching to datapath elements. (3
+        02831.         bits multiplexed)
+        01351:   at ../src/dummy.cpp line 13
+        01351.     Preprocessing thread dummy::load_input
+        01351:   at ../src/dummy.cpp line 187
+        01351.     Preprocessing thread dummy::compute_kernel
+        01351:   at ../src/dummy.cpp line 102
+        01351.     Preprocessing thread dummy::store_output
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        00116.     line 153
+        00116.     Optimizing method dummy::dma_read_chnl_sync_rcv_back_method
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        00116.     line 211
+        00116.     Optimizing method dummy::dma_read_chnl_sync_rcv_ready_arb
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_can_get_mod.h
+        00116.     line 62
+        00116.     Optimizing method dummy::dma_read_chnl_can_get_mod_process
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        00116.     line 139
+        00116.     Optimizing method dummy::dma_write_chnl_sync_snd_back_method
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        00116.     line 177
+        00116.     Optimizing method dummy::dma_write_chnl_sync_snd_valid_arb
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_can_put_mod.h
+        00116.     line 60
+        00116.     Optimizing method dummy::dma_write_chnl_can_put_mod_process
+        01351:   at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.i.hpp
+        01351.     line 6
+        01351.     Preprocessing thread dummy::config_accelerator
+        00116:   at ../src/dummy.cpp line 13
+        00116.     Optimizing thread dummy::load_input
+        00305:     638 nodes
+        00306:     Optimize: pass 1.
+        00305:     628 nodes
+        00306:     Optimize: pass 2.
+        00305:     631 nodes
+        00306:     Optimize: pass 3..
+        00305:     629 nodes
+        00306:     Optimize: pass 4.
+        00288:     at ../src/dummy.cpp line 81
+        00288.       Unrolling loop 2 times because the HLS_UNROLL_LOOP(ON,...)
+        00288.       directive was used.
+        00305:     841 nodes
+        00306:     Optimize: pass 5...
+        00305:     626 nodes
+        00306:     Optimize: pass 6.
+        00305:     626 nodes
+        00306:     Optimize: pass 7.
+        00305:     626 nodes
+        00306:     Optimize: pass 8.
+        02831:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_get.h
+        02831.         line 378
+        02831.         Converting control branching to datapath elements. (11
+        02831.         bits multiplexed)
+        02831:       at ../src/dummy.cpp line 83
+        02831.         Converting control branching to datapath elements. (11
+        02831.         bits multiplexed)
+        00305:     516 nodes
+        00306:     Optimize: pass 9...
+        00305:     495 nodes
+        00306:     Optimize: pass 10.
+        00305:     494 nodes
+        00306:     Optimize: pass 11..
+        00305:     492 nodes
+        00306:     Optimize: pass 12.
+        00305:     516 nodes
+        00306:     Optimize: pass 13.
+        00305:     516 nodes
+        00306:     Optimize: pass 14.
+        02813:     at ../src/dummy.hpp line 28
+        02813.       Array plm0, 512 words x 64 bits (32768 total bits), has
+        02813.       been mapped to a dummy_plm memory  because this array has
+        02813.       a HLS_MAP_TO_MEMORY directive at ../src/dummy.hpp line 28.
+   NOTE 00260:       at ../src/dummy.cpp line 84 (in load_input())
+   NOTE 00260.           called from line 13 (in [0]())
+   NOTE 00260.           called from line 81
+   NOTE 00260.         This is the first of 2 variable writes to plm0.
+        02813:     at ../src/dummy.hpp line 29
+        02813.       Array plm1, 512 words x 64 bits (32768 total bits), has
+        02813.       been mapped to a dummy_plm memory  because this array has
+        02813.       a HLS_MAP_TO_MEMORY directive at ../src/dummy.hpp line 29.
+   NOTE 00260:       at ../src/dummy.cpp line 86 (in load_input())
+   NOTE 00260.           called from line 13 (in [0]())
+   NOTE 00260.           called from line 81
+   NOTE 00260.         This is the first of 2 variable writes to plm1.
+        00289:       at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.i.hpp
+        00289.         line 44 (in wait_for_config())
+        00289.           called from ../src/dummy.cpp line 33 (in load_input())
+        00289.           called from line 13
+        00289.         This loop is not being unrolled because the
+        00289.         HLS_UNROLL_LOOP(OFF,...) directive was used.
+        00289:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+        00289.         line 272 (in put())
+        00289.           called from ../src/dummy.cpp line 57 (in load_input())
+        00289.           called from line 13
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_get.h
+        00289.         line 373 (in get())
+        00289.           called from ../src/dummy.cpp line 79 (in load_input())
+        00289.           called from line 13
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at ../src/dummy.cpp line 71 (in load_input())
+        00289.           called from line 13
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_get.h
+        00289.         line 289 (in get())
+        00289.           called from line 307 (in load_input())
+        00289.           called from ../src/dummy.cpp line 13
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at ../src/dummy.cpp line 45 (in load_input())
+        00289.           called from line 13
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at ../src/dummy.cpp line 44 (in load_input())
+        00289.           called from line 13
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator.i.hpp
+        00289.         line 52 (in process_done())
+        00289.           called from ../src/dummy.cpp line 96 (in load_input())
+        00289.           called from line 13
+        00289.         This loop is not being unrolled because the
+        00289.         HLS_UNROLL_LOOP(OFF,...) directive was used.
+        02835:       at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.i.hpp
+        02835.         line 44
+        02835.         Not converting control branching to datapath elements
+        02835.         because the wait statements are not balanced.
+        02835:       at ../src/dummy.cpp line 44
+        02835.         Not converting control branching to datapath elements
+        02835.         because the wait statements are not balanced.
+        02835:       at ../src/dummy.cpp line 45
+        02835.         Not converting control branching to datapath elements
+        02835.         because the wait statements are not balanced.
+        02835:       at ../src/dummy.cpp line 71
+        02835.         Not converting control branching to datapath elements
+        02835.         because the wait statements are not balanced.
+        02835:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_get.h
+        02835.         line 373
+        02835.         Not converting control branching to datapath elements
+        02835.         because the wait statements are not balanced.
+        00116:   at ../src/dummy.cpp line 187
+        00116.     Optimizing thread dummy::compute_kernel
+        00305:     169 nodes
+        00306:     Optimize: pass 1.
+        00305:     165 nodes
+        00306:     Optimize: pass 2.
+        00305:     165 nodes
+        00306:     Optimize: pass 3.
+        00305:     165 nodes
+        00306:     Optimize: pass 4.
+        00305:     177 nodes
+        00306:     Optimize: pass 5.
+        00305:     177 nodes
+        00306:     Optimize: pass 6.
+        00289:       at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.i.hpp
+        00289.         line 44 (in wait_for_config())
+        00289.           called from ../src/dummy.cpp line 202 (in
+        00289.         compute_kernel())
+        00289.           called from line 187
+        00289.         This loop is not being unrolled because the
+        00289.         HLS_UNROLL_LOOP(OFF,...) directive was used.
+        00289:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+        00289.         line 272 (in put())
+        00289.           called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/esp_handshake.hpp
+        00289.         line 188 (in ack())
+        00289.           called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+        00289.         line 54 (in compute_load_handshake())
+        00289.           called from ../src/dummy.cpp line 209 (in
+        00289.         compute_kernel())
+        00289.           called from line 187
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_get.h
+        00289.         line 289 (in get())
+        00289.           called from line 307 (in compute_kernel())
+        00289.           called from ../src/dummy.cpp line 187
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at ../src/dummy.cpp line 208 (in compute_kernel())
+        00289.           called from line 187
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00116:   at ../src/dummy.cpp line 102
+        00116.     Optimizing thread dummy::store_output
+        00305:     527 nodes
+        00306:     Optimize: pass 1.
+        00305:     517 nodes
+        00306:     Optimize: pass 2.
+        00305:     520 nodes
+        00306:     Optimize: pass 3..
+        00305:     518 nodes
+        00306:     Optimize: pass 4.
+        00288:     at ../src/dummy.cpp line 166
+        00288.       Unrolling loop 2 times because the HLS_UNROLL_LOOP(ON,...)
+        00288.       directive was used.
+        00305:     666 nodes
+        00306:     Optimize: pass 5...
+        00305:     519 nodes
+        00306:     Optimize: pass 6...
+        00305:     510 nodes
+        00306:     Optimize: pass 7.
+        00305:     510 nodes
+        00306:     Optimize: pass 8.
+        00305:     510 nodes
+        00306:     Optimize: pass 9.
+        02831:       at ../src/dummy.cpp line 168
+        02831.         Converting control branching to datapath elements. (11
+        02831.         bits multiplexed)
+        00305:     490 nodes
+        00306:     Optimize: pass 10...
+        00305:     472 nodes
+        00306:     Optimize: pass 11.
+        00305:     478 nodes
+        00306:     Optimize: pass 12..
+        00305:     471 nodes
+        00306:     Optimize: pass 13.
+        00305:     466 nodes
+        00306:     Optimize: pass 14..
+        00305:     461 nodes
+        00306:     Optimize: pass 15.
+        00305:     460 nodes
+        00306:     Optimize: pass 16..
+        00305:     458 nodes
+        00306:     Optimize: pass 17.
+        00305:     476 nodes
+        00306:     Optimize: pass 18.
+        00305:     476 nodes
+        00306:     Optimize: pass 19.
+        00261:       at ../src/dummy.cpp line 169 (in store_output())
+        00261.           called from line 102 (in [0]())
+        00261.           called from line 166
+        00261.         This is the first of 2 variable reads from plm0.
+        00261:       at ../src/dummy.cpp line 171 (in store_output())
+        00261.           called from line 102 (in [0]())
+        00261.           called from line 166
+        00261.         This is the first of 2 variable reads from plm1.
+        00289:       at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.i.hpp
+        00289.         line 44 (in wait_for_config())
+        00289.           called from ../src/dummy.cpp line 120 (in
+        00289.         store_output())
+        00289.           called from line 102
+        00289.         This loop is not being unrolled because the
+        00289.         HLS_UNROLL_LOOP(OFF,...) directive was used.
+        00289:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+        00289.         line 272 (in put())
+        00289.           called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/esp_handshake.hpp
+        00289.         line 188 (in ack())
+        00289.           called from /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.i.hpp
+        00289.         line 78 (in store_compute_handshake())
+        00289.           called from ../src/dummy.cpp line 135 (in
+        00289.         store_output())
+        00289.           called from line 102
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_blocking_put.h
+        00289.         line 272 (in put())
+        00289.           called from ../src/dummy.cpp line 145 (in
+        00289.         store_output())
+        00289.           called from line 102
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_put.h
+        00289.         line 337 (in put())
+        00289.           called from ../src/dummy.cpp line 173 (in
+        00289.         store_output())
+        00289.           called from line 102
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at ../src/dummy.cpp line 163 (in store_output())
+        00289.           called from line 102
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at ../src/dummy.cpp line 132 (in store_output())
+        00289.           called from line 102
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at ../src/dummy.cpp line 131 (in store_output())
+        00289.           called from line 102
+        00289.         This loop is not being unrolled because no unrolling was
+        00289.         specified.
+        00289:       at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator.i.hpp
+        00289.         line 52 (in process_done())
+        00289.           called from ../src/dummy.cpp line 182 (in
+        00289.         store_output())
+        00289.           called from line 102
+        00289.         This loop is not being unrolled because the
+        00289.         HLS_UNROLL_LOOP(OFF,...) directive was used.
+        02835:       at ../src/dummy.cpp line 131
+        02835.         Not converting control branching to datapath elements
+        02835.         because the wait statements are not balanced.
+        02835:       at ../src/dummy.cpp line 132
+        02835.         Not converting control branching to datapath elements
+        02835.         because the wait statements are not balanced.
+        02835:       at ../src/dummy.cpp line 163
+        02835.         Not converting control branching to datapath elements
+        02835.         because the wait statements are not balanced.
+        02835:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_put.h
+        02835.         line 337
+        02835.         Not converting control branching to datapath elements
+        02835.         because the wait statements are not balanced.
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        00116.     line 153
+        00116.     Optimizing method dummy::dma_read_chnl_sync_rcv_back_method
+        00305:     295 nodes
+        00306:     Optimize: pass 1..
+        00305:     154 nodes
+        00306:     Optimize: pass 2.
+        00305:     199 nodes
+        00306:     Optimize: pass 3..
+        00305:     174 nodes
+        00306:     Optimize: pass 4.
+        00305:     174 nodes
+        00306:     Optimize: pass 5.
+        00305:     174 nodes
+        00306:     Optimize: pass 6.
+        02831:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        02831.         line 164
+        02831.         Converting control branching to datapath elements. (11
+        02831.         bits multiplexed)
+        00305:     160 nodes
+        00306:     Optimize: pass 7..
+        00305:     157 nodes
+        00306:     Optimize: pass 8.
+        00305:     155 nodes
+        00306:     Optimize: pass 9..
+        00305:     151 nodes
+        00306:     Optimize: pass 10.
+        00305:     160 nodes
+        00306:     Optimize: pass 11..
+        00305:     157 nodes
+        00306:     Optimize: pass 12.
+        00305:     157 nodes
+        00306:     Optimize: pass 13.
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        00116.     line 211
+        00116.     Optimizing method dummy::dma_read_chnl_sync_rcv_ready_arb
+        00305:     131 nodes
+        00306:     Optimize: pass 1.
+        00305:     137 nodes
+        00306:     Optimize: pass 2..
+        00305:     131 nodes
+        00306:     Optimize: pass 3.
+        00305:     131 nodes
+        00306:     Optimize: pass 4.
+        00305:     131 nodes
+        00306:     Optimize: pass 5.
+        02831:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        02831.         line 216
+        02831.         Converting control branching to datapath elements. (11
+        02831.         bits multiplexed)
+        00305:     111 nodes
+        00306:     Optimize: pass 6..
+        00305:     108 nodes
+        00306:     Optimize: pass 7.
+        02831:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        02831.         line 214
+        02831.         Converting control branching to datapath elements. (11
+        02831.         bits multiplexed)
+        00305:     77 nodes
+        00306:     Optimize: pass 8..
+        00305:     74 nodes
+        00306:     Optimize: pass 9.
+        00305:     72 nodes
+        00306:     Optimize: pass 10..
+        00305:     68 nodes
+        00306:     Optimize: pass 11.
+        00305:     83 nodes
+        00306:     Optimize: pass 12..
+        00305:     74 nodes
+        00306:     Optimize: pass 13.
+        00305:     74 nodes
+        00306:     Optimize: pass 14.
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_can_get_mod.h
+        00116.     line 62
+        00116.     Optimizing method dummy::dma_read_chnl_can_get_mod_process
+        00305:     39 nodes
+        00306:     Optimize: pass 1.
+        00305:     48 nodes
+        00306:     Optimize: pass 2..
+        00305:     45 nodes
+        00306:     Optimize: pass 3.
+        00305:     45 nodes
+        00306:     Optimize: pass 4.
+        00305:     45 nodes
+        00306:     Optimize: pass 5.
+        00305:     51 nodes
+        00306:     Optimize: pass 6..
+        00305:     48 nodes
+        00306:     Optimize: pass 7.
+        00305:     48 nodes
+        00306:     Optimize: pass 8.
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        00116.     line 139
+        00116.     Optimizing method dummy::dma_write_chnl_sync_snd_back_method
+        00305:     263 nodes
+        00306:     Optimize: pass 1..
+        00305:     138 nodes
+        00306:     Optimize: pass 2.
+        00305:     168 nodes
+        00306:     Optimize: pass 3..
+        00305:     153 nodes
+        00306:     Optimize: pass 4.
+        00305:     153 nodes
+        00306:     Optimize: pass 5.
+        00305:     153 nodes
+        00306:     Optimize: pass 6.
+        02831:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        02831.         line 146
+        02831.         Converting control branching to datapath elements. (11
+        02831.         bits multiplexed)
+        00305:     133 nodes
+        00306:     Optimize: pass 7..
+        00305:     130 nodes
+        00306:     Optimize: pass 8.
+        00305:     129 nodes
+        00306:     Optimize: pass 9..
+        00305:     127 nodes
+        00306:     Optimize: pass 10.
+        00305:     133 nodes
+        00306:     Optimize: pass 11..
+        00305:     130 nodes
+        00306:     Optimize: pass 12.
+        00305:     130 nodes
+        00306:     Optimize: pass 13.
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        00116.     line 177
+        00116.     Optimizing method dummy::dma_write_chnl_sync_snd_valid_arb
+        00305:     131 nodes
+        00306:     Optimize: pass 1.
+        00305:     137 nodes
+        00306:     Optimize: pass 2..
+        00305:     131 nodes
+        00306:     Optimize: pass 3.
+        00305:     131 nodes
+        00306:     Optimize: pass 4.
+        00305:     131 nodes
+        00306:     Optimize: pass 5.
+        02831:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        02831.         line 182
+        02831.         Converting control branching to datapath elements. (11
+        02831.         bits multiplexed)
+        00305:     111 nodes
+        00306:     Optimize: pass 6..
+        00305:     108 nodes
+        00306:     Optimize: pass 7.
+        02831:       at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        02831.         line 180
+        02831.         Converting control branching to datapath elements. (11
+        02831.         bits multiplexed)
+        00305:     77 nodes
+        00306:     Optimize: pass 8..
+        00305:     74 nodes
+        00306:     Optimize: pass 9.
+        00305:     72 nodes
+        00306:     Optimize: pass 10..
+        00305:     68 nodes
+        00306:     Optimize: pass 11.
+        00305:     83 nodes
+        00306:     Optimize: pass 12..
+        00305:     74 nodes
+        00306:     Optimize: pass 13.
+        00305:     74 nodes
+        00306:     Optimize: pass 14.
+        00116:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_can_put_mod.h
+        00116.     line 60
+        00116.     Optimizing method dummy::dma_write_chnl_can_put_mod_process
+        00305:     35 nodes
+        00306:     Optimize: pass 1.
+        00305:     44 nodes
+        00306:     Optimize: pass 2..
+        00305:     41 nodes
+        00306:     Optimize: pass 3.
+        00305:     41 nodes
+        00306:     Optimize: pass 4.
+        00305:     41 nodes
+        00306:     Optimize: pass 5.
+        00305:     44 nodes
+        00306:     Optimize: pass 6..
+        00305:     41 nodes
+        00306:     Optimize: pass 7.
+        00305:     41 nodes
+        00306:     Optimize: pass 8.
+        00116:   at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.i.hpp
+        00116.     line 6
+        00116.     Optimizing thread dummy::config_accelerator
+        00305:     100 nodes
+        00306:     Optimize: pass 1.
+        00305:     99 nodes
+        00306:     Optimize: pass 2.
+        00305:     99 nodes
+        00306:     Optimize: pass 3.
+        00305:     99 nodes
+        00306:     Optimize: pass 4.
+        00305:     99 nodes
+        00306:     Optimize: pass 5.
+        00289:       at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.i.hpp
+        00289.         line 18 (in config_accelerator())
+        00289.           called from line 6
+        00289.         This loop is not being unrolled because the
+        00289.         HLS_UNROLL_LOOP(OFF,...) directive was used.
+        00289:       at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.i.hpp
+        00289.         line 32 (in config_accelerator())
+        00289.           called from line 6
+        00289.         This loop is not being unrolled because the
+        00289.         HLS_UNROLL_LOOP(OFF,...) directive was used.
+        01352:   at ../src/dummy.cpp line 13
+        01352.     Postprocessing thread dummy::load_input
+        01352:   at ../src/dummy.cpp line 187
+        01352.     Postprocessing thread dummy::compute_kernel
+        01352:   at ../src/dummy.cpp line 102
+        01352.     Postprocessing thread dummy::store_output
+        01352:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        01352.     line 153
+        01352.     Postprocessing method
+        01352.     dummy::dma_read_chnl_sync_rcv_back_method
+        01352:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        01352.     line 211
+        01352.     Postprocessing method
+        01352.     dummy::dma_read_chnl_sync_rcv_ready_arb
+        01352:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_can_get_mod.h
+        01352.     line 62
+        01352.     Postprocessing method
+        01352.     dummy::dma_read_chnl_can_get_mod_process
+        01352:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        01352.     line 139
+        01352.     Postprocessing method
+        01352.     dummy::dma_write_chnl_sync_snd_back_method
+        01352:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        01352.     line 177
+        01352.     Postprocessing method
+        01352.     dummy::dma_write_chnl_sync_snd_valid_arb
+        01352:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_can_put_mod.h
+        01352.     line 60
+        01352.     Postprocessing method
+        01352.     dummy::dma_write_chnl_can_put_mod_process
+        01352:   at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.i.hpp
+        01352.     line 6
+        01352.     Postprocessing thread dummy::config_accelerator
+   NOTE 01437:   at ../src/dummy.cpp line 13
+   NOTE 01437.     Using global default input delay value of 0.100ns.
+   NOTE 01437:   at ../src/dummy.cpp line 187
+   NOTE 01437.     Using global default input delay value of 0.100ns.
+   NOTE 01437:   at ../src/dummy.cpp line 102
+   NOTE 01437.     Using global default input delay value of 0.100ns.
+   NOTE 01437:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+   NOTE 01437.     line 153
+   NOTE 01437.     Using global default input delay value of 0.100ns.
+   NOTE 01437:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+   NOTE 01437.     line 211
+   NOTE 01437.     Using global default input delay value of 0.100ns.
+   NOTE 01437:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_can_get_mod.h
+   NOTE 01437.     line 62
+   NOTE 01437.     Using global default input delay value of 0.100ns.
+   NOTE 01437:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+   NOTE 01437.     line 139
+   NOTE 01437.     Using global default input delay value of 0.100ns.
+   NOTE 01437:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+   NOTE 01437.     line 177
+   NOTE 01437.     Using global default input delay value of 0.100ns.
+   NOTE 01437:   at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_can_put_mod.h
+   NOTE 01437.     line 60
+   NOTE 01437.     Using global default input delay value of 0.100ns.
+
+        00182: Initial resource mapping:
+   NOTE 01037:     Characterizing multiplexors up to 128 bits by 64 inputs.
+   NOTE 02776:     Obtaining mux metrics for techlib...
+        01429:       Binary Multiplexor Metrics:
+        02077:     Bitwidth    Num Inputs   LUTs    Delay (ns)
+        02078:         1            2        1      1.117
+        02078:         1            3        1      1.117
+        02078:         1            4        1      1.117
+        02078:         1            5        1      1.117
+        02078:         1            8        2      1.239
+        02078:         1            9        2      1.239
+        02078:         1           16        3      1.284
+        02078:         1           17        3      1.284
+        02078:         1           32        3      1.768
+        02078:         1           33        3      1.768
+        02078:         1           64        4      1.794
+        02078:         2            2        2      1.117
+        02078:         2            3        2      1.117
+        02078:         2            4        2      1.117
+        02078:         2            5        2      1.117
+        02078:         2            8        4      1.239
+        02078:         2            9        4      1.239
+        02078:         2           16        6      1.284
+        02078:         2           17        6      1.284
+        02078:         2           32        6      1.768
+        02078:         2           33        6      1.768
+        02078:         2           64        8      1.794
+        02078:         4            2        4      1.117
+        02078:         4            3        4      1.117
+        02078:         4            4        4      1.117
+        02078:         4            5        4      1.117
+        02078:         4            8        8      1.239
+        02078:         4            9        8      1.239
+        02078:         4           16       12      1.284
+        02078:         4           17       12      1.284
+        02078:         4           32       12      1.768
+        02078:         4           33       12      1.768
+        02078:         4           64       16      1.794
+        02078:         8            2        8      1.117
+        02078:         8            3        8      1.117
+        02078:         8            4        8      1.117
+        02078:         8            5        8      1.117
+        02078:         8            8       16      1.239
+        02078:         8            9       16      1.239
+        02078:         8           16       24      1.284
+        02078:         8           17       24      1.284
+        02078:         8           32       24      1.768
+        02078:         8           33       24      1.768
+        02078:         8           64       32      1.794
+        02078:        16            2       16      1.117
+        02078:        16            3       16      1.117
+        02078:        16            4       16      1.117
+        02078:        16            5       16      1.117
+        02078:        16            8       32      1.239
+        02078:        16            9       32      1.239
+        02078:        16           16       48      1.284
+        02078:        16           17       48      1.284
+        02078:        16           32       48      1.768
+        02078:        16           33       48      1.768
+        02078:        16           64       64      1.794
+        02078:        32            2       32      1.117
+        02078:        32            3       32      1.117
+        02078:        32            4       32      1.117
+        02078:        32            5       32      1.117
+        02078:        32            8       64      1.239
+        02078:        32            9       64      1.239
+        02078:        32           16       96      1.284
+        02078:        32           17       96      1.284
+        02078:        32           32       96      1.768
+        02078:        32           33       96      1.768
+        02078:        32           64      128      1.794
+        02078:        64            2       64      1.117
+        02078:        64            3       64      1.117
+        02078:        64            4       64      1.117
+        02078:        64            5       64      1.117
+        02078:        64            8      128      1.239
+        02078:        64            9      128      1.239
+        02078:        64           16      192      1.284
+        02078:        64           17      192      1.284
+        02078:        64           32      192      1.768
+        02078:        64           33      192      1.768
+        02078:        64           64      256      1.794
+        02078:       128            2      128      1.117
+        02078:       128            3      128      1.117
+        02078:       128            4      128      1.117
+        02078:       128            5      128      1.117
+        02078:       128            8      256      1.239
+        02078:       128            9      256      1.239
+        02078:       128           16      384      1.284
+        02078:       128           17      384      1.284
+        02078:       128           32      384      1.768
+        02078:       128           33      384      1.768
+        02078:       128           64      512      1.794
+        01429:       Onehot Multiplexor Metrics:
+        02077:     Bitwidth    Num Inputs   LUTs    Delay (ns)
+        02078:         1            2        1      1.117
+        02078:         1            3        1      1.117
+        02078:         1            4        1      1.117
+        02078:         1            5        1      1.117
+        02078:         1            8        2      1.239
+        02078:         1            9        2      1.239
+        02078:         1           16        3      1.284
+        02078:         1           17        3      1.284
+        02078:         1           32        3      1.768
+        02078:         1           33        3      1.768
+        02078:         1           64        4      1.794
+        02078:         2            2        2      1.117
+        02078:         2            3        2      1.117
+        02078:         2            4        2      1.117
+        02078:         2            5        2      1.117
+        02078:         2            8        4      1.239
+        02078:         2            9        4      1.239
+        02078:         2           16        6      1.284
+        02078:         2           17        6      1.284
+        02078:         2           32        6      1.768
+        02078:         2           33        6      1.768
+        02078:         2           64        8      1.794
+        02078:         4            2        4      1.117
+        02078:         4            3        4      1.117
+        02078:         4            4        4      1.117
+        02078:         4            5        4      1.117
+        02078:         4            8        8      1.239
+        02078:         4            9        8      1.239
+        02078:         4           16       12      1.284
+        02078:         4           17       12      1.284
+        02078:         4           32       12      1.768
+        02078:         4           33       12      1.768
+        02078:         4           64       16      1.794
+        02078:         8            2        8      1.117
+        02078:         8            3        8      1.117
+        02078:         8            4        8      1.117
+        02078:         8            5        8      1.117
+        02078:         8            8       16      1.239
+        02078:         8            9       16      1.239
+        02078:         8           16       24      1.284
+        02078:         8           17       24      1.284
+        02078:         8           32       24      1.768
+        02078:         8           33       24      1.768
+        02078:         8           64       32      1.794
+        02078:        16            2       16      1.117
+        02078:        16            3       16      1.117
+        02078:        16            4       16      1.117
+        02078:        16            5       16      1.117
+        02078:        16            8       32      1.239
+        02078:        16            9       32      1.239
+        02078:        16           16       48      1.284
+        02078:        16           17       48      1.284
+        02078:        16           32       48      1.768
+        02078:        16           33       48      1.768
+        02078:        16           64       64      1.794
+        02078:        32            2       32      1.117
+        02078:        32            3       32      1.117
+        02078:        32            4       32      1.117
+        02078:        32            5       32      1.117
+        02078:        32            8       64      1.239
+        02078:        32            9       64      1.239
+        02078:        32           16       96      1.284
+        02078:        32           17       96      1.284
+        02078:        32           32       96      1.768
+        02078:        32           33       96      1.768
+        02078:        32           64      128      1.794
+        02078:        64            2       64      1.117
+        02078:        64            3       64      1.117
+        02078:        64            4       64      1.117
+        02078:        64            5       64      1.117
+        02078:        64            8      128      1.239
+        02078:        64            9      128      1.239
+        02078:        64           16      192      1.284
+        02078:        64           17      192      1.284
+        02078:        64           32      192      1.768
+        02078:        64           33      192      1.768
+        02078:        64           64      256      1.794
+        02078:       128            2      128      1.117
+        02078:       128            3      128      1.117
+        02078:       128            4      128      1.117
+        02078:       128            5      128      1.117
+        02078:       128            8      256      1.239
+        02078:       128            9      256      1.239
+        02078:       128           16      384      1.284
+        02078:       128           17      384      1.284
+        02078:       128           32      384      1.768
+        02078:       128           33      384      1.768
+        02078:       128           64      512      1.794
+        00968:   Matching resources
+        02788:       Using cached results for dummy_Or_1Ux1U_1U_4
+        00304:         Comb. LUTs =   1  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.346ns
+        02788:       Using cached results for dummy_N_Muxb_1_2_5_4
+        00304:         Comb. LUTs =   1  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.346ns
+        02788:       Using cached results for dummy_N_Muxb_1_2_4_4
+        00304:         Comb. LUTs =   1  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.346ns
+        02788:       Using cached results for dummy_Xor_1Ux1U_1U_4
+        00304:         Comb. LUTs =   1  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.346ns
+        02788:       Using cached results for dummy_N_Muxb_1_2_3_4
+        00304:         Comb. LUTs =   1  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.346ns
+        02788:       Using cached results for dummy_N_Mux_1_2_2_4
+        00304:         Comb. LUTs =   1  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.346ns
+        02788:       Using cached results for dummy_And_1Ux1U_1U_4
+        00304:         Comb. LUTs =   1  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.346ns
+        02788:       Using cached results for dummy_LessThan_32Ux32U_1U_4
+        00304:         Comb. LUTs =  32  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.804ns
+        02788:       Using cached results for dummy_Add_32Sx1U_32S_4
+        00304:         Comb. LUTs =  33  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  1.025ns
+        02788:       Using cached results for dummy_Sub_32Sx10U_32S_4
+        00304:         Comb. LUTs =  64  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  1.115ns
+        02788:       Using cached results for dummy_LessThan_16Ux32U_1U_4
+        00304:         Comb. LUTs =  32  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.804ns
+        02788:       Using cached results for dummy_Not_1U_1U_4
+        00304:         Comb. LUTs =   1  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.346ns
+        02788:       Using cached results for dummy_Add_32Ux32U_32U_4
+        00304:         Comb. LUTs =  64  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  1.115ns
+        02788:       Using cached results for dummy_N_Mux_32_2_0_4
+        00304:         Comb. LUTs =  16  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.355ns
+        02788:       Using cached results for dummy_GreaterThan_32Sx11S_1U_4
+        00304:         Comb. LUTs =  33  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  1.274ns
+        02788:       Using cached results for dummy_GreaterThan_32Sx2S_1U_4
+        00304:         Comb. LUTs =  33  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  1.274ns
+        02723:       Synthesizing dummy_Add_32Sx2U_32S_4...
+        02723:       Synthesizing dummy_Add_16Ux2U_16U_4...
+        02723:       Synthesizing dummy_Add_9Ux1U_9U_4...
+        02723:       Synthesizing dummy_N_MuxB_128_2_1_4...
+        02941: .....................................................
+
+        02940: . Extraction Report
+        02941: .....................................................
+        02941: . Kind |   Type Spec |   Inst Spec | To |   Matches
+        02941: .....................................................
+        02941:
+        02948: 2 items do not match any extraction spec:
+        02949:   #1: Array : plm1
+        02949:   #2: Array : plm0
+        02941: .....................................................
+        02941:
+        00813:     Array bindings:
+        02935:       at ../src/dummy.hpp line 29
+        02935.         Array plm1, 512 words x 64 bits (32768 total bits), has
+        02935.         been mapped to a dummy_plm memory having 512 words x 64
+        02935.         bits (32768 total bits).  Shared amongst threads
+        02935.         load_input and store_output.
+        02935:       at ../src/dummy.hpp line 28
+        02935.         Array plm0, 512 words x 64 bits (32768 total bits), has
+        02935.         been mapped to a dummy_plm memory having 512 words x 64
+        02935.         bits (32768 total bits).  Shared amongst threads
+        02935.         load_input and store_output.
+        02935:       at ../src/dummy.hpp line 28
+        02935.         Array plm0, 512 words x 64 bits (32768 total bits), has
+        02935.         been mapped to a dummy_plm memory having 512 words x 64
+        02935.         bits (32768 total bits).  Shared amongst threads
+        02935.         load_input and store_output.
+        02935:       at ../src/dummy.hpp line 29
+        02935.         Array plm1, 512 words x 64 bits (32768 total bits), has
+        02935.         been mapped to a dummy_plm memory having 512 words x 64
+        02935.         bits (32768 total bits).  Shared amongst threads
+        02935.         load_input and store_output.
+
+        00969: Scheduling:
+   NOTE 01437:   at /home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.i.hpp
+   NOTE 01437.     line 6
+   NOTE 01437.     Using global default input delay value of 0.100ns.
+               .
+        01171:   Scheduling thread dummy::compute_kernel
+        02080:       sched_asap            on
+        02080:       sched_effort          medium
+        02080:       sharing_effort_parts  low
+        02080:       sharing_effort_regs   low
+        02080:       relax_timing          off
+        02080:       power_clock_gating    off
+        02080:       sched_optim_slack     none
+        02080:       timing_analysis       on
+        00907: .............................................................................
+        00907: . Loop carried dependencies report for loop:     esp_config_proc.i.hpp:44:5 .
+        00907: .                                                                           .
+        00907: . <No loop carried dependencies found>                                      .
+        00907: .............................................................................
+        00907: ..................................................................
+        00907: . Loop carried dependencies report for loop:     dummy.cpp:208:5 .
+        00907: .                                                                .
+        00907: . <No loop carried dependencies found>                           .
+        00907: ..................................................................
+        00907: ............................................................................
+        00907: . Loop carried dependencies report for loop:     cynw_blocking_put.h:272:5 .
+        00907: .                                                                          .
+        00907: . <No loop carried dependencies found>                                     .
+        00907: ............................................................................
+        00907: ............................................................................
+        00907: . Loop carried dependencies report for loop:     cynw_blocking_get.h:289:5 .
+        00907: .                                                                          .
+        00907: . <No loop carried dependencies found>                                     .
+        00907: ............................................................................
+        02098:     Total op count: 15
+        03257:     Sharable op count: 0
+        01170:     Unsharable op count: 15
+        00356:     Estimated intrinsic mux LUTs: 0
+        02361:     Schedule complete. Optimizing
+        01230:     Optimize: pass 1.
+
+        00970: Allocation & binding:
+        02974:     Generated 0 gate enable expressions for 0 operations
+        02973:     Optimize clock gating - process completed
+        01218:     Scheduling Resources:
+        01463:       No scheduled resources (functional units) are needed.
+               .
+        01171:   Scheduling thread dummy::config_accelerator
+        02080:       sched_asap            on
+        02080:       sched_effort          medium
+        02080:       sharing_effort_parts  low
+        02080:       sharing_effort_regs   low
+        02080:       relax_timing          off
+        02080:       power_clock_gating    off
+        02080:       sched_optim_slack     none
+        02080:       timing_analysis       on
+        00907: .............................................................................
+        00907: . Loop carried dependencies report for loop:     esp_config_proc.i.hpp:18:5 .
+        00907: .                                                                           .
+        00907: . <No loop carried dependencies found>                                      .
+        00907: .............................................................................
+        00907: .............................................................................
+        00907: . Loop carried dependencies report for loop:     esp_config_proc.i.hpp:32:5 .
+        00907: .                                                                           .
+        00907: . <No loop carried dependencies found>                                      .
+        00907: .............................................................................
+        02098:     Total op count: 4
+        03257:     Sharable op count: 0
+        01170:     Unsharable op count: 4
+        00356:     Estimated intrinsic mux LUTs: 0
+        02361:     Schedule complete. Optimizing
+        01230:     Optimize: pass 1.
+
+        00970: Allocation & binding:
+        02974:     Generated 0 gate enable expressions for 0 operations
+        02973:     Optimize clock gating - process completed
+        01218:     Scheduling Resources:
+        01463:       No scheduled resources (functional units) are needed.
+               .
+        01171:   Scheduling method dummy::dma_read_chnl_sync_rcv_ready_arb
+        02080:       sched_asap            on
+        02080:       sched_effort          medium
+        02080:       sharing_effort_parts  low
+        02080:       sharing_effort_regs   low
+        02080:       relax_timing          off
+        02080:       power_clock_gating    off
+        02080:       sched_optim_slack     none
+        02080:       timing_analysis       on
+        02098:     Total op count: 10
+        03257:     Sharable op count: 0
+        01170:     Unsharable op count: 10
+        00356:     Estimated intrinsic mux LUTs: 2
+        01167:     at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        01167.       line 216 estimated mux area: 1
+        01168:     Symbol:dma_read_chnl.sync_rcv.ready_arb Mux inputs: 2 Width:
+        01168.       1 Mux area: 1
+        01167:     at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        01167.       line 221 estimated mux area: 1
+        01168:     Symbol:dma_read_chnl.ready Mux inputs: 2 Width: 1 Mux area:
+        01168.       1
+        02361:     Schedule complete. Optimizing
+        01230:     Optimize: pass 1.
+
+        00970: Allocation & binding:
+        02974:     Generated 0 gate enable expressions for 0 operations
+        02973:     Optimize clock gating - process completed
+        01218:     Scheduling Resources:
+        01219:                   Resource Quantity
+        01220:       dummy_Xor_1Ux1U_1U_4        2
+        01220:       dummy_N_Muxb_1_2_4_4        1
+        01220:       dummy_N_Muxb_1_2_5_4        1
+               .
+        01171:   Scheduling method dummy::dma_read_chnl_sync_rcv_back_method
+        02080:       sched_asap            on
+        02080:       sched_effort          medium
+        02080:       sharing_effort_parts  low
+        02080:       sharing_effort_regs   low
+        02080:       relax_timing          off
+        02080:       power_clock_gating    off
+        02080:       sched_optim_slack     none
+        02080:       timing_analysis       on
+        02098:     Total op count: 28
+        03257:     Sharable op count: 0
+        01170:     Unsharable op count: 28
+        00356:     Estimated intrinsic mux LUTs: 66
+        01167:     at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        01167.       line 150 estimated mux area: 64
+        01168:     Symbol:dma_read_chnl.data_buf Mux inputs: 2 Width: 128 Mux
+        01168.       area: 64
+        01167:     at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        01167.       line 168 estimated mux area: 1
+        01168:     Symbol:dma_read_chnl.sync_rcv.ready_flop.dma_read_chnl.sync_rcv.ready_arb
+        01168.       Mux inputs: 2 Width: 1 Mux area: 1
+        01167:     at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h
+        01167.       line 145 estimated mux area: 1
+        01168:     Symbol:dma_read_chnl.sync_rcv.reset_ready_curr.dma_read_chnl.sync_rcv.ready_arb
+        01168.       Mux inputs: 2 Width: 1 Mux area: 1
+        02361:     Schedule complete. Optimizing
+        01230:     Optimize: pass 1.
+
+        00970: Allocation & binding:
+        02974:     Generated 0 gate enable expressions for 0 operations
+        02973:     Optimize clock gating - process completed
+        01218:     Scheduling Resources:
+        01219:                     Resource Quantity
+        01220:         dummy_And_1Ux1U_1U_4        1
+        01220:       dummy_N_MuxB_128_2_1_4        1
+        01220:          dummy_N_Mux_1_2_2_4        1
+        01220:         dummy_N_Muxb_1_2_3_4        1
+        01220:            dummy_Not_1U_1U_4        1
+               .
+        01171:   Scheduling method dummy::dma_read_chnl_can_get_mod_process
+        02080:       sched_asap            on
+        02080:       sched_effort          medium
+        02080:       sharing_effort_parts  low
+        02080:       sharing_effort_regs   low
+        02080:       relax_timing          off
+        02080:       power_clock_gating    off
+        02080:       sched_optim_slack     none
+        02080:       timing_analysis       on
+        02098:     Total op count: 8
+        03257:     Sharable op count: 0
+        01170:     Unsharable op count: 8
+        00356:     Estimated intrinsic mux LUTs: 0
+        02361:     Schedule complete. Optimizing
+        01230:     Optimize: pass 1.
+
+        00970: Allocation & binding:
+        02974:     Generated 0 gate enable expressions for 0 operations
+        02973:     Optimize clock gating - process completed
+        01218:     Scheduling Resources:
+        01219:                   Resource Quantity
+        01220:       dummy_And_1Ux1U_1U_4        2
+        01220:          dummy_Not_1U_1U_4        1
+        01220:        dummy_Or_1Ux1U_1U_4        1
+               .
+        01171:   Scheduling thread dummy::load_input
+        02080:       sched_asap            on
+        02080:       sched_effort          medium
+        02080:       sharing_effort_parts  low
+        02080:       sharing_effort_regs   low
+        02080:       relax_timing          off
+        02080:       power_clock_gating    off
+        02080:       sched_optim_slack     none
+        02080:       timing_analysis       on
+   NOTE 01992: at ../src/dummy.cpp line 73
+   NOTE 01992. Breaking array dependency associated with 'plm1',
+   NOTE 01992. because a HLS_BREAK_ARRAY_DEPENDENCY directive was specified.
+   NOTE 01992: at ../src/dummy.cpp line 72
+   NOTE 01992. Breaking array dependency associated with 'plm0',
+   NOTE 01992. because a HLS_BREAK_ARRAY_DEPENDENCY directive was specified.
+        00907: .............................................................................
+        00907: . Loop carried dependencies report for loop:     esp_config_proc.i.hpp:44:5 .
+        00907: .                                                                           .
+        00907: . <No loop carried dependencies found>                                      .
+        00907: .............................................................................
+        00907: ..................................................................
+        00907: . Loop carried dependencies report for loop:     dummy.cpp:44:32 .
+        00907: .                                                                .
+        00907: . Loop carried variables                                         .
+        00907: . -------------------------                                      .
+        00907: . dma_read_chnl.set_ready_curr                                   .
+        00907: . load_input::ping                                               .
+        00907: . load_input::offset                                             .
+        00907: . load_input::n                                                  .
+        00907: .                                                                .
+        00907: . Total loop carried dependencies: 4                             .
+        00907: ..................................................................
+        00907: ..................................................................
+        00907: . Loop carried dependencies report for loop:     dummy.cpp:45:37 .
+        00907: .                                                                .
+        00907: . Loop carried variables                                         .
+        00907: . -------------------------                                      .
+        00907: . dma_read_chnl.set_ready_curr                                   .
+        00907: . load_input::ping                                               .
+        00907: . load_input::offset                                             .
+        00907: . load_input::b                                                  .
+        00907: .                                                                .
+        00907: . Total loop carried dependencies: 4                             .
+        00907: ..................................................................
+        00907: ............................................................................
+        00907: . Loop carried dependencies report for loop:     cynw_blocking_put.h:272:5 .
+        00907: .                                                                          .
+        00907: . <No loop carried dependencies found>                                     .
+        00907: ............................................................................
+        00907: ..................................................................
+        00907: . Loop carried dependencies report for loop:     dummy.cpp:84:29 .
+        00907: .                                                                .
+        00907: . Loop carried variables                                         .
+        00907: . -------------------------                                      .
+        00907: . dma_read_chnl.set_ready_curr                                   .
+        00907: . load_input::i                                                  .
+        00907: .                                                                .
+        00907: . Total loop carried dependencies: 2                             .
+        00907: ..................................................................
+        00907: .............................................................................
+        00907: . Loop carried dependencies report for loop:     cynw_may_block_get.h:373:6 .
+        00907: .                                                                           .
+        00907: . <No loop carried dependencies found>                                      .
+        00907: .............................................................................
+        00907: ............................................................................
+        00907: . Loop carried dependencies report for loop:     cynw_blocking_get.h:289:5 .
+        00907: .                                                                          .
+        00907: . <No loop carried dependencies found>                                     .
+        00907: ............................................................................
+        00907: .............................................................................
+        00907: . Loop carried dependencies report for loop:     esp_accelerator.i.hpp:52:5 .
+        00907: .                                                                           .
+        00907: . <No loop carried dependencies found>                                      .
+        00907: .............................................................................
+        02098:     Total op count: 82
+        03257:     Sharable op count: 15
+        01170:     Unsharable op count: 67
+        00356:     Estimated intrinsic mux LUTs: 80
+        01167:     at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_get.h
+        01167.       line 378 estimated mux area: 64
+        01168:     Symbol:u_l_1989 Mux inputs: 2 Width: 128 Mux area: 64
+        01167:     at ../src/dummy.cpp line 49 estimated mux area: 16
+        01168:     Symbol:load_input::len Mux inputs: 2 Width: 32 Mux area: 16
+        02361:     Schedule complete. Optimizing
+        01230:     Optimize: pass 1.
+
+        00970: Allocation & binding:
+        02974:     Generated 0 gate enable expressions for 0 operations
+        02973:     Optimize clock gating - process completed
+        01218:     Scheduling Resources:
+        01219:                             Resource Quantity
+        01220:               dummy_Add_16Ux2U_16U_4        3
+        01220:                    dummy_Not_1U_1U_4        3
+        01220:                            dummy_plm        2
+        01220:               dummy_Add_32Sx1U_32S_4        1
+        01220:              dummy_Add_32Ux32U_32U_4        1
+        01220:       dummy_GreaterThan_32Sx11S_1U_4        1
+        01220:        dummy_GreaterThan_32Sx2S_1U_4        1
+        01220:          dummy_LessThan_16Ux32U_1U_4        1
+        01220:          dummy_LessThan_32Ux32U_1U_4        1
+        01220:               dummy_N_MuxB_128_2_1_4        1
+        01220:                 dummy_N_Mux_32_2_0_4        1
+        01220:              dummy_Sub_32Sx10U_32S_4        1
+               .
+        01171:   Scheduling method dummy::dma_write_chnl_sync_snd_valid_arb
+        02080:       sched_asap            on
+        02080:       sched_effort          medium
+        02080:       sharing_effort_parts  low
+        02080:       sharing_effort_regs   low
+        02080:       relax_timing          off
+        02080:       power_clock_gating    off
+        02080:       sched_optim_slack     none
+        02080:       timing_analysis       on
+        02098:     Total op count: 10
+        03257:     Sharable op count: 0
+        01170:     Unsharable op count: 10
+        00356:     Estimated intrinsic mux LUTs: 2
+        01167:     at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        01167.       line 182 estimated mux area: 1
+        01168:     Symbol:dma_write_chnl.sync_snd.valid_arb Mux inputs: 2
+        01168.       Width: 1 Mux area: 1
+        01167:     at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        01167.       line 187 estimated mux area: 1
+        01168:     Symbol:dma_write_chnl.valid Mux inputs: 2 Width: 1 Mux area:
+        01168.       1
+        02361:     Schedule complete. Optimizing
+        01230:     Optimize: pass 1.
+
+        00970: Allocation & binding:
+        02974:     Generated 0 gate enable expressions for 0 operations
+        02973:     Optimize clock gating - process completed
+        01218:     Scheduling Resources:
+        01219:                   Resource Quantity
+        01220:       dummy_Xor_1Ux1U_1U_4        2
+        01220:       dummy_N_Muxb_1_2_4_4        1
+        01220:       dummy_N_Muxb_1_2_5_4        1
+               .
+        01171:   Scheduling method dummy::dma_write_chnl_sync_snd_back_method
+        02080:       sched_asap            on
+        02080:       sched_effort          medium
+        02080:       sharing_effort_parts  low
+        02080:       sharing_effort_regs   low
+        02080:       relax_timing          off
+        02080:       power_clock_gating    off
+        02080:       sched_optim_slack     none
+        02080:       timing_analysis       on
+        02098:     Total op count: 18
+        03257:     Sharable op count: 0
+        01170:     Unsharable op count: 18
+        00356:     Estimated intrinsic mux LUTs: 1
+        01167:     at /opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h
+        01167.       line 136 estimated mux area: 1
+        01168:     Symbol:dma_write_chnl.sync_snd.reset_valid_curr.dma_write_chnl.sync_snd.valid_arb
+        01168.       Mux inputs: 2 Width: 1 Mux area: 1
+        02361:     Schedule complete. Optimizing
+        01230:     Optimize: pass 1.
+
+        00970: Allocation & binding:
+        02974:     Generated 0 gate enable expressions for 0 operations
+        02973:     Optimize clock gating - process completed
+        01218:     Scheduling Resources:
+        01219:                   Resource Quantity
+        01220:       dummy_And_1Ux1U_1U_4        1
+        01220:       dummy_N_Muxb_1_2_3_4        1
+        01220:          dummy_Not_1U_1U_4        1
+               .
+        01171:   Scheduling method dummy::dma_write_chnl_can_put_mod_process
+        02080:       sched_asap            on
+        02080:       sched_effort          medium
+        02080:       sharing_effort_parts  low
+        02080:       sharing_effort_regs   low
+        02080:       relax_timing          off
+        02080:       power_clock_gating    off
+        02080:       sched_optim_slack     none
+        02080:       timing_analysis       on
+        02098:     Total op count: 5
+        03257:     Sharable op count: 0
+        01170:     Unsharable op count: 5
+        00356:     Estimated intrinsic mux LUTs: 0
+        02361:     Schedule complete. Optimizing
+        01230:     Optimize: pass 1.
+
+        00970: Allocation & binding:
+        02974:     Generated 0 gate enable expressions for 0 operations
+        02973:     Optimize clock gating - process completed
+        01218:     Scheduling Resources:
+        01219:                  Resource Quantity
+        01220:         dummy_Not_1U_1U_4        1
+        01220:       dummy_Or_1Ux1U_1U_4        1
+               .
+        01171:   Scheduling thread dummy::store_output
+        02080:       sched_asap            on
+        02080:       sched_effort          medium
+        02080:       sharing_effort_parts  low
+        02080:       sharing_effort_regs   low
+        02080:       relax_timing          off
+        02080:       power_clock_gating    off
+        02080:       sched_optim_slack     none
+        02080:       timing_analysis       on
+        00907: .............................................................................
+        00907: . Loop carried dependencies report for loop:     esp_config_proc.i.hpp:44:5 .
+        00907: .                                                                           .
+        00907: . <No loop carried dependencies found>                                      .
+        00907: .............................................................................
+        00907: ...................................................................
+        00907: . Loop carried dependencies report for loop:     dummy.cpp:131:32 .
+        00907: .                                                                 .
+        00907: . Loop carried variables                                          .
+        00907: . -------------------------                                       .
+        00907: . dma_write_chnl.set_valid_curr                                   .
+        00907: . store_output::ping                                              .
+        00907: . store_output::offset                                            .
+        00907: . store_output::n                                                 .
+        00907: .                                                                 .
+        00907: . Total loop carried dependencies: 4                              .
+        00907: ...................................................................
+        00907: ...................................................................
+        00907: . Loop carried dependencies report for loop:     dummy.cpp:132:37 .
+        00907: .                                                                 .
+        00907: . Loop carried variables                                          .
+        00907: . -------------------------                                       .
+        00907: . dma_write_chnl.set_valid_curr                                   .
+        00907: . store_output::ping                                              .
+        00907: . store_output::offset                                            .
+        00907: . store_output::b                                                 .
+        00907: .                                                                 .
+        00907: . Total loop carried dependencies: 4                              .
+        00907: ...................................................................
+        00907: ............................................................................
+        00907: . Loop carried dependencies report for loop:     cynw_blocking_put.h:272:5 .
+        00907: .                                                                          .
+        00907: . <No loop carried dependencies found>                                     .
+        00907: ............................................................................
+        00907: ............................................................................
+        00907: . Loop carried dependencies report for loop:     cynw_blocking_put.h:272:5 .
+        00907: .                                                                          .
+        00907: . <No loop carried dependencies found>                                     .
+        00907: ............................................................................
+        00907: ...................................................................
+        00907: . Loop carried dependencies report for loop:     dummy.cpp:171:65 .
+        00907: .                                                                 .
+        00907: . Loop carried variables                                          .
+        00907: . -------------------------                                       .
+        00907: . dma_write_chnl.set_valid_curr                                   .
+        00907: . store_output::i                                                 .
+        00907: .                                                                 .
+        00907: . Total loop carried dependencies: 2                              .
+        00907: ...................................................................
+        00907: .............................................................................
+        00907: . Loop carried dependencies report for loop:     cynw_may_block_put.h:337:6 .
+        00907: .                                                                           .
+        00907: . <No loop carried dependencies found>                                      .
+        00907: .............................................................................
+        00907: .............................................................................
+        00907: . Loop carried dependencies report for loop:     esp_accelerator.i.hpp:52:5 .
+        00907: .                                                                           .
+        00907: . <No loop carried dependencies found>                                      .
+        00907: .............................................................................
+        02098:     Total op count: 83
+        03257:     Sharable op count: 14
+        01170:     Unsharable op count: 69
+        00356:     Estimated intrinsic mux LUTs: 80
+        01167:     at ../src/dummy.cpp line 168 estimated mux area: 64
+        01168:     Symbol:store_output::data_bv Mux inputs: 2 Width: 128 Mux
+        01168.       area: 64
+        01167:     at ../src/dummy.cpp line 137 estimated mux area: 16
+        01168:     Symbol:store_output::len Mux inputs: 2 Width: 32 Mux area:
+        01168.       16
+        02361:     Schedule complete. Optimizing
+        01230:     Optimize: pass 1.
+
+        00970: Allocation & binding:
+        02974:     Generated 0 gate enable expressions for 0 operations
+        02973:     Optimize clock gating - process completed
+        01218:     Scheduling Resources:
+        01219:                             Resource Quantity
+        01220:               dummy_Add_16Ux2U_16U_4        3
+        01220:                    dummy_Not_1U_1U_4        2
+        01220:                            dummy_plm        2
+        01220:               dummy_Add_32Sx1U_32S_4        1
+        01220:              dummy_Add_32Ux32U_32U_4        1
+        01220:       dummy_GreaterThan_32Sx11S_1U_4        1
+        01220:        dummy_GreaterThan_32Sx2S_1U_4        1
+        01220:          dummy_LessThan_16Ux32U_1U_4        1
+        01220:          dummy_LessThan_32Ux32U_1U_4        1
+        01220:               dummy_N_MuxB_128_2_1_4        1
+        01220:                 dummy_N_Mux_32_2_0_4        1
+        01220:              dummy_Sub_32Sx10U_32S_4        1
+
+        02918: RTL Generation & Optimization:
+        02917:   Preparing thread dummy::compute_kernel for final RTL output
+        01006:     States: 5
+        01677:     Building RTL structures, pass 1
+        01677:     Building RTL structures, pass 2
+
+               .......................................................
+               .                                                     .
+        00802: . Allocation Report for method "compute_kernel":      .
+        00805: .                           per Instance     Total    .
+        00805: .                           ------------  ----------- .
+        00805: .          Resource  Count   LUTs  Mults  LUTs  Mults .
+        00805: . -----------------  -----  -----  -----  ----  ----- .
+        00808: .         registers      6                            .
+        00404: .     register bits      6      1            6        .
+        00405: . implicit mux LUTs                          2        .
+        00811: . --------------------------------------------------- .
+        00403: .  Total LUTs/Mults                          8      0 .
+               .                                                     .
+               .......................................................
+
+
+        01677:     Building RTL structures, pass 3
+        02917:   Preparing thread dummy::config_accelerator for final RTL
+        02917.     output
+        01006:     States: 4
+        01677:     Building RTL structures, pass 1
+        01677:     Building RTL structures, pass 2
+
+               .......................................................
+               .                                                     .
+        00802: . Allocation Report for method "config_accelerator":  .
+        00805: .                           per Instance     Total    .
+        00805: .                           ------------  ----------- .
+        00805: .          Resource  Count   LUTs  Mults  LUTs  Mults .
+        00805: . -----------------  -----  -----  -----  ----  ----- .
+        00808: .         registers      1                            .
+        00404: .     register bits      1      1            1        .
+        00405: . implicit mux LUTs                          1        .
+        00811: . --------------------------------------------------- .
+        00403: .  Total LUTs/Mults                          2      0 .
+               .                                                     .
+               .......................................................
+
+
+        01677:     Building RTL structures, pass 3
+        02917:   Preparing method dummy::dma_read_chnl_sync_rcv_ready_arb for
+        02917.     final RTL output
+        01006:     States: 2
+        01677:     Building RTL structures, pass 1
+        01677:     Building RTL structures, pass 2
+
+               ..........................................................
+               .                                                        .
+        00802: . Allocation Report for method "dma_read_chnl_sync_rcv_ready_arb": .
+        00805: .                              per Instance     Total    .
+        00805: .                              ------------  ----------- .
+        00805: .             Resource  Count   LUTs  Mults  LUTs  Mults .
+        00805: . --------------------  -----  -----  -----  ----  ----- .
+        00402: . dummy_Xor_1Ux1U_1U_4      2      1      0     2      0 .
+        00402: . dummy_N_Muxb_1_2_4_4      1      1      0     1      0 .
+        00402: . dummy_N_Muxb_1_2_5_4      1      1      0     1      0 .
+        00808: .            registers      0                            .
+        00404: .        register bits      0      1            0        .
+        00405: .    implicit mux LUTs                          0        .
+        00811: . ------------------------------------------------------ .
+        00403: .     Total LUTs/Mults                          4      0 .
+               .                                                        .
+               ..........................................................
+
+
+        01677:     Building RTL structures, pass 3
+        02917:   Preparing method dummy::dma_read_chnl_sync_rcv_back_method for
+        02917.     final RTL output
+        01006:     States: 2
+        01677:     Building RTL structures, pass 1
+        01677:     Building RTL structures, pass 2
+
+               ............................................................
+               .                                                          .
+        00802: . Allocation Report for method "dma_read_chnl_sync_rcv_back_method": .
+        00805: .                                per Instance     Total    .
+        00805: .                                ------------  ----------- .
+        00805: .               Resource  Count   LUTs  Mults  LUTs  Mults .
+        00805: . ----------------------  -----  -----  -----  ----  ----- .
+        00402: . dummy_N_MuxB_128_2_1_4      1     64      0    64      0 .
+        00402: .   dummy_And_1Ux1U_1U_4      1      1      0     1      0 .
+        00402: .    dummy_N_Mux_1_2_2_4      1      1      0     1      0 .
+        00402: .   dummy_N_Muxb_1_2_3_4      1      1      0     1      0 .
+        00402: .      dummy_Not_1U_1U_4      1      1      0     1      0 .
+        00808: .              registers      6                            .
+        00404: .          register bits    133      1          133        .
+        00405: .      implicit mux LUTs                          5        .
+        00811: . -------------------------------------------------------- .
+        00403: .       Total LUTs/Mults                        206      0 .
+               .                                                          .
+               ............................................................
+
+
+        01677:     Building RTL structures, pass 3
+        02917:   Preparing method dummy::dma_read_chnl_can_get_mod_process for
+        02917.     final RTL output
+        01006:     States: 2
+        01677:     Building RTL structures, pass 1
+        01677:     Building RTL structures, pass 2
+
+               ..........................................................
+               .                                                        .
+        00802: . Allocation Report for method "dma_read_chnl_can_get_mod_process": .
+        00805: .                              per Instance     Total    .
+        00805: .                              ------------  ----------- .
+        00805: .             Resource  Count   LUTs  Mults  LUTs  Mults .
+        00805: . --------------------  -----  -----  -----  ----  ----- .
+        00402: . dummy_And_1Ux1U_1U_4      2      1      0     2      0 .
+        00402: .    dummy_Not_1U_1U_4      1      1      0     1      0 .
+        00402: .  dummy_Or_1Ux1U_1U_4      1      1      0     1      0 .
+        00808: .            registers      0                            .
+        00404: .        register bits      0      1            0        .
+        00405: .    implicit mux LUTs                          0        .
+        00811: . ------------------------------------------------------ .
+        00403: .     Total LUTs/Mults                          4      0 .
+               .                                                        .
+               ..........................................................
+
+
+        01677:     Building RTL structures, pass 3
+        02917:   Preparing thread dummy::load_input for final RTL output
+        01006:     States: 9
+        01677:     Building RTL structures, pass 1
+        01677:     Building RTL structures, pass 2
+
+               ....................................................................
+               .                                                                  .
+        00802: . Allocation Report for method "load_input":                       .
+        00805: .                                        per Instance     Total    .
+        00805: .                                        ------------  ----------- .
+        00805: .                       Resource  Count   LUTs  Mults  LUTs  Mults .
+        00805: . ------------------------------  -----  -----  -----  ----  ----- .
+        00402: .  dummy_GreaterThan_32Sx2S_1U_4      2     33      0    66      0 .
+        00402: .        dummy_Add_32Ux32U_32U_4      1     64      0    64      0 .
+        00402: .         dummy_N_MuxB_128_2_1_4      1     64      0    64      0 .
+        00402: .        dummy_Sub_32Sx10U_32S_4      1     64      0    64      0 .
+        00402: .         dummy_Add_16Ux2U_16U_4      3     18      0    54      0 .
+        00402: .         dummy_Add_32Sx1U_32S_4      1     33      0    33      0 .
+        00402: . dummy_GreaterThan_32Sx11S_1U_4      1     33      0    33      0 .
+        00402: .    dummy_LessThan_16Ux32U_1U_4      1     32      0    32      0 .
+        00402: .    dummy_LessThan_32Ux32U_1U_4      1     32      0    32      0 .
+        00402: .           dummy_N_Mux_32_2_0_4      1     16      0    16      0 .
+        00402: .              dummy_Not_1U_1U_4      4      1      0     4      0 .
+        00808: .                      registers     23                            .
+        00404: .                  register bits    438      1          438        .
+        00405: .              implicit mux LUTs                        293        .
+        00811: . ---------------------------------------------------------------- .
+        00403: .               Total LUTs/Mults                       1193      0 .
+               .                                                                  .
+               ....................................................................
+
+
+        00813:     Array bindings:
+        02935:       at ../src/dummy.hpp line 28
+        02935.         Array plm0, 512 words x 64 bits (32768 total bits), has
+        02935.         been mapped to a dummy_plm memory having 512 words x 64
+        02935.         bits (32768 total bits).  Shared amongst threads
+        02935.         load_input and store_output.
+        02935:       at ../src/dummy.hpp line 29
+        02935.         Array plm1, 512 words x 64 bits (32768 total bits), has
+        02935.         been mapped to a dummy_plm memory having 512 words x 64
+        02935.         bits (32768 total bits).  Shared amongst threads
+        02935.         load_input and store_output.
+        01677:     Building RTL structures, pass 3
+        02917:   Preparing method dummy::dma_write_chnl_sync_snd_valid_arb for
+        02917.     final RTL output
+        01006:     States: 2
+        01677:     Building RTL structures, pass 1
+        01677:     Building RTL structures, pass 2
+
+               ..........................................................
+               .                                                        .
+        00802: . Allocation Report for method "dma_write_chnl_sync_snd_valid_arb": .
+        00805: .                              per Instance     Total    .
+        00805: .                              ------------  ----------- .
+        00805: .             Resource  Count   LUTs  Mults  LUTs  Mults .
+        00805: . --------------------  -----  -----  -----  ----  ----- .
+        00402: . dummy_Xor_1Ux1U_1U_4      2      1      0     2      0 .
+        00402: . dummy_N_Muxb_1_2_4_4      1      1      0     1      0 .
+        00402: . dummy_N_Muxb_1_2_5_4      1      1      0     1      0 .
+        00808: .            registers      0                            .
+        00404: .        register bits      0      1            0        .
+        00405: .    implicit mux LUTs                          0        .
+        00811: . ------------------------------------------------------ .
+        00403: .     Total LUTs/Mults                          4      0 .
+               .                                                        .
+               ..........................................................
+
+
+        01677:     Building RTL structures, pass 3
+        02917:   Preparing method dummy::dma_write_chnl_sync_snd_back_method
+        02917.     for final RTL output
+        01006:     States: 2
+        01677:     Building RTL structures, pass 1
+        01677:     Building RTL structures, pass 2
+
+               ..........................................................
+               .                                                        .
+        00802: . Allocation Report for method "dma_write_chnl_sync_snd_back_method": .
+        00805: .                              per Instance     Total    .
+        00805: .                              ------------  ----------- .
+        00805: .             Resource  Count   LUTs  Mults  LUTs  Mults .
+        00805: . --------------------  -----  -----  -----  ----  ----- .
+        00402: . dummy_And_1Ux1U_1U_4      1      1      0     1      0 .
+        00402: . dummy_N_Muxb_1_2_3_4      1      1      0     1      0 .
+        00402: .    dummy_Not_1U_1U_4      1      1      0     1      0 .
+        00808: .            registers      4                            .
+        00404: .        register bits      4      1            4        .
+        00405: .    implicit mux LUTs                          4        .
+        00811: . ------------------------------------------------------ .
+        00403: .     Total LUTs/Mults                         11      0 .
+               .                                                        .
+               ..........................................................
+
+
+        01677:     Building RTL structures, pass 3
+        02917:   Preparing method dummy::dma_write_chnl_can_put_mod_process for
+        02917.     final RTL output
+        01006:     States: 2
+        01677:     Building RTL structures, pass 1
+        01677:     Building RTL structures, pass 2
+
+               .........................................................
+               .                                                       .
+        00802: . Allocation Report for method "dma_write_chnl_can_put_mod_process": .
+        00805: .                             per Instance     Total    .
+        00805: .                             ------------  ----------- .
+        00805: .            Resource  Count   LUTs  Mults  LUTs  Mults .
+        00805: . -------------------  -----  -----  -----  ----  ----- .
+        00402: .   dummy_Not_1U_1U_4      1      1      0     1      0 .
+        00402: . dummy_Or_1Ux1U_1U_4      1      1      0     1      0 .
+        00808: .           registers      0                            .
+        00404: .       register bits      0      1            0        .
+        00405: .   implicit mux LUTs                          0        .
+        00811: . ----------------------------------------------------- .
+        00403: .    Total LUTs/Mults                          2      0 .
+               .                                                       .
+               .........................................................
+
+
+        01677:     Building RTL structures, pass 3
+        02917:   Preparing thread dummy::store_output for final RTL output
+        01006:     States: 10
+        01677:     Building RTL structures, pass 1
+        01677:     Building RTL structures, pass 2
+
+               ....................................................................
+               .                                                                  .
+        00802: . Allocation Report for method "store_output":                     .
+        00805: .                                        per Instance     Total    .
+        00805: .                                        ------------  ----------- .
+        00805: .                       Resource  Count   LUTs  Mults  LUTs  Mults .
+        00805: . ------------------------------  -----  -----  -----  ----  ----- .
+        00402: .  dummy_GreaterThan_32Sx2S_1U_4      2     33      0    66      0 .
+        00402: .        dummy_Add_32Ux32U_32U_4      1     64      0    64      0 .
+        00402: .         dummy_N_MuxB_128_2_1_4      1     64      0    64      0 .
+        00402: .        dummy_Sub_32Sx10U_32S_4      1     64      0    64      0 .
+        00402: .         dummy_Add_16Ux2U_16U_4      3     18      0    54      0 .
+        00402: .         dummy_Add_32Sx1U_32S_4      1     33      0    33      0 .
+        00402: . dummy_GreaterThan_32Sx11S_1U_4      1     33      0    33      0 .
+        00402: .    dummy_LessThan_16Ux32U_1U_4      1     32      0    32      0 .
+        00402: .    dummy_LessThan_32Ux32U_1U_4      1     32      0    32      0 .
+        00402: .           dummy_N_Mux_32_2_0_4      1     16      0    16      0 .
+        00402: .              dummy_Not_1U_1U_4      3      1      0     3      0 .
+        00808: .                      registers     26                            .
+        00404: .                  register bits    614      1          614        .
+        00405: .              implicit mux LUTs                        647        .
+        00811: . ---------------------------------------------------------------- .
+        00403: .               Total LUTs/Mults                       1722      0 .
+               .                                                                  .
+               ....................................................................
+
+
+        00813:     Array bindings:
+        02935:       at ../src/dummy.hpp line 28
+        02935.         Array plm0, 512 words x 64 bits (32768 total bits), has
+        02935.         been mapped to a dummy_plm memory having 512 words x 64
+        02935.         bits (32768 total bits).  Shared amongst threads
+        02935.         load_input and store_output.
+        02935:       at ../src/dummy.hpp line 29
+        02935.         Array plm1, 512 words x 64 bits (32768 total bits), has
+        02935.         been mapped to a dummy_plm memory having 512 words x 64
+        02935.         bits (32768 total bits).  Shared amongst threads
+        02935.         load_input and store_output.
+        01677:     Building RTL structures, pass 3
+        00971:   Cleaning up
+        02788:       Using cached results for dummy_Add_4U_9_4
+        00304:         Comb. LUTs =   2  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.378ns
+        02788:       Using cached results for dummy_Add_3U_8_4
+        00304:         Comb. LUTs =   2  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.372ns
+        02788:       Using cached results for dummy_Add_2U_7_4
+        00304:         Comb. LUTs =   1  Seq. LUTs =   0  Dedicated Mults = 0
+        00304.                                       Latency =  0  Delay =  0.366ns
+
+               +------------------------------------------------------------------+
+               |                                                                  |
+        00803: | Allocation Report for all threads:                               |
+        00805: |                                        per Instance     Total    |
+        00805: |                                        ------------  ----------- |
+        00805: |                       Resource  Count   LUTs  Mults  LUTs  Mults |
+        00805: | ------------------------------  -----  -----  -----  ----  ----- |
+        00402: |         dummy_N_MuxB_128_2_1_4      3     64      0   192      0 |
+        00402: |  dummy_GreaterThan_32Sx2S_1U_4      4     33      0   132      0 |
+        00402: |        dummy_Add_32Ux32U_32U_4      2     64      0   128      0 |
+        00402: |        dummy_Sub_32Sx10U_32S_4      2     64      0   128      0 |
+        00402: |         dummy_Add_16Ux2U_16U_4      6     18      0   108      0 |
+        00402: |         dummy_Add_32Sx1U_32S_4      2     33      0    66      0 |
+        00402: | dummy_GreaterThan_32Sx11S_1U_4      2     33      0    66      0 |
+        00402: |                      dummy_plm      2     32      0    64      0 |
+        00402: |    dummy_LessThan_32Ux32U_1U_4      2     32      0    64      0 |
+        00402: |    dummy_LessThan_16Ux32U_1U_4      2     32      0    64      0 |
+        00402: |           dummy_N_Mux_32_2_0_4      2     16      0    32      0 |
+        00402: |              dummy_Not_1U_1U_4     11      1      0    11      0 |
+        00402: |           dummy_And_1Ux1U_1U_4      4      1      0     4      0 |
+        00402: |           dummy_Xor_1Ux1U_1U_4      4      1      0     4      0 |
+        00402: |           dummy_N_Muxb_1_2_3_4      2      1      0     2      0 |
+        00402: |           dummy_N_Muxb_1_2_4_4      2      1      0     2      0 |
+        00402: |           dummy_N_Muxb_1_2_5_4      2      1      0     2      0 |
+        00402: |            dummy_Or_1Ux1U_1U_4      2      1      0     2      0 |
+        00402: |            dummy_N_Mux_1_2_2_4      1      1      0     1      0 |
+        00808: |                      registers     87                            |
+        01442: |              Reg bits by type:                                   |
+        01442. |                 EN SS SC AS AC                                   |
+        00809: |                  0  0  0  0  1    137      1          137        |
+        00809: |                  0  0  1  0  0     47      2           94        |
+        00809: |                  1  0  1  0  0   1042      2         2084        |
+        00809: |                  1  1  0  0  0      2      2            4        |
+        00404: |              all register bits   1228      1         2319        |
+        01434: |            Impl muxes by type:                                   |
+        01434. |                       WID  INP                                   |
+        00810: |                         1    2      8      1            8        |
+        00810: |                         1    2      1      1            1        |
+        00810: |                         1    2     27      1           27        |
+        00810: |                         2    3      1      2            2        |
+        00810: |                         2    3     10      2           20        |
+        00810: |                         2    4      1      2            2        |
+        00810: |                         3    8      1      5            5        |
+        00810: |                         4    9      1      7            7        |
+        00810: |                         5    2      1      5            5        |
+        00810: |                         9    2      4      8           32        |
+        00810: |                        16    2      3     14           42        |
+        00810: |                        32    2      2     32           64        |
+        00810: |                        32    3      6     32          192        |
+        00810: |                       128    2      1    128          128        |
+        00405: |              implicit mux LUTs                        535        |
+        02604: |                estimated cntrl                        112        |
+        00811: | ---------------------------------------------------------------- |
+        00403: |               Total LUTs/Mults                       4038      0 |
+               |                                                                  |
+               +------------------------------------------------------------------+
+
+
+        00813:     Array bindings:
+        02935:       at ../src/dummy.hpp line 28
+        02935.         Array plm0, 512 words x 64 bits (32768 total bits), has
+        02935.         been mapped to a dummy_plm memory having 512 words x 64
+        02935.         bits (32768 total bits).  Shared amongst threads
+        02935.         load_input and store_output.
+        02935:       at ../src/dummy.hpp line 29
+        02935.         Array plm1, 512 words x 64 bits (32768 total bits), has
+        02935.         been mapped to a dummy_plm memory having 512 words x 64
+        02935.         bits (32768 total bits).  Shared amongst threads
+        02935.         load_input and store_output.
+
+        00195: Writing RTL files:
+        01766:   bdw_work/modules/dummy/BASIC_DMA128/dummy_rtl.h
+        01767:   bdw_work/modules/dummy/BASIC_DMA128/dummy_rtl.cpp
+        01768:   bdw_work/modules/dummy/BASIC_DMA128/dummy_rtl.v
+
+        01445: Summary of messages of severity WARNING or greater:
+        01193:   SEVERITY MSGID CNT
+        01198:    WARNING 00608   1
+        01198:    WARNING 90177   1
+
+stratus_hls succeeded with 0 errors and 2 warnings.
+
+make[5]: 'bdw_work/modules/dummy/BASIC_DMA128/dummy_rtl.v' is up to date.
+make[5]: 'bdw_work/modules/dummy/BASIC_DMA128/stratus_hls.bdr' is up to date.

@@ -1,0 +1,574 @@
+Scheduler report for : compute_kernel
+-------------------------------------
+
+Op                    SID(BB;Clocked)  Pipeline Stage  IS     SRCLOC
+--                    ---------------  --------------  --     ------
+
+input_ready.ack.__ac  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+output_ready.req.__r  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+cfg.done.compute_ker  5 (4:FALSE)      --              FALSE  @(f:../src/dummy.hpp,l:44,c:21->f:/home/kevin/nov_
+
+cfg                   11 (8:TRUE)      --              FALSE  ../src/dummy.hpp,l:44,c:21
+
+input_ready.ack.__ac  17 (13:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+input_ready.ack.__ac  17 (13:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+input_ready.ack.__ac  19 (15:TRUE)     --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+input_ready.ack.__ac  21 (17:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+output_ready.req.__r  22 (18:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+output_ready.req.__r  24 (20:TRUE)     --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+output_ready.req.__r  26 (22:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+
+Scheduler report for : config_accelerator
+-----------------------------------------
+
+Op                    SID(BB;Clocked)  Pipeline Stage  IS     SRCLOC
+--                    ---------------  --------------  --     ------
+
+cfg.done.config_acce  3 (2:FALSE)      --              FALSE  @(f:../src/dummy.hpp,l:44,c:21->f:/home/kevin/nov_
+
+cfg.conf_done.config  6 (5:TRUE)       --              FALSE  @(f:../src/dummy.hpp,l:44,c:21->f:/home/kevin/nov_
+
+cfg.done.config_acce  8 (7:FALSE)      --              FALSE  @(f:../src/dummy.hpp,l:44,c:21->f:/home/kevin/nov_
+
+
+Scheduler report for : dma_read_chnl_sync_rcv_ready_arb
+-------------------------------------------------------
+
+Op                    SID(BB;Clocked)  Pipeline Stage  IS     SRCLOC
+--                    ---------------  --------------  --     ------
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+
+Scheduler report for : dma_read_chnl_sync_rcv_back_method
+---------------------------------------------------------
+
+Op                    SID(BB;Clocked)  Pipeline Stage  IS     SRCLOC
+--                    ---------------  --------------  --     ------
+
+dma_read_chnl.sync_r  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  5 (4:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  5 (4:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  5 (4:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  5 (4:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  5 (4:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  5 (4:TRUE)       --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.sync_r  5 (4:TRUE)       --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.sync_r  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+
+Scheduler report for : dma_read_chnl_can_get_mod_process
+--------------------------------------------------------
+
+Op                    SID(BB;Clocked)  Pipeline Stage  IS     SRCLOC
+--                    ---------------  --------------  --     ------
+
+dma_read_chnl.can_ge  3 (2:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.can_ge  3 (2:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.can_ge  3 (2:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.can_ge  3 (2:TRUE)       --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.can_ge  3 (2:TRUE)       --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.can_ge  3 (2:TRUE)       --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.can_ge  3 (2:TRUE)       --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.can_ge  3 (2:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+
+Scheduler report for : load_input
+---------------------------------
+
+Op                    SID(BB;Clocked)  Pipeline Stage  IS     SRCLOC
+--                    ---------------  --------------  --     ------
+
+load_input::ping.loa  1 (0:FALSE)      --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:42,c:10)
+
+load_input::offset.l  1 (0:FALSE)      --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:43,c:14)
+
+load_input::n.load_i  1 (0:FALSE)      --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:44,c:14)
+
+dma_read_chnl.set_re  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+input_ready.req.__re  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_ctrl.valid.  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+cfg.done.load_input:  5 (4:FALSE)      --              FALSE  @(f:../src/dummy.hpp,l:44,c:21->f:/home/kevin/nov_
+
+cfg                   11 (8:TRUE)      --              FALSE  ../src/dummy.hpp,l:44,c:21
+
+conf_info.batch.load  15 (11:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+conf_info.tokens.loa  15 (11:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+conf_info.source.loa  15 (11:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+set_ready_curr.load_  20 (15:FALSE)    --              FALSE  @[(f:/home/kevin/nov_submission/esp/accelerators/s
+
+load_input::ping.loa  20 (15:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:42,c:10)
+
+load_input::offset.l  20 (15:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:43,c:14)
+
+load_input::n.load_i  20 (15:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:44,c:14)
+
+plm1.load_input       20 (15:FALSE)    --              FALSE  ../src/dummy.hpp,l:50,c:14
+
+plm0.load_input       20 (15:FALSE)    --              FALSE  ../src/dummy.hpp,l:49,c:14
+
+load_input::b.load_i  20 (15:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:45,c:18)
+
+load_input            20 (15:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:45,c:32
+
+load_input            20 (15:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:44,c:33
+
+set_ready_curr.load_  26 (18:FALSE)    --              FALSE  @[(f:/home/kevin/nov_submission/esp/accelerators/s
+
+load_input::ping.loa  26 (18:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:42,c:10)
+
+load_input::offset.l  26 (18:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:43,c:14)
+
+load_input::b.load_i  26 (18:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:45,c:18)
+
+plm1.load_input       26 (18:FALSE)    --              FALSE  ../src/dummy.hpp,l:50,c:14
+
+plm0.load_input       26 (18:FALSE)    --              FALSE  ../src/dummy.hpp,l:49,c:14
+
+load_input            26 (18:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:49,c:30
+
+load_input            26 (18:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13
+
+load_input::dma_info  26 (18:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:53,c:24->f:/home
+
+dma_read_ctrl.data.u  26 (18:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_ctrl.data.s  26 (18:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_ctrl.data.l  26 (18:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_ctrl.data.i  26 (18:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_ctrl.valid.  26 (18:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+load_input            26 (18:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:45,c:39
+
+load_input            26 (18:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:55,c:20
+
+dma_read_ctrl.ready.  32 (20:TRUE)     --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+load_input::i.load_i  32 (20:TRUE)     --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:71,c:27)
+
+load_input            32 (20:TRUE)     --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:45,c:32
+
+dma_read_ctrl.valid.  36 (22:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+load_input            40 (24:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:83,c:21
+
+load_input            40 (24:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:83,c:21
+
+set_ready_curr.load_  44 (25:FALSE)    --              FALSE  @[(f:/home/kevin/nov_submission/esp/accelerators/s
+
+load_input::i.load_i  44 (25:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:13,c:13->l:71,c:27)
+
+plm1.load_input       44 (25:FALSE)    --              FALSE  ../src/dummy.hpp,l:50,c:14
+
+plm0.load_input       44 (25:FALSE)    --              FALSE  ../src/dummy.hpp,l:49,c:14
+
+dma_read_chnl.can_ge  44 (25:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+load_input            44 (25:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:71,c:45
+
+dma_read_chnl         59 (29:TRUE)     --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_read_chnl.ready.  69 (32:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.data.l  69 (32:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl.data_b  69 (32:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_read_chnl         69 (32:FALSE)    --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+load_input::get::ope  69 (32:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13
+
+load_input::get::set  69 (32:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13
+
+dma_read_chnl.set_re  69 (32:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+load_input            73 (33:TRUE)     --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:83,c:21
+
+load_input            73 (33:TRUE)     --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:83,c:21
+
+[1].load_input        73 (33:TRUE)     --              FALSE  ../src/dummy.cpp,l:81,c:17
+
+[1].load_input        73 (33:TRUE)     --              FALSE  ../src/dummy.cpp,l:81,c:17
+
+[2].load_input        73 (33:TRUE)     --              FALSE  ../src/dummy.cpp,l:81,c:17
+
+[2].load_input        73 (33:TRUE)     --              FALSE  ../src/dummy.cpp,l:81,c:17
+
+[3].load_input        73 (33:TRUE)     --              FALSE  ../src/dummy.cpp,l:81,c:17
+
+[3].load_input        73 (33:TRUE)     --              FALSE  ../src/dummy.cpp,l:81,c:17
+
+load_input            73 (33:TRUE)     --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:71,c:36
+
+plm1.[0].load_input   73 (33:TRUE)     --              TRUE   ../src/dummy.hpp,l:50,c:14
+
+plm0.[0].load_input   73 (33:TRUE)     --              TRUE   ../src/dummy.hpp,l:49,c:14
+
+plm1.[1].load_input   73 (33:TRUE)     --              TRUE   ../src/dummy.hpp,l:50,c:14
+
+plm0.[1].load_input   73 (33:TRUE)     --              TRUE   ../src/dummy.hpp,l:49,c:14
+
+plm1.[2].load_input   73 (33:TRUE)     --              TRUE   ../src/dummy.hpp,l:50,c:14
+
+plm0.[2].load_input   73 (33:TRUE)     --              TRUE   ../src/dummy.hpp,l:49,c:14
+
+plm1.[3].load_input   73 (33:TRUE)     --              TRUE   ../src/dummy.hpp,l:50,c:14
+
+plm0.[3].load_input   73 (33:TRUE)     --              TRUE   ../src/dummy.hpp,l:49,c:14
+
+input_ready.req.__re  81 (36:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+input_ready.req.__re  87 (38:TRUE)     --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+load_input            91 (40:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:91,c:20
+
+input_ready.req.__re  91 (40:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+load_input            93 (16:TRUE)     --              FALSE  ../src/dummy.cpp,l:13,c:13
+
+load_input            93 (16:TRUE)     --              FALSE  ../src/dummy.cpp,l:13,c:13
+
+load_input            97 (43:FALSE)    --              FALSE  ../src/dummy.cpp,l:13,c:13 -> l:44,c:23
+
+
+Scheduler report for : dma_write_chnl_sync_snd_valid_arb
+--------------------------------------------------------
+
+Op                    SID(BB;Clocked)  Pipeline Stage  IS     SRCLOC
+--                    ---------------  --------------  --     ------
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+
+Scheduler report for : dma_write_chnl_sync_snd_back_method
+----------------------------------------------------------
+
+Op                    SID(BB;Clocked)  Pipeline Stage  IS     SRCLOC
+--                    ---------------  --------------  --     ------
+
+dma_write_chnl.sync_  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  4 (3:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  5 (4:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  5 (4:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  5 (4:TRUE)       --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_write_chnl.sync_  5 (4:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  6 (5:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_write_chnl.sync_  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.sync_  6 (5:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_write_chnl.sync_  6 (5:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+
+Scheduler report for : dma_write_chnl_can_put_mod_process
+---------------------------------------------------------
+
+Op                    SID(BB;Clocked)  Pipeline Stage  IS     SRCLOC
+--                    ---------------  --------------  --     ------
+
+dma_write_chnl.can_p  3 (2:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.can_p  3 (2:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.can_p  3 (2:TRUE)       --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_write_chnl.can_p  3 (2:TRUE)       --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_write_chnl.can_p  3 (2:TRUE)       --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+
+Scheduler report for : store_output
+-----------------------------------
+
+Op                    SID(BB;Clocked)  Pipeline Stage  IS     SRCLOC
+--                    ---------------  --------------  --     ------
+
+store_output::ping.s  1 (0:FALSE)      --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:129,c:10)
+
+store_output::n.stor  1 (0:FALSE)      --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:131,c:14)
+
+store_output::offset  1 (0:FALSE)      --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:130,c:14)
+
+dma_write_chnl.set_v  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+output_ready.ack.__a  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+acc_done.store_outpu  3 (2:FALSE)      --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+dma_write_ctrl.valid  3 (2:FALSE)      --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+cfg.done.store_outpu  5 (4:FALSE)      --              FALSE  @(f:../src/dummy.hpp,l:44,c:21->f:/home/kevin/nov_
+
+cfg                   11 (8:TRUE)      --              FALSE  ../src/dummy.hpp,l:44,c:21
+
+conf_info.batch.stor  15 (11:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+conf_info.tokens.sto  15 (11:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+conf_info.ndests.sto  15 (11:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+set_valid_curr.store  20 (15:FALSE)    --              FALSE  @[(f:/home/kevin/nov_submission/esp/accelerators/s
+
+store_output::ping.s  20 (15:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:129,c:10)
+
+store_output::offset  20 (15:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:130,c:14)
+
+store_output::n.stor  20 (15:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:131,c:14)
+
+plm0.store_output     20 (15:FALSE)    --              FALSE  ../src/dummy.hpp,l:49,c:14
+
+plm1.store_output     20 (15:FALSE)    --              FALSE  ../src/dummy.hpp,l:50,c:14
+
+store_output::b.stor  20 (15:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:132,c:18)
+
+store_output          20 (15:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:132,c:32
+
+store_output          20 (15:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:131,c:33
+
+set_valid_curr.store  26 (18:FALSE)    --              FALSE  @[(f:/home/kevin/nov_submission/esp/accelerators/s
+
+store_output::ping.s  26 (18:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:129,c:10)
+
+store_output::offset  26 (18:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:130,c:14)
+
+store_output::b.stor  26 (18:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:132,c:18)
+
+plm0.store_output     26 (18:FALSE)    --              FALSE  ../src/dummy.hpp,l:49,c:14
+
+plm1.store_output     26 (18:FALSE)    --              FALSE  ../src/dummy.hpp,l:50,c:14
+
+store_output          26 (18:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:137,c:30
+
+store_output          26 (18:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13
+
+store_output          26 (18:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:132,c:39
+
+output_ready.ack.__a  26 (18:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+output_ready.ack.__a  26 (18:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+store_output::dma_in  26 (18:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:141,c:24->f:/ho
+
+output_ready.ack.__a  32 (20:TRUE)     --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+store_output          32 (20:TRUE)     --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:132,c:32
+
+store_output          36 (22:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:143,c:20
+
+output_ready.ack.__a  36 (22:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_ctrl.data.  36 (22:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_ctrl.data.  36 (22:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_ctrl.data.  36 (22:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_ctrl.data.  36 (22:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_ctrl.valid  36 (22:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+store_output          39 (23:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:168,c:21
+
+dma_write_ctrl.ready  42 (24:TRUE)     --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+store_output::i.stor  42 (24:TRUE)     --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:163,c:27)
+
+dma_write_ctrl.valid  46 (26:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+set_valid_curr.store  54 (29:FALSE)    --              FALSE  @[(f:/home/kevin/nov_submission/esp/accelerators/s
+
+store_output::i.stor  54 (29:FALSE)    --              FALSE  @(f:../src/dummy.cpp,l:102,c:13->l:163,c:27)
+
+plm0.store_output     54 (29:FALSE)    --              FALSE  ../src/dummy.hpp,l:49,c:14
+
+plm1.store_output     54 (29:FALSE)    --              FALSE  ../src/dummy.hpp,l:50,c:14
+
+store_output          54 (29:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:163,c:45
+
+[1].store_output      54 (29:FALSE)    --              FALSE  ../src/dummy.cpp,l:166,c:17
+
+[2].store_output      54 (29:FALSE)    --              FALSE  ../src/dummy.cpp,l:166,c:17
+
+[3].store_output      54 (29:FALSE)    --              FALSE  ../src/dummy.cpp,l:166,c:17
+
+[1].store_output      54 (29:FALSE)    --              FALSE  ../src/dummy.cpp,l:166,c:17
+
+[2].store_output      54 (29:FALSE)    --              FALSE  ../src/dummy.cpp,l:166,c:17
+
+[3].store_output      54 (29:FALSE)    --              FALSE  ../src/dummy.cpp,l:166,c:17
+
+dma_write_chnl.can_p  58 (30:TRUE)     --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+plm0.[0].store_outpu  58 (30:TRUE)     --              FALSE  ../src/dummy.hpp,l:49,c:14
+
+plm0.[1].store_outpu  58 (30:TRUE)     --              FALSE  ../src/dummy.hpp,l:49,c:14
+
+plm0.[2].store_outpu  58 (30:TRUE)     --              FALSE  ../src/dummy.hpp,l:49,c:14
+
+plm0.[3].store_outpu  58 (30:TRUE)     --              FALSE  ../src/dummy.hpp,l:49,c:14
+
+plm1.[0].store_outpu  58 (30:TRUE)     --              FALSE  ../src/dummy.hpp,l:50,c:14
+
+plm1.[1].store_outpu  58 (30:TRUE)     --              FALSE  ../src/dummy.hpp,l:50,c:14
+
+plm1.[2].store_outpu  58 (30:TRUE)     --              FALSE  ../src/dummy.hpp,l:50,c:14
+
+plm1.[3].store_outpu  58 (30:TRUE)     --              FALSE  ../src/dummy.hpp,l:50,c:14
+
+[3].store_output::op  58 (30:TRUE)     --              FALSE  ../src/dummy.cpp,l:166,c:17
+
+dma_write_chnl        73 (34:TRUE)     --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+store_output          83 (37:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:163,c:36
+
+dma_write_chnl        83 (37:FALSE)    --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+store_output::put::s  83 (37:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13
+
+dma_write_chnl.set_v  83 (37:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+dma_write_chnl.data.  83 (37:FALSE)    --              FALSE  @(f:/home/kevin/nov_submission/esp/accelerators/st
+
+store_output          91 (40:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:176,c:20
+
+store_output          93 (16:TRUE)     --              FALSE  ../src/dummy.cpp,l:102,c:13
+
+store_output          93 (16:TRUE)     --              FALSE  ../src/dummy.cpp,l:102,c:13
+
+store_output          97 (43:FALSE)    --              FALSE  ../src/dummy.cpp,l:102,c:13 -> l:131,c:23
+
+acc_done.store_outpu  101 (46:FALSE)   --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+acc_done.store_outpu  102 (47:TRUE)    --              FALSE  /home/kevin/nov_submission/esp/accelerators/stratu
+
+

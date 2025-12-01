@@ -1,0 +1,2681 @@
+<?xml version="1.0"?>
+<source_file>
+    <path>bdw_work/modules/dummy/BASIC_DMA128/bdr/beh_ports.bdr</path>
+    <file_kind>CYNTH_BEH_PORTS</file_kind>
+    <module>
+        <name>cynw::Sync_Rcv &lt;sc_dt::sc_bv &lt;(int)128 &gt;, cynw::SIG_TRAITS_pCLK_nRST &gt;</name>
+        <id>61</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h</source_path>
+        <source_line>48</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <port>
+            <name>valid</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>data</name>
+            <direction>in</direction>
+            <datatype W="128">sc_bv</datatype>
+            <rtl_port_name>data</rtl_port_name>
+        </port>
+        <port>
+            <name>data_buf</name>
+            <direction>out</direction>
+            <datatype W="128">sc_bv</datatype>
+            <rtl_port_name>data_buf</rtl_port_name>
+        </port>
+        <port>
+            <name>set_ready_curr</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>set_ready_curr</rtl_port_name>
+        </port>
+        <signal>
+            <name>set_ready_prev</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>set_ready_prev</rtl_port_name>
+        </signal>
+        <signal>
+            <name>reset_ready_prev</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>reset_ready_prev</rtl_port_name>
+        </signal>
+        <signal>
+            <name>reset_ready_curr</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>reset_ready_curr</rtl_port_name>
+        </signal>
+        <signal>
+            <name>ready_flop</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>ready_flop</rtl_port_name>
+        </signal>
+        <port>
+            <name>ready_mask</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready_mask</rtl_port_name>
+        </port>
+    </module>
+    <module>
+        <name>cynw::Sync_Snd &lt;cynw::SIG_TRAITS_pCLK_nRST &gt;</name>
+        <id>1354</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_snd.h</source_path>
+        <source_line>48</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <port>
+            <name>valid</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>set_valid_curr</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>set_valid_curr</rtl_port_name>
+        </port>
+        <signal>
+            <name>set_valid_prev</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>set_valid_prev</rtl_port_name>
+        </signal>
+        <signal>
+            <name>reset_valid_prev</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>reset_valid_prev</rtl_port_name>
+        </signal>
+        <signal>
+            <name>reset_valid_curr</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>reset_valid_curr</rtl_port_name>
+        </signal>
+        <signal>
+            <name>valid_flop</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>valid_flop</rtl_port_name>
+        </signal>
+    </module>
+    <module>
+        <name>sc_imp_module</name>
+        <id>4353</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/stratus_hls.h</source_path>
+        <source_line>1508</source_line>
+        <source_column>7</source_column>
+        <external_module/>
+        <ctor_params>
+            <param>
+                <name>nm</name>
+                <unsupported_type/>
+                <datatype>
+                    <reftype>
+                        <datatype>
+                                                        <id>69</id>
+                        <const/>
+                        </datatype>
+                        <const/>
+                    </reftype>
+                </datatype>
+            </param>
+        </ctor_params>
+    </module>
+    <module>
+        <name>cynw::cynw_one_shot</name>
+        <id>4485</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_comm_util.h</source_path>
+        <source_line>1387</source_line>
+        <source_column>7</source_column>
+        <inline_module/>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+            <clock></clock>
+        </port>
+        <port>
+            <name>rst</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>rst</rtl_port_name>
+        </port>
+        <port>
+            <name>active</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>active</rtl_port_name>
+        </port>
+        <signal>
+            <name>m_trig_req</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>m_trig_req</rtl_port_name>
+        </signal>
+        <signal>
+            <name>m_prev_trig_req</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>m_prev_trig_req</rtl_port_name>
+        </signal>
+        <signal>
+            <name>m_next_trig_req</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>m_next_trig_req</rtl_port_name>
+        </signal>
+        <signal>
+            <name>m_next_trig_req_reg</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>m_next_trig_req_reg</rtl_port_name>
+        </signal>
+        <signal>
+            <name>m_stalling</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>m_stalling</rtl_port_name>
+        </signal>
+    </module>
+    <module>
+        <name>cynw::cynw_sync_in_tlm</name>
+        <id>4629</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_comm_util.h</source_path>
+        <source_line>2255</source_line>
+        <source_column>1</source_column>
+        <inline_module/>
+        <port>
+            <name>m_input</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>m_input</rtl_port_name>
+        </port>
+    </module>
+    <module>
+        <name>dummy_plm_untimed_model</name>
+        <id>5590</id>
+        <source_path>./memlib/c_parts/dummy_plm.h</source_path>
+        <source_line>278150</source_line>
+        <source_column>7</source_column>
+        <inline_module/>
+    </module>
+    <module>
+        <name>dummy_plm</name>
+        <id>6567</id>
+        <source_path>./memlib/c_parts/dummy_plm.h</source_path>
+        <source_line>54</source_line>
+        <source_column>1</source_column>
+        <port>
+            <name>CLK</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CLK</rtl_port_name>
+        </port>
+        <port>
+            <name>WE0</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>WE0</rtl_port_name>
+        </port>
+        <port>
+            <name>CE0</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE0</rtl_port_name>
+        </port>
+        <port>
+            <name>D0</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>D0</rtl_port_name>
+        </port>
+        <port>
+            <name>A0</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A0</rtl_port_name>
+        </port>
+        <port>
+            <name>WEM0</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>WEM0</rtl_port_name>
+        </port>
+        <port>
+            <name>WE1</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>WE1</rtl_port_name>
+        </port>
+        <port>
+            <name>CE1</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE1</rtl_port_name>
+        </port>
+        <port>
+            <name>D1</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>D1</rtl_port_name>
+        </port>
+        <port>
+            <name>A1</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A1</rtl_port_name>
+        </port>
+        <port>
+            <name>WEM1</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>WEM1</rtl_port_name>
+        </port>
+        <port>
+            <name>WE2</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>WE2</rtl_port_name>
+        </port>
+        <port>
+            <name>CE2</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE2</rtl_port_name>
+        </port>
+        <port>
+            <name>D2</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>D2</rtl_port_name>
+        </port>
+        <port>
+            <name>A2</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A2</rtl_port_name>
+        </port>
+        <port>
+            <name>WEM2</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>WEM2</rtl_port_name>
+        </port>
+        <port>
+            <name>WE3</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>WE3</rtl_port_name>
+        </port>
+        <port>
+            <name>CE3</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE3</rtl_port_name>
+        </port>
+        <port>
+            <name>D3</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>D3</rtl_port_name>
+        </port>
+        <port>
+            <name>A3</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A3</rtl_port_name>
+        </port>
+        <port>
+            <name>WEM3</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>WEM3</rtl_port_name>
+        </port>
+        <port>
+            <name>WE4</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>WE4</rtl_port_name>
+        </port>
+        <port>
+            <name>CE4</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE4</rtl_port_name>
+        </port>
+        <port>
+            <name>D4</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>D4</rtl_port_name>
+        </port>
+        <port>
+            <name>A4</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A4</rtl_port_name>
+        </port>
+        <port>
+            <name>WEM4</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>WEM4</rtl_port_name>
+        </port>
+        <port>
+            <name>WE5</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>WE5</rtl_port_name>
+        </port>
+        <port>
+            <name>CE5</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE5</rtl_port_name>
+        </port>
+        <port>
+            <name>D5</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>D5</rtl_port_name>
+        </port>
+        <port>
+            <name>A5</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A5</rtl_port_name>
+        </port>
+        <port>
+            <name>WEM5</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>WEM5</rtl_port_name>
+        </port>
+        <port>
+            <name>WE6</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>WE6</rtl_port_name>
+        </port>
+        <port>
+            <name>CE6</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE6</rtl_port_name>
+        </port>
+        <port>
+            <name>D6</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>D6</rtl_port_name>
+        </port>
+        <port>
+            <name>A6</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A6</rtl_port_name>
+        </port>
+        <port>
+            <name>WEM6</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>WEM6</rtl_port_name>
+        </port>
+        <port>
+            <name>WE7</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>WE7</rtl_port_name>
+        </port>
+        <port>
+            <name>CE7</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE7</rtl_port_name>
+        </port>
+        <port>
+            <name>D7</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>D7</rtl_port_name>
+        </port>
+        <port>
+            <name>A7</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A7</rtl_port_name>
+        </port>
+        <port>
+            <name>WEM7</name>
+            <direction>in</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>WEM7</rtl_port_name>
+        </port>
+        <port>
+            <name>CE8</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE8</rtl_port_name>
+        </port>
+        <port>
+            <name>Q8</name>
+            <direction>out</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>Q8</rtl_port_name>
+        </port>
+        <port>
+            <name>A8</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A8</rtl_port_name>
+        </port>
+        <port>
+            <name>CE9</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE9</rtl_port_name>
+        </port>
+        <port>
+            <name>Q9</name>
+            <direction>out</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>Q9</rtl_port_name>
+        </port>
+        <port>
+            <name>A9</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A9</rtl_port_name>
+        </port>
+        <port>
+            <name>CE10</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE10</rtl_port_name>
+        </port>
+        <port>
+            <name>Q10</name>
+            <direction>out</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>Q10</rtl_port_name>
+        </port>
+        <port>
+            <name>A10</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A10</rtl_port_name>
+        </port>
+        <port>
+            <name>CE11</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE11</rtl_port_name>
+        </port>
+        <port>
+            <name>Q11</name>
+            <direction>out</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>Q11</rtl_port_name>
+        </port>
+        <port>
+            <name>A11</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A11</rtl_port_name>
+        </port>
+        <port>
+            <name>CE12</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE12</rtl_port_name>
+        </port>
+        <port>
+            <name>Q12</name>
+            <direction>out</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>Q12</rtl_port_name>
+        </port>
+        <port>
+            <name>A12</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A12</rtl_port_name>
+        </port>
+        <port>
+            <name>CE13</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE13</rtl_port_name>
+        </port>
+        <port>
+            <name>Q13</name>
+            <direction>out</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>Q13</rtl_port_name>
+        </port>
+        <port>
+            <name>A13</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A13</rtl_port_name>
+        </port>
+        <port>
+            <name>CE14</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE14</rtl_port_name>
+        </port>
+        <port>
+            <name>Q14</name>
+            <direction>out</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>Q14</rtl_port_name>
+        </port>
+        <port>
+            <name>A14</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A14</rtl_port_name>
+        </port>
+        <port>
+            <name>CE15</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>CE15</rtl_port_name>
+        </port>
+        <port>
+            <name>Q15</name>
+            <direction>out</direction>
+            <datatype W="64">sc_uint</datatype>
+            <rtl_port_name>Q15</rtl_port_name>
+        </port>
+        <port>
+            <name>A15</name>
+            <direction>in</direction>
+            <datatype W="9">sc_uint</datatype>
+            <rtl_port_name>A15</rtl_port_name>
+        </port>
+        <ctor_params>
+            <param>
+                <name>name</name>
+                <unsupported_type/>
+                <datatype>
+                    <name>sc_core::sc_module_name</name>
+                    <id>637</id>
+                </datatype>
+                <rtl_port_name></rtl_port_name>
+            </param>
+        </ctor_params>
+    </module>
+    <module>
+        <name>cynw::Can_put_mod</name>
+        <id>7238</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_can_put_mod.h</source_path>
+        <source_line>43</source_line>
+        <source_column>8</source_column>
+        <inline_module/>
+        <port>
+            <name>valid</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>can_put</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>can_put</rtl_port_name>
+        </port>
+    </module>
+    <module>
+        <name>cynw::Can_get_mod</name>
+        <id>7278</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_can_get_mod.h</source_path>
+        <source_line>43</source_line>
+        <source_column>8</source_column>
+        <inline_module/>
+        <port>
+            <name>valid</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>can_get</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>can_get</rtl_port_name>
+        </port>
+        <port>
+            <name>ready_mask</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready_mask</rtl_port_name>
+        </port>
+    </module>
+    <module>
+        <name>cynw::put_get_channel_imp &lt;bool, cynw::SIG_TRAITS_pCLK_nRST, true &gt;</name>
+        <id>7581</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_channel.h</source_path>
+        <source_line>51</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <signal>
+            <name>ready</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </signal>
+        <signal>
+            <name>valid</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </signal>
+        <signal>
+            <name>data</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>data</rtl_port_name>
+        </signal>
+    </module>
+    <module>
+        <name>cynw::put_get_channel &lt;bool, cynw::SIG_TRAITS_pCLK_nRST &gt;</name>
+        <id>7619</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_channel.h</source_path>
+        <source_line>95</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <signal>
+            <name>ready</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </signal>
+        <signal>
+            <name>valid</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </signal>
+        <signal>
+            <name>data</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>data</rtl_port_name>
+        </signal>
+    </module>
+    <module>
+        <name>esp_config</name>
+        <id>7655</id>
+        <source_path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config.hpp</source_path>
+        <source_line>9</source_line>
+        <source_column>7</source_column>
+        <external_module/>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <port>
+            <name>rst</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>rst</rtl_port_name>
+        </port>
+        <port>
+            <name>conf_info</name>
+            <direction>in</direction>
+            <datatype>
+                <name>conf_info_t</name>
+                <packed_size>128</packed_size>
+                <id>7695</id>
+                <required_file>
+                    <path>../src/dummy_conf_info.hpp</path>
+                    <order>568</order>
+                    <source_path>dummy_conf_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>tokens</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_tokens</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>batch</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_batch</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>source</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_source</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>ndests</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_ndests</rtl_port_name>
+                    <packed_offset>96</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+            </datatype>
+        </port>
+        <port>
+            <name>conf_done</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>conf_done</rtl_port_name>
+        </port>
+        <ctor_params>
+            <param>
+                <name>name</name>
+                <unsupported_type/>
+                <datatype>
+                    <reftype>
+                        <datatype>
+                            <name>sc_core::sc_module_name</name>
+                            <const/>
+                            <id>637</id>
+                        </datatype>
+                        <rtl_port_name></rtl_port_name>
+                        <const/>
+                    </reftype>
+                </datatype>
+            </param>
+        </ctor_params>
+    </module>
+    <module>
+        <name>esp_config_proc</name>
+        <id>7955</id>
+        <source_path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/utils/configs/esp_config_proc.hpp</source_path>
+        <source_line>9</source_line>
+        <source_column>7</source_column>
+        <inline_module/>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <port>
+            <name>rst</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>rst</rtl_port_name>
+        </port>
+        <port>
+            <name>conf_info</name>
+            <direction>in</direction>
+            <datatype>
+                <name>conf_info_t</name>
+                <packed_size>128</packed_size>
+                <id>7695</id>
+                <required_file>
+                    <path>../src/dummy_conf_info.hpp</path>
+                    <order>568</order>
+                    <source_path>dummy_conf_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>tokens</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_tokens</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>batch</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_batch</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>source</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_source</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>ndests</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_ndests</rtl_port_name>
+                    <packed_offset>96</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+            </datatype>
+        </port>
+        <port>
+            <name>conf_done</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>conf_done</rtl_port_name>
+        </port>
+        <signal>
+            <name>done</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>done</rtl_port_name>
+        </signal>
+    </module>
+    <module>
+        <name>cynw::get_initiator_imp &lt;sc_dt::sc_bv &lt;(int)128 &gt;, cynw::SIG_TRAITS_pCLK_nRST, true &gt;</name>
+        <id>8173</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_get.h</source_path>
+        <source_line>56</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <port>
+            <name>valid</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>data</name>
+            <direction>in</direction>
+            <datatype W="128">sc_bv</datatype>
+            <rtl_port_name>data</rtl_port_name>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <signal>
+            <name>multiple_calls_in_rtl</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>multiple_calls_in_rtl</rtl_port_name>
+        </signal>
+        <signal>
+            <name>set_ready_curr</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>set_ready_curr</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>data_buf</name>
+                        <datatype W="128">sc_bv</datatype>
+            <rtl_port_name>data_buf</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>can_get_sig</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>can_get_sig</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>ready_mask</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>ready_mask</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>multi_calls_in_cycle_sig</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>multi_calls_in_cycle_sig</rtl_port_name>
+            <private/>
+        </signal>
+    </module>
+    <module>
+        <name>cynw::get_initiator &lt;sc_dt::sc_bv &lt;(int)128 &gt;, cynw::SIG_TRAITS_pCLK_nRST &gt;</name>
+        <id>8510</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_get.h</source_path>
+        <source_line>154</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <port>
+            <name>valid</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>data</name>
+            <direction>in</direction>
+            <datatype W="128">sc_bv</datatype>
+            <rtl_port_name>data</rtl_port_name>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <signal>
+            <name>multiple_calls_in_rtl</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>multiple_calls_in_rtl</rtl_port_name>
+        </signal>
+        <signal>
+            <name>set_ready_curr</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>set_ready_curr</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>data_buf</name>
+                        <datatype W="128">sc_bv</datatype>
+            <rtl_port_name>data_buf</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>can_get_sig</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>can_get_sig</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>ready_mask</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>ready_mask</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>multi_calls_in_cycle_sig</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>multi_calls_in_cycle_sig</rtl_port_name>
+            <private/>
+        </signal>
+    </module>
+    <module>
+        <name>cynw::put_initiator_imp &lt;sc_dt::sc_bv &lt;(int)128 &gt;, cynw::SIG_TRAITS_pCLK_nRST, true &gt;</name>
+        <id>8833</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_put.h</source_path>
+        <source_line>54</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <port>
+            <name>valid</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>data</name>
+            <direction>out</direction>
+            <datatype W="128">sc_bv</datatype>
+            <rtl_port_name>data</rtl_port_name>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <signal>
+            <name>multiple_calls_in_rtl</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>multiple_calls_in_rtl</rtl_port_name>
+        </signal>
+        <signal>
+            <name>set_valid_curr</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>set_valid_curr</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>can_put_sig</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>can_put_sig</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>multi_calls_in_cycle_sig</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>multi_calls_in_cycle_sig</rtl_port_name>
+            <private/>
+        </signal>
+    </module>
+    <module>
+        <name>cynw::put_initiator &lt;sc_dt::sc_bv &lt;(int)128 &gt;, cynw::SIG_TRAITS_pCLK_nRST &gt;</name>
+        <id>8899</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_may_block_put.h</source_path>
+        <source_line>147</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <port>
+            <name>valid</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>data</name>
+            <direction>out</direction>
+            <datatype W="128">sc_bv</datatype>
+            <rtl_port_name>data</rtl_port_name>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <signal>
+            <name>multiple_calls_in_rtl</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>multiple_calls_in_rtl</rtl_port_name>
+        </signal>
+        <signal>
+            <name>set_valid_curr</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>set_valid_curr</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>can_put_sig</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>can_put_sig</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>multi_calls_in_cycle_sig</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>multi_calls_in_cycle_sig</rtl_port_name>
+            <private/>
+        </signal>
+    </module>
+    <module>
+        <name>esp_accelerator &lt;(unsigned long)128 &gt;</name>
+        <id>8948</id>
+        <source_path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator.hpp</source_path>
+        <source_line>14</source_line>
+        <source_column>7</source_column>
+        <external_module/>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <port>
+            <name>rst</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>rst</rtl_port_name>
+        </port>
+        <meta_port>
+            <name>dma_read_chnl</name>
+            <datatype>
+                <name>cynw::cynw_get_port_base &lt;sc_dt::sc_bv &lt;(int)128 &gt; &gt;</name>
+                <packed_size>131</packed_size>
+                <id>8179</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_chnl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>in</direction>
+                <datatype W="128">sc_bv</datatype>
+                <rtl_port_name>dma_read_chnl_data</rtl_port_name>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_chnl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <port>
+            <name>conf_info</name>
+            <direction>in</direction>
+            <datatype>
+                <name>conf_info_t</name>
+                <packed_size>128</packed_size>
+                <id>7695</id>
+                <required_file>
+                    <path>../src/dummy_conf_info.hpp</path>
+                    <order>568</order>
+                    <source_path>dummy_conf_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>tokens</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_tokens</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>batch</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_batch</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>source</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_source</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>ndests</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_ndests</rtl_port_name>
+                    <packed_offset>96</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+            </datatype>
+        </port>
+        <port>
+            <name>conf_done</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>conf_done</rtl_port_name>
+        </port>
+        <port>
+            <name>acc_done</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>acc_done</rtl_port_name>
+        </port>
+        <port>
+            <name>debug</name>
+            <direction>out</direction>
+            <datatype W="32">unsigned int</datatype>
+            <rtl_port_name>debug</rtl_port_name>
+        </port>
+        <meta_port>
+            <name>dma_read_ctrl</name>
+            <datatype>
+                <name>cynw::cynw_put_port_base &lt;dma_info_t &gt;</name>
+                <packed_size>75</packed_size>
+                <id>8786</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_ctrl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>out</direction>
+                <datatype>
+                    <name>dma_info_t</name>
+                    <packed_size>72</packed_size>
+                    <id>8577</id>
+                    <required_file>
+                        <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                        <order>633</order>
+                        <source_path>core/systems/esp_dma_info.hpp</source_path>
+                    </required_file>
+                    <member>
+                        <name>index</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_index</rtl_port_name>
+                        <packed_offset>0</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>length</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_length</rtl_port_name>
+                        <packed_offset>32</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>size</name>
+                        <datatype W="3">sc_bv</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_size</rtl_port_name>
+                        <packed_offset>64</packed_offset>
+                        <packed_size>3</packed_size>
+                    </member>
+                    <member>
+                        <name>user</name>
+                        <datatype W="5">sc_bv</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_user</rtl_port_name>
+                        <packed_offset>67</packed_offset>
+                        <packed_size>5</packed_size>
+                    </member>
+                </datatype>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_ctrl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <meta_port>
+            <name>dma_write_ctrl</name>
+            <datatype>
+                <name>cynw::cynw_put_port_base &lt;dma_info_t &gt;</name>
+                <packed_size>75</packed_size>
+                <id>8786</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_ctrl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>out</direction>
+                <datatype>
+                    <name>dma_info_t</name>
+                    <packed_size>72</packed_size>
+                    <id>8577</id>
+                    <required_file>
+                        <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                        <order>633</order>
+                        <source_path>core/systems/esp_dma_info.hpp</source_path>
+                    </required_file>
+                    <member>
+                        <name>index</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_index</rtl_port_name>
+                        <packed_offset>0</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>length</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_length</rtl_port_name>
+                        <packed_offset>32</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>size</name>
+                        <datatype W="3">sc_bv</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_size</rtl_port_name>
+                        <packed_offset>64</packed_offset>
+                        <packed_size>3</packed_size>
+                    </member>
+                    <member>
+                        <name>user</name>
+                        <datatype W="5">sc_bv</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_user</rtl_port_name>
+                        <packed_offset>67</packed_offset>
+                        <packed_size>5</packed_size>
+                    </member>
+                </datatype>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_ctrl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <meta_port>
+            <name>dma_write_chnl</name>
+            <datatype>
+                <name>cynw::cynw_put_port_base &lt;sc_dt::sc_bv &lt;(int)128 &gt; &gt;</name>
+                <packed_size>131</packed_size>
+                <id>8839</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_chnl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>out</direction>
+                <datatype W="128">sc_bv</datatype>
+                <rtl_port_name>dma_write_chnl_data</rtl_port_name>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_chnl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <ctor_params>
+            <param>
+                <name>name</name>
+                <unsupported_type/>
+                <datatype>
+                    <reftype>
+                        <datatype>
+                            <name>sc_core::sc_module_name</name>
+                            <const/>
+                            <id>637</id>
+                        </datatype>
+                        <rtl_port_name></rtl_port_name>
+                        <const/>
+                    </reftype>
+                </datatype>
+            </param>
+        </ctor_params>
+    </module>
+    <module>
+        <name>esp_accelerator_3P &lt;(unsigned long)128 &gt;</name>
+        <id>9209</id>
+        <source_path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/accelerators/esp_accelerator_3P.hpp</source_path>
+        <source_line>14</source_line>
+        <source_column>7</source_column>
+        <external_module/>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <port>
+            <name>rst</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>rst</rtl_port_name>
+        </port>
+        <meta_port>
+            <name>dma_read_chnl</name>
+            <datatype>
+                <name>cynw::cynw_get_port_base &lt;sc_dt::sc_bv &lt;(int)128 &gt; &gt;</name>
+                <packed_size>131</packed_size>
+                <id>8179</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_chnl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>in</direction>
+                <datatype W="128">sc_bv</datatype>
+                <rtl_port_name>dma_read_chnl_data</rtl_port_name>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_chnl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <port>
+            <name>conf_info</name>
+            <direction>in</direction>
+            <datatype>
+                <name>conf_info_t</name>
+                <packed_size>128</packed_size>
+                <id>7695</id>
+                <required_file>
+                    <path>../src/dummy_conf_info.hpp</path>
+                    <order>568</order>
+                    <source_path>dummy_conf_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>tokens</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_tokens</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>batch</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_batch</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>source</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_source</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>ndests</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_ndests</rtl_port_name>
+                    <packed_offset>96</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+            </datatype>
+        </port>
+        <port>
+            <name>conf_done</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>conf_done</rtl_port_name>
+        </port>
+        <port>
+            <name>acc_done</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>acc_done</rtl_port_name>
+        </port>
+        <port>
+            <name>debug</name>
+            <direction>out</direction>
+            <datatype W="32">unsigned int</datatype>
+            <rtl_port_name>debug</rtl_port_name>
+        </port>
+        <meta_port>
+            <name>dma_read_ctrl</name>
+            <datatype>
+                <name>cynw::cynw_put_port_base &lt;dma_info_t &gt;</name>
+                <packed_size>75</packed_size>
+                <id>8786</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_ctrl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>out</direction>
+                <datatype>
+                    <name>dma_info_t</name>
+                    <packed_size>72</packed_size>
+                    <id>8577</id>
+                    <required_file>
+                        <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                        <order>633</order>
+                        <source_path>core/systems/esp_dma_info.hpp</source_path>
+                    </required_file>
+                    <member>
+                        <name>index</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_index</rtl_port_name>
+                        <packed_offset>0</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>length</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_length</rtl_port_name>
+                        <packed_offset>32</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>size</name>
+                        <datatype W="3">sc_bv</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_size</rtl_port_name>
+                        <packed_offset>64</packed_offset>
+                        <packed_size>3</packed_size>
+                    </member>
+                    <member>
+                        <name>user</name>
+                        <datatype W="5">sc_bv</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_user</rtl_port_name>
+                        <packed_offset>67</packed_offset>
+                        <packed_size>5</packed_size>
+                    </member>
+                </datatype>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_ctrl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <meta_port>
+            <name>dma_write_ctrl</name>
+            <datatype>
+                <name>cynw::cynw_put_port_base &lt;dma_info_t &gt;</name>
+                <packed_size>75</packed_size>
+                <id>8786</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_ctrl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>out</direction>
+                <datatype>
+                    <name>dma_info_t</name>
+                    <packed_size>72</packed_size>
+                    <id>8577</id>
+                    <required_file>
+                        <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                        <order>633</order>
+                        <source_path>core/systems/esp_dma_info.hpp</source_path>
+                    </required_file>
+                    <member>
+                        <name>index</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_index</rtl_port_name>
+                        <packed_offset>0</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>length</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_length</rtl_port_name>
+                        <packed_offset>32</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>size</name>
+                        <datatype W="3">sc_bv</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_size</rtl_port_name>
+                        <packed_offset>64</packed_offset>
+                        <packed_size>3</packed_size>
+                    </member>
+                    <member>
+                        <name>user</name>
+                        <datatype W="5">sc_bv</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_user</rtl_port_name>
+                        <packed_offset>67</packed_offset>
+                        <packed_size>5</packed_size>
+                    </member>
+                </datatype>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_ctrl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <meta_port>
+            <name>dma_write_chnl</name>
+            <datatype>
+                <name>cynw::cynw_put_port_base &lt;sc_dt::sc_bv &lt;(int)128 &gt; &gt;</name>
+                <packed_size>131</packed_size>
+                <id>8839</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_chnl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>out</direction>
+                <datatype W="128">sc_bv</datatype>
+                <rtl_port_name>dma_write_chnl_data</rtl_port_name>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_chnl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <ctor_params>
+            <param>
+                <name>name</name>
+                <unsupported_type/>
+                <datatype>
+                    <reftype>
+                        <datatype>
+                            <name>sc_core::sc_module_name</name>
+                            <const/>
+                            <id>637</id>
+                        </datatype>
+                        <rtl_port_name></rtl_port_name>
+                        <const/>
+                    </reftype>
+                </datatype>
+            </param>
+        </ctor_params>
+    </module>
+    <module>
+        <name>dummy</name>
+        <id>9284</id>
+        <source_path>../src/dummy.hpp</source_path>
+        <source_line>16</source_line>
+        <source_column>7</source_column>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <port>
+            <name>rst</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>rst</rtl_port_name>
+        </port>
+        <meta_port>
+            <name>dma_read_chnl</name>
+            <datatype>
+                <name>cynw::cynw_get_port_base &lt;sc_dt::sc_bv &lt;(int)128 &gt; &gt;</name>
+                <packed_size>131</packed_size>
+                <id>8179</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_chnl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>in</direction>
+                <datatype W="128">sc_bv</datatype>
+                <rtl_port_name>dma_read_chnl_data</rtl_port_name>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_chnl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <port>
+            <name>conf_info</name>
+            <direction>in</direction>
+            <datatype>
+                <name>conf_info_t</name>
+                <packed_size>128</packed_size>
+                <id>7695</id>
+                <required_file>
+                    <path>../src/dummy_conf_info.hpp</path>
+                    <order>568</order>
+                    <source_path>dummy_conf_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>tokens</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_tokens</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>batch</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_batch</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>source</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_source</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>ndests</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>conf_info_ndests</rtl_port_name>
+                    <packed_offset>96</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+            </datatype>
+        </port>
+        <port>
+            <name>conf_done</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>conf_done</rtl_port_name>
+        </port>
+        <port>
+            <name>acc_done</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>acc_done</rtl_port_name>
+        </port>
+        <port>
+            <name>debug</name>
+            <direction>out</direction>
+            <datatype W="32">unsigned int</datatype>
+            <rtl_port_name>debug</rtl_port_name>
+        </port>
+        <meta_port>
+            <name>dma_read_ctrl</name>
+            <datatype>
+                <name>cynw::cynw_put_port_base &lt;dma_info_t &gt;</name>
+                <packed_size>75</packed_size>
+                <id>8786</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_ctrl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>out</direction>
+                <datatype>
+                    <name>dma_info_t</name>
+                    <packed_size>72</packed_size>
+                    <id>8577</id>
+                    <required_file>
+                        <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                        <order>633</order>
+                        <source_path>core/systems/esp_dma_info.hpp</source_path>
+                    </required_file>
+                    <member>
+                        <name>index</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_index</rtl_port_name>
+                        <packed_offset>0</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>length</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_length</rtl_port_name>
+                        <packed_offset>32</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>size</name>
+                        <datatype W="3">sc_bv</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_size</rtl_port_name>
+                        <packed_offset>64</packed_offset>
+                        <packed_size>3</packed_size>
+                    </member>
+                    <member>
+                        <name>user</name>
+                        <datatype W="5">sc_bv</datatype>
+                        <rtl_port_name>dma_read_ctrl_data_user</rtl_port_name>
+                        <packed_offset>67</packed_offset>
+                        <packed_size>5</packed_size>
+                    </member>
+                </datatype>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_read_ctrl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <meta_port>
+            <name>dma_write_ctrl</name>
+            <datatype>
+                <name>cynw::cynw_put_port_base &lt;dma_info_t &gt;</name>
+                <packed_size>75</packed_size>
+                <id>8786</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_ctrl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>out</direction>
+                <datatype>
+                    <name>dma_info_t</name>
+                    <packed_size>72</packed_size>
+                    <id>8577</id>
+                    <required_file>
+                        <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                        <order>633</order>
+                        <source_path>core/systems/esp_dma_info.hpp</source_path>
+                    </required_file>
+                    <member>
+                        <name>index</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_index</rtl_port_name>
+                        <packed_offset>0</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>length</name>
+                        <datatype W="32">unsigned int</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_length</rtl_port_name>
+                        <packed_offset>32</packed_offset>
+                        <packed_size>32</packed_size>
+                    </member>
+                    <member>
+                        <name>size</name>
+                        <datatype W="3">sc_bv</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_size</rtl_port_name>
+                        <packed_offset>64</packed_offset>
+                        <packed_size>3</packed_size>
+                    </member>
+                    <member>
+                        <name>user</name>
+                        <datatype W="5">sc_bv</datatype>
+                        <rtl_port_name>dma_write_ctrl_data_user</rtl_port_name>
+                        <packed_offset>67</packed_offset>
+                        <packed_size>5</packed_size>
+                    </member>
+                </datatype>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_ctrl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <meta_port>
+            <name>dma_write_chnl</name>
+            <datatype>
+                <name>cynw::cynw_put_port_base &lt;sc_dt::sc_bv &lt;(int)128 &gt; &gt;</name>
+                <packed_size>131</packed_size>
+                <id>8839</id>
+                <required_file>
+                    <path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_port_base.h</path>
+                    <order>614</order>
+                    <source_path>cynw_put_get_channels/cynw_put_get_port_base.h</source_path>
+                </required_file>
+            </datatype>
+            <port>
+                <name>valid</name>
+                <direction>out</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_chnl_valid</rtl_port_name>
+            </port>
+            <port>
+                <name>data</name>
+                <direction>out</direction>
+                <datatype W="128">sc_bv</datatype>
+                <rtl_port_name>dma_write_chnl_data</rtl_port_name>
+            </port>
+            <port>
+                <name>ready</name>
+                <direction>in</direction>
+                <datatype W="1">bool</datatype>
+                <rtl_port_name>dma_write_chnl_ready</rtl_port_name>
+            </port>
+        </meta_port>
+        <ctor_params>
+            <param>
+                <name>name</name>
+                <unsupported_type/>
+                <datatype>
+                    <reftype>
+                        <datatype>
+                            <name>sc_core::sc_module_name</name>
+                            <const/>
+                            <id>637</id>
+                        </datatype>
+                        <rtl_port_name></rtl_port_name>
+                        <const/>
+                    </reftype>
+                </datatype>
+            </param>
+        </ctor_params>
+    </module>
+    <module>
+        <name>cynw::Sync_Rcv &lt;dma_info_t, cynw::SIG_TRAITS_pCLK_nRST &gt;</name>
+        <id>144089</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_sync_rcv.h</source_path>
+        <source_line>48</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+            <order>633</order>
+            <source_path>core/systems/esp_dma_info.hpp</source_path>
+        </required_file>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <port>
+            <name>valid</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>data</name>
+            <direction>in</direction>
+            <datatype>
+                <name>dma_info_t</name>
+                <packed_size>72</packed_size>
+                <id>8577</id>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>index</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_index</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>length</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_length</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>size</name>
+                    <datatype W="3">sc_bv</datatype>
+                    <rtl_port_name>data_size</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>3</packed_size>
+                </member>
+                <member>
+                    <name>user</name>
+                    <datatype W="5">sc_bv</datatype>
+                    <rtl_port_name>data_user</rtl_port_name>
+                    <packed_offset>67</packed_offset>
+                    <packed_size>5</packed_size>
+                </member>
+            </datatype>
+        </port>
+        <port>
+            <name>data_buf</name>
+            <direction>out</direction>
+            <datatype>
+                <name>dma_info_t</name>
+                <packed_size>72</packed_size>
+                <id>8577</id>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>index</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_buf_index</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>length</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_buf_length</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>size</name>
+                    <datatype W="3">sc_bv</datatype>
+                    <rtl_port_name>data_buf_size</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>3</packed_size>
+                </member>
+                <member>
+                    <name>user</name>
+                    <datatype W="5">sc_bv</datatype>
+                    <rtl_port_name>data_buf_user</rtl_port_name>
+                    <packed_offset>67</packed_offset>
+                    <packed_size>5</packed_size>
+                </member>
+            </datatype>
+        </port>
+        <port>
+            <name>set_ready_curr</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>set_ready_curr</rtl_port_name>
+        </port>
+        <signal>
+            <name>set_ready_prev</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>set_ready_prev</rtl_port_name>
+        </signal>
+        <signal>
+            <name>reset_ready_prev</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>reset_ready_prev</rtl_port_name>
+        </signal>
+        <signal>
+            <name>reset_ready_curr</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>reset_ready_curr</rtl_port_name>
+        </signal>
+        <signal>
+            <name>ready_flop</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>ready_flop</rtl_port_name>
+        </signal>
+        <port>
+            <name>ready_mask</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready_mask</rtl_port_name>
+        </port>
+    </module>
+    <module>
+        <name>cynw::nb_get_initiator_imp &lt;dma_info_t, cynw::SIG_TRAITS_pCLK_nRST, true &gt;</name>
+        <id>144187</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_non_blocking_get.h</source_path>
+        <source_line>56</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+            <order>633</order>
+            <source_path>core/systems/esp_dma_info.hpp</source_path>
+        </required_file>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <port>
+            <name>valid</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>data</name>
+            <direction>in</direction>
+            <datatype>
+                <name>dma_info_t</name>
+                <packed_size>72</packed_size>
+                <id>8577</id>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>index</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_index</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>length</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_length</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>size</name>
+                    <datatype W="3">sc_bv</datatype>
+                    <rtl_port_name>data_size</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>3</packed_size>
+                </member>
+                <member>
+                    <name>user</name>
+                    <datatype W="5">sc_bv</datatype>
+                    <rtl_port_name>data_user</rtl_port_name>
+                    <packed_offset>67</packed_offset>
+                    <packed_size>5</packed_size>
+                </member>
+            </datatype>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <signal>
+            <name>set_ready_curr</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>set_ready_curr</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>data_buf</name>
+                        <datatype>
+                <name>dma_info_t</name>
+                <packed_size>72</packed_size>
+                <id>132441</id>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>index</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_buf_index</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>length</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_buf_length</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>size</name>
+                    <datatype W="3">sc_bv</datatype>
+                    <rtl_port_name>data_buf_size</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>3</packed_size>
+                </member>
+                <member>
+                    <name>user</name>
+                    <datatype W="5">sc_bv</datatype>
+                    <rtl_port_name>data_buf_user</rtl_port_name>
+                    <packed_offset>67</packed_offset>
+                    <packed_size>5</packed_size>
+                </member>
+            </datatype>
+            <private/>
+        </signal>
+        <signal>
+            <name>nb_can_get_sig1</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>nb_can_get_sig1</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>nb_can_get_sig2</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>nb_can_get_sig2</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>ready_mask</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>ready_mask</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>multi_calls_in_cycle_sig</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>multi_calls_in_cycle_sig</rtl_port_name>
+            <private/>
+        </signal>
+    </module>
+    <module>
+        <name>cynw::nb_get_initiator &lt;dma_info_t, cynw::SIG_TRAITS_pCLK_nRST &gt;</name>
+        <id>144283</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_non_blocking_get.h</source_path>
+        <source_line>157</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+            <order>633</order>
+            <source_path>core/systems/esp_dma_info.hpp</source_path>
+        </required_file>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <port>
+            <name>valid</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </port>
+        <port>
+            <name>data</name>
+            <direction>in</direction>
+            <datatype>
+                <name>dma_info_t</name>
+                <packed_size>72</packed_size>
+                <id>8577</id>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>index</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_index</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>length</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_length</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>size</name>
+                    <datatype W="3">sc_bv</datatype>
+                    <rtl_port_name>data_size</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>3</packed_size>
+                </member>
+                <member>
+                    <name>user</name>
+                    <datatype W="5">sc_bv</datatype>
+                    <rtl_port_name>data_user</rtl_port_name>
+                    <packed_offset>67</packed_offset>
+                    <packed_size>5</packed_size>
+                </member>
+            </datatype>
+        </port>
+        <port>
+            <name>ready</name>
+            <direction>out</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </port>
+        <port>
+            <name>clk</name>
+            <direction>in</direction>
+            <datatype W="1">bool</datatype>
+            <rtl_port_name>clk</rtl_port_name>
+        </port>
+        <signal>
+            <name>set_ready_curr</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>set_ready_curr</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>data_buf</name>
+                        <datatype>
+                <name>dma_info_t</name>
+                <packed_size>72</packed_size>
+                <id>132441</id>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>index</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_buf_index</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>length</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_buf_length</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>size</name>
+                    <datatype W="3">sc_bv</datatype>
+                    <rtl_port_name>data_buf_size</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>3</packed_size>
+                </member>
+                <member>
+                    <name>user</name>
+                    <datatype W="5">sc_bv</datatype>
+                    <rtl_port_name>data_buf_user</rtl_port_name>
+                    <packed_offset>67</packed_offset>
+                    <packed_size>5</packed_size>
+                </member>
+            </datatype>
+            <private/>
+        </signal>
+        <signal>
+            <name>nb_can_get_sig1</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>nb_can_get_sig1</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>nb_can_get_sig2</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>nb_can_get_sig2</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>ready_mask</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>ready_mask</rtl_port_name>
+            <private/>
+        </signal>
+        <signal>
+            <name>multi_calls_in_cycle_sig</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>multi_calls_in_cycle_sig</rtl_port_name>
+            <private/>
+        </signal>
+    </module>
+    <module>
+        <name>cynw::put_get_channel_imp &lt;dma_info_t, cynw::SIG_TRAITS_pCLK_nRST, true &gt;</name>
+        <id>144363</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_channel.h</source_path>
+        <source_line>51</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+            <order>633</order>
+            <source_path>core/systems/esp_dma_info.hpp</source_path>
+        </required_file>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <signal>
+            <name>ready</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </signal>
+        <signal>
+            <name>valid</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </signal>
+        <signal>
+            <name>data</name>
+                        <datatype>
+                <name>dma_info_t</name>
+                <packed_size>72</packed_size>
+                <id>132441</id>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>index</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_index</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>length</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_length</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>size</name>
+                    <datatype W="3">sc_bv</datatype>
+                    <rtl_port_name>data_size</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>3</packed_size>
+                </member>
+                <member>
+                    <name>user</name>
+                    <datatype W="5">sc_bv</datatype>
+                    <rtl_port_name>data_user</rtl_port_name>
+                    <packed_offset>67</packed_offset>
+                    <packed_size>5</packed_size>
+                </member>
+            </datatype>
+        </signal>
+    </module>
+    <module>
+        <name>cynw::put_get_channel &lt;dma_info_t, cynw::SIG_TRAITS_pCLK_nRST &gt;</name>
+        <id>144404</id>
+        <source_path>/opt/cad/stratus/share/stratus/include/cynw_put_get_channels/cynw_put_get_channel.h</source_path>
+        <source_line>95</source_line>
+        <source_column>8</source_column>
+        <required_file>
+            <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+            <order>633</order>
+            <source_path>core/systems/esp_dma_info.hpp</source_path>
+        </required_file>
+        <required_file>
+            <path>/opt/cad/stratus/share/stratus/include/cynw_flex_channels_traits.h</path>
+            <order>609</order>
+            <source_path>cynw_flex_channels_traits.h</source_path>
+        </required_file>
+        <inline_module/>
+        <signal>
+            <name>ready</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>ready</rtl_port_name>
+        </signal>
+        <signal>
+            <name>valid</name>
+                        <datatype W="1">bool</datatype>
+            <rtl_port_name>valid</rtl_port_name>
+        </signal>
+        <signal>
+            <name>data</name>
+                        <datatype>
+                <name>dma_info_t</name>
+                <packed_size>72</packed_size>
+                <id>132441</id>
+                <required_file>
+                    <path>/home/kevin/nov_submission/esp/accelerators/stratus_hls/common/inc/core/systems/esp_dma_info.hpp</path>
+                    <order>633</order>
+                    <source_path>core/systems/esp_dma_info.hpp</source_path>
+                </required_file>
+                <member>
+                    <name>index</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_index</rtl_port_name>
+                    <packed_offset>0</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>length</name>
+                    <datatype W="32">unsigned int</datatype>
+                    <rtl_port_name>data_length</rtl_port_name>
+                    <packed_offset>32</packed_offset>
+                    <packed_size>32</packed_size>
+                </member>
+                <member>
+                    <name>size</name>
+                    <datatype W="3">sc_bv</datatype>
+                    <rtl_port_name>data_size</rtl_port_name>
+                    <packed_offset>64</packed_offset>
+                    <packed_size>3</packed_size>
+                </member>
+                <member>
+                    <name>user</name>
+                    <datatype W="5">sc_bv</datatype>
+                    <rtl_port_name>data_user</rtl_port_name>
+                    <packed_offset>67</packed_offset>
+                    <packed_size>5</packed_size>
+                </member>
+            </datatype>
+        </signal>
+    </module>
+    <datatype>
+        <name>std::__cxx11::basic_string &lt;char, std::char_traits &lt;char &gt;, std::allocator &lt;char &gt; &gt;</name>
+        <id>69</id>
+        <member/>
+    </datatype>
+</source_file>
