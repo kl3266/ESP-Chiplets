@@ -661,7 +661,7 @@ package body nocpackage is
     end if;
   end;
 
-  function set_mem_id_range
+  function set_mem_id_range 
     return integer is
   begin
     if CFG_NMEM_TILE = 0 then
@@ -671,7 +671,7 @@ package body nocpackage is
     end if;
   end;
 
-  function set_slmddr_id_range
+  function set_slmddr_id_range 
     return integer is
   begin
     if CFG_NSLMDDR_TILE = 0 then

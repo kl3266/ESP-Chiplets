@@ -6,28 +6,28 @@ ifneq ("$(OVR_TECHLIB)","")
 XDC_SUFFIX = -fpga-proxy
 XDC_EMU_SUFFIX = -chip-emu
 
-XDC_EMU += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_EMU_SUFFIX).xdc
-XDC_EMU += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_EMU_SUFFIX)-eth-pins.xdc
-XDC_EMU += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_EMU_SUFFIX)-eth-constraints.xdc
-XDC_EMU += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_EMU_SUFFIX)-cable-pins.xdc
+XDC_EMU += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_EMU_SUFFIX).xdc
+XDC_EMU += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_EMU_SUFFIX)-eth-pins.xdc
+XDC_EMU += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_EMU_SUFFIX)-eth-constraints.xdc
+XDC_EMU += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_EMU_SUFFIX)-cable-pins.xdc
 else
 XDC_SUFFIX =
 endif
 
 
 ifneq ($(filter $(TECHLIB),$(FPGALIBS)),)
-XDC   = $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_SUFFIX).xdc
-XDC  += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_SUFFIX)-mig-pins.xdc
-XDC  += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_SUFFIX)-mig-constraints.xdc
+XDC   = $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_SUFFIX).xdc
+XDC  += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_SUFFIX)-mig-pins.xdc
+XDC  += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_SUFFIX)-mig-constraints.xdc
 ifneq ($(findstring profpga, $(BOARD)),)
-XDC  += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_SUFFIX)-mmi64.xdc
-XDC  += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_SUFFIX)-cable-pins.xdc
+XDC  += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_SUFFIX)-mmi64.xdc
+XDC  += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_SUFFIX)-cable-pins.xdc
 endif
-XDC  += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_SUFFIX)-eth-pins.xdc
-XDC  += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_SUFFIX)-dvi-pins.xdc
-XDC  += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_SUFFIX)-eth-constraints.xdc
+XDC  += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_SUFFIX)-eth-pins.xdc
+XDC  += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_SUFFIX)-dvi-pins.xdc
+XDC  += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_SUFFIX)-eth-constraints.xdc
 ifeq ($(CONFIG_SVGA_ENABLE),y)
-XDC  += $(ESP_ROOT)/constraints/$(BOARD)/$(BOARD)$(XDC_SUFFIX)-dvi-constraints.xdc
+XDC  += $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/$(CONSTRAINTS_BASE)$(XDC_SUFFIX)-dvi-constraints.xdc
 endif
 ifeq ($(CONFIG_HAS_DVFS),y)
 XDC  += $(ESP_ROOT)/constraints/esp-common/esp-plls.xdc
@@ -36,6 +36,7 @@ endif
 
 
 ### Options for Vivado batch mode ###
+VIVADO_JOBS ?= 32
 VIVADO_BATCH_OPT = -mode batch -quiet -notrace
 
 $(VIVADO_LOGS):
@@ -77,6 +78,7 @@ vivado/setup.tcl: vivado $(BOARD_FILES)
 	$(QUIET_INFO)echo "generating project script for Vivado"
 	@$(RM) $@
 	@echo "create_project $(DESIGN) -part ${DEVICE} -force" > $@
+	@echo "set_param general.maxThreads $(VIVADO_JOBS)" >> $@
 	@echo "set_property target_language verilog [current_project]" >> $@
 	@echo "set_property include_dirs {$(INCDIR)} [get_filesets {sim_1 sources_1}]" >> $@
 ifeq ("$(CPU_ARCH)","ibex")
@@ -94,31 +96,33 @@ ifneq ($(IP_XCI_SRCS),)
 	done;
 	@echo "upgrade_ip [get_ips -all]" >> $@
 endif
-	@if test -r $(ESP_ROOT)/constraints/$(BOARD)/mig.xci; then \
+ifneq ("$(INCLUDE_MIG_IP)","0")
+	@if test -r $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/mig.xci; then \
 		echo $(SPACES)"INFO including MIG IP"; \
 		mkdir -p vivado/mig; \
-		cp $(ESP_ROOT)/constraints/$(BOARD)/mig.xci ./vivado/mig; \
-		if test -r $(ESP_ROOT)/constraints/$(BOARD)/mig.prj; then \
-			cp $(ESP_ROOT)/constraints/$(BOARD)/mig.prj ./vivado/mig; \
+		cp $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/mig.xci ./vivado/mig; \
+		if test -r $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/mig.prj; then \
+			cp $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/mig.prj ./vivado/mig; \
 		fi; \
 		echo "import_ip -files ./mig/mig.xci" >> $@; \
 		echo "generate_target  all [get_ips mig] -force " >> $@; \
-	elif test -r $(ESP_ROOT)/constraints/$(BOARD)/mig.tcl; then \
+	elif test -r $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/mig.tcl; then \
 		echo $(SPACES)"INFO including MIG IP"; \
 		mkdir -p vivado/mig; \
-		cp $(ESP_ROOT)/constraints/$(BOARD)/mig.tcl ./vivado/mig; \
-		if test -r $(ESP_ROOT)/constraints/$(BOARD)/mig.csv; then \
-			cp $(ESP_ROOT)/constraints/$(BOARD)/mig.csv ./vivado/mig; \
+		cp $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/mig.tcl ./vivado/mig; \
+		if test -r $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/mig.csv; then \
+			cp $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/mig.csv ./vivado/mig; \
 		fi; \
 		echo "source ./mig/mig.tcl" >> $@; \
 		echo "generate_target  all [get_ips mig] -force " >> $@; \
 	else \
 		echo $(SPACES)"WARNING: no MIG IP was found"; \
 	fi;
-	@if test -r $(ESP_ROOT)/constraints/$(BOARD)/zynq.tcl; then \
+endif
+	@if test -r $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/zynq.tcl; then \
 		echo $(SPACES)"INFO including ZYNQ PS IP"; \
 		mkdir -p vivado/zynq; \
-		cp $(ESP_ROOT)/constraints/$(BOARD)/zynq.tcl ./vivado/zynq; \
+		cp $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/zynq.tcl ./vivado/zynq; \
 		echo "set argv [list $(ARCH_BITS)]" >> $@; \
 		echo "set argv [list $(ARCH_BITS)]" >> $@; \
 		echo "set argc 1" >> $@; \
@@ -127,17 +131,17 @@ endif
 		echo "set argc 0" >> $@; \
 	fi;
 ifeq ($(CONFIG_ETH_EN),y)
-	@if test -r $(ESP_ROOT)/constraints/$(BOARD)/sgmii.xci; then \
+	@if test -r $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/sgmii.xci; then \
 		echo $(SPACES)"INFO including SGMII IP"; \
 		mkdir -p vivado/sgmii; \
-		cp $(ESP_ROOT)/constraints/$(BOARD)/sgmii.xci ./vivado/sgmii; \
+		cp $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/sgmii.xci ./vivado/sgmii; \
 		echo "set_property target_language verilog [current_project]" >> $@; \
 		echo "import_ip -files ./sgmii/sgmii.xci" >> $@; \
 		echo "generate_target  all [get_ips sgmii] -force" >> $@; \
-	elif test -r $(ESP_ROOT)/constraints/$(BOARD)/sgmii.tcl; then \
+	elif test -r $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/sgmii.tcl; then \
 		echo $(SPACES)"INFO including SGMII IP"; \
 		mkdir -p vivado/sgmii; \
-		cp $(ESP_ROOT)/constraints/$(BOARD)/sgmii.tcl ./vivado/sgmii; \
+		cp $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/sgmii.tcl ./vivado/sgmii; \
 		echo "set_property target_language verilog [current_project]" >> $@; \
 		echo "source ./sgmii/sgmii.tcl" >> $@; \
 		echo "generate_target  all [get_ips sgmii] -force" >> $@; \
@@ -159,15 +163,29 @@ endif
 	    echo "read_xdc $$i" >> $@; \
 	    echo "set_property used_in_synthesis true [get_files $$i]" >> $@; \
 	    echo "set_property used_in_implementation true [get_files $$i]" >> $@; \
-          fi; \
+	          fi; \
 	done;
-	@echo "set_property top $(TOP) [current_fileset]" >> $@
+ifneq ("$(VIVADO_SYNTH_STRATEGY)","")
+	@echo "set_property strategy {$(VIVADO_SYNTH_STRATEGY)} [get_runs synth_1]" >> $@
+endif
+ifneq ("$(VIVADO_IMPL_STRATEGY)","")
+	@echo "set_property strategy {$(VIVADO_IMPL_STRATEGY)} [get_runs impl_1]" >> $@
+endif
+	@echo "set_property top_auto_set false [get_filesets sources_1]" >> $@
+	@echo "set_property top $(VIVADO_TOP) [get_filesets sources_1]" >> $@
+ifneq ("$(VIVADO_GENERIC)","")
+	@echo "set_property generic {$(VIVADO_GENERIC)} [get_filesets sources_1]" >> $@
+endif
+ifneq ("$(ALLOW_UNCONSTRAINED_IO)","0")
+	@echo "set_property STEPS.WRITE_BITSTREAM.TCL.PRE {$(WRITE_BITSTREAM_PREHOOK)} [get_runs impl_1]" >> $@
+endif
 
 
 vivado/setup_emu.tcl: vivado $(BOARD_FILES)
 	$(QUIET_INFO)echo "generating project script for Vivado"
 	@$(RM) $@
 	@echo "create_project $(DESIGN)-chip-emu -part ${DEVICE} -force" > $@
+	@echo "set_param general.maxThreads $(VIVADO_JOBS)" >> $@
 	@echo "set_property target_language verilog [current_project]" >> $@
 	@echo "set_property include_dirs {$(INCDIR)} [get_filesets {sim_1 sources_1}]" >> $@
 ifeq ("$(CPU_ARCH)","ibex")
@@ -191,30 +209,46 @@ endif
 	@echo "update_compile_order -fileset sim_1" >> $@
 
 
-vivado/syn.tcl: vivado
+FORCE:
+
+vivado/syn.tcl: vivado FORCE
 	$(QUIET_INFO)echo "generating synthesis script for Vivado"
 	@$(RM) $@
 	@echo "open_project $(DESIGN).xpr" > $@
+	@echo "set_param general.maxThreads $(VIVADO_JOBS)" >> $@
 	@echo "update_ip_catalog" >> $@
 	@echo "update_compile_order -fileset sources_1" >> $@
+	@echo "set_property top_auto_set false [get_filesets sources_1]" >> $@
+	@echo "set_property top $(VIVADO_TOP) [get_filesets sources_1]" >> $@
+ifneq ("$(VIVADO_GENERIC)","")
+	@echo "set_property generic {$(VIVADO_GENERIC)} [get_filesets sources_1]" >> $@
+endif
 	@echo "reset_run impl_1" >> $@
 	@echo "reset_run synth_1" >> $@
 #	@echo "synth_design -rtl -name rtl_1" >> $@
 #	@echo "synth_design -directive runtimeoptimize -resource_sharing off -keep_equivalent_registers -no_lc -rtl -name rtl_1" >> $@
 #	@echo "synth_design -resource_sharing off -keep_equivalent_registers -no_lc -rtl -name rtl_1" >> $@
-	@echo "launch_runs synth_1 -jobs 12" >> $@
+	@echo "launch_runs synth_1 -jobs $(VIVADO_JOBS)" >> $@
 	@echo "get_ips" >> $@
 	@echo "wait_on_run -timeout 360 synth_1" >> $@
 	@echo "set_msg_config -suppress -id {Drc 23-20}" >> $@
-	@echo "launch_runs impl_1 -jobs 12" >> $@
+	@echo "launch_runs impl_1 -to_step route_design -jobs $(VIVADO_JOBS)" >> $@
 	@echo "wait_on_run -timeout 360 impl_1" >> $@
-	@echo "launch_runs impl_1 -to_step write_bitstream" >> $@
+ifneq ("$(ALLOW_UNCONSTRAINED_IO)","0")
+	@echo "open_checkpoint $(DESIGN).runs/impl_1/$(VIVADO_TOP)_routed.dcp" >> $@
+	@echo "set_property SEVERITY {Warning} [get_drc_checks NSTD-1]" >> $@
+	@echo "set_property SEVERITY {Warning} [get_drc_checks UCIO-1]" >> $@
+	@echo "write_bitstream -force $(DESIGN).runs/impl_1/$(VIVADO_TOP).bit" >> $@
+else
+	@echo "launch_runs impl_1 -to_step write_bitstream -jobs $(VIVADO_JOBS)" >> $@
 	@echo "wait_on_run -timeout 60 impl_1" >> $@
+endif
 
-vivado/syn_emu.tcl: vivado
+vivado/syn_emu.tcl: vivado FORCE
 	$(QUIET_INFO)echo "generating synthesis script for Vivado"
 	@$(RM) $@
 	@echo "open_project $(DESIGN)-chip-emu.xpr" > $@
+	@echo "set_param general.maxThreads $(VIVADO_JOBS)" >> $@
 	@echo "update_ip_catalog" >> $@
 	@echo "update_compile_order -fileset sources_1" >> $@
 	@echo "reset_run impl_1" >> $@
@@ -222,13 +256,13 @@ vivado/syn_emu.tcl: vivado
 #	@echo "synth_design -rtl -name rtl_1" >> $@
 #	@echo "synth_design -directive runtimeoptimize -resource_sharing off -keep_equivalent_registers -no_lc -rtl -name rtl_1" >> $@
 #	@echo "synth_design -resource_sharing off -keep_equivalent_registers -no_lc -rtl -name rtl_1" >> $@
-	@echo "launch_runs synth_1 -jobs 12" >> $@
+	@echo "launch_runs synth_1 -jobs $(VIVADO_JOBS)" >> $@
 	@echo "get_ips" >> $@
 	@echo "wait_on_run -timeout 360 synth_1" >> $@
 	@echo "set_msg_config -suppress -id {Drc 23-20}" >> $@
-	@echo "launch_runs impl_1 -jobs 12" >> $@
+	@echo "launch_runs impl_1 -jobs $(VIVADO_JOBS)" >> $@
 	@echo "wait_on_run -timeout 360 impl_1" >> $@
-	@echo "launch_runs impl_1 -to_step write_bitstream" >> $@
+	@echo "launch_runs impl_1 -to_step write_bitstream -jobs $(VIVADO_JOBS)" >> $@
 	@echo "wait_on_run -timeout 60 impl_1" >> $@
 
 vivado/program.tcl: vivado
@@ -331,7 +365,7 @@ vivado-syn: vivado-setup
 	@cd vivado; \
 	vivado $(VIVADO_BATCH_OPT) -source syn.tcl | tee ../$(VIVADO_LOGS)/vivado_syn.log; \
 	cd ../;
-	@bit=vivado/$(DESIGN).runs/impl_1/$(TOP).bit; \
+	@bit=vivado/$(DESIGN).runs/impl_1/$(VIVADO_TOP).bit; \
 	if test -r $$bit; then \
 		rm -rf $(TOP).bit; \
 		ln -s $$bit; \
@@ -360,7 +394,7 @@ vivado-update: vivado vivado/syn.tcl
 	else \
 		vivado $(VIVADO_BATCH_OPT) -source syn.tcl | tee ../$(VIVADO_LOGS)/vivado_syn.log; \
 		cd ../; \
-		bit=vivado/$(DESIGN).runs/impl_1/$(TOP).bit; \
+		bit=vivado/$(DESIGN).runs/impl_1/$(VIVADO_TOP).bit; \
 		if test -r $$bit; then \
 			rm -rf $(TOP).bit; \
 			ln -s $$bit; \
@@ -390,7 +424,7 @@ endif # ifneq ($(filter $(TECHLIB),$(FPGALIBS)),)
 
 vivado-prog-fpga: vivado/program.tcl
 	@cd vivado; \
-	bit=$(DESIGN).runs/impl_1/$(TOP).bit; \
+	bit=$(DESIGN).runs/impl_1/$(VIVADO_TOP).bit; \
 	if test -r $$bit; then \
 		vivado $(VIVADO_BATCH_OPT) -source program.tcl -tclargs $(FPGA_HOST) $(XIL_HW_SERVER_PORT) $(PART) $$bit; \
 	else \
@@ -406,4 +440,4 @@ vivado-distclean: vivado-clean
 		vivado	\
 		*.bit
 
-.PHONY: vivado-clean vivado-distclean vivado-syn vivado-prog-fpga vivado/$(DESIGN) vivado-setup vivado-gui
+.PHONY: FORCE vivado-clean vivado-distclean vivado-syn vivado-prog-fpga vivado/$(DESIGN) vivado-setup vivado-gui

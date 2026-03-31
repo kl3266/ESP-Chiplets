@@ -34,7 +34,8 @@ endif
 ifeq ($(TECH_TYPE),asic)
 DEVICE = ASIC-$(TECHLIB)
 else ifneq ($(filter $(TECHLIB),$(FPGALIBS)),)
-include $(ESP_ROOT)/constraints/$(BOARD)/Makefile.inc
+CONSTRAINTS_DIR ?= $(BOARD)
+include $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/Makefile.inc
 DEVICE = $(PART)-$(PACKAGE)-$(SPEED)
 TECH_TYPE = fpga
 #else ifneq ($(filter $(TECHLIB),$(ASICLIBS)),)

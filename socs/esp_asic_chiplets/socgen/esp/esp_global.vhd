@@ -161,14 +161,14 @@ package esp_global is
 
   constant CFG_IO_TILE_CHIPLET : std_logic_vector(0 to CFG_CHIPLET_NUM - 1) := (
     0 => '1',
-    1 => '1',
-    2 => '1',
-    3 => '1',
-    4 => '1',
-    5 => '1',
-    6 => '1',
-    7 => '1',
-    8 => '1',
+    1 => '0',
+    2 => '0',
+    3 => '0',
+    4 => '0',
+    5 => '0',
+    6 => '0',
+    7 => '0',
+    8 => '0',
     others => '0'
   );
 --  function max_val(arr : attr_arr) return integer is

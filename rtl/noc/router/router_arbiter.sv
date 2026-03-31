@@ -139,3 +139,50 @@ module router_arbiter
 `endif // ~SYNTHESIS
 
 endmodule
+
+module router_arbiter_rtpe
+  (
+   input  logic clk,
+   input  logic rst,
+   input  logic [3:0] request,
+   input  logic forwarding_head,
+   input  logic forwarding_tail,
+   output logic [3:0] grant,
+   output logic grant_valid
+   );
+
+  logic grant_locked;
+  logic [1:0] ptr;
+  logic [3:0] req_masked, req_internal;
+  logic [3:0] mask;
+  logic [3:0] grant_masked, grant_raw;
+
+  assign req_internal = grant_locked ? 4'b0 : request;
+  assign mask = 4'b1111 << ptr;
+  assign req_masked = req_internal & mask;
+  assign grant_masked = req_masked & (-req_masked);
+  assign grant_raw = req_internal & (-req_internal);
+  assign grant = (|req_masked) ? grant_masked : grant_raw;
+  assign grant_valid = |req_internal;
+
+  always_ff @(posedge clk) begin
+    if (rst) begin
+      grant_locked <= 1'b0;
+      ptr <= '0;
+    end else begin
+      if (forwarding_tail) begin
+        grant_locked <= 1'b0;
+      end else if (forwarding_head) begin
+        grant_locked <= 1'b1;
+        case (grant)
+          4'b0001: ptr <= 2'd1;
+          4'b0010: ptr <= 2'd2;
+          4'b0100: ptr <= 2'd3;
+          4'b1000: ptr <= 2'd0;
+          default: ptr <= ptr;
+        endcase
+      end
+    end
+  end
+
+endmodule

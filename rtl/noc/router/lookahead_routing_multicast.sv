@@ -25,108 +25,174 @@
 //
 
 module lookahead_routing_multicast #(
-  parameter integer DEST_SIZE = 6)
-  (
+  parameter integer DEST_SIZE = 6,
+  parameter logic [1:0] PORT_ID = 0
+) (
    input logic clk,
    input noc::xy_t position,
    input noc::xy_t [0:DEST_SIZE-1] destination,
    input logic [DEST_SIZE-1:0] val,
-   input noc::direction_t current_routing,
    output noc::direction_t next_routing
    );
 
-   logic [4:0] testing_local_west;
-   logic [4:0] testing_local_east;
-   logic [4:0] testing_local_north;
-   logic [4:0] testing_local_south;
-   logic [4:0] testing_local_local;
+  noc::direction_t routing_paths [DEST_SIZE-1:0];
+  logic [DEST_SIZE-1:0] routing_bit_0, routing_bit_1, routing_bit_2, routing_bit_3, routing_bit_4;
+  noc::xy_t next_position;
 
-   noc::direction_t [DEST_SIZE-1:0] routing_paths;
-
-  function automatic noc::direction_t routing(
-    input noc::xy_t next_position,
-    input noc::xy_t destination);
-    // Compute next routing: go East/West first, then North/South
-    noc::direction_t west, east, north, south, local1;
-
-    west = next_position.x > destination.x ?
-	       //  00100 : 11011;
-	       noc::goWest : ~noc::goWest;
-    east = next_position.x < destination.x ?
-            // 01000 : 10111;
-           noc::goEast : ~noc::goEast;
-    north = next_position.y > destination.y ?
-            //  01101 : 11110;
-            noc::goNorth | noc::goWest | noc::goEast : ~noc::goNorth;
-    south = next_position.y < destination.y ?
-            //  01110 : 11101;
-            noc::goSouth | noc::goWest | noc::goEast : ~noc::goSouth;
-
-    if (next_position.y == destination.y && next_position.x == destination.x)
-	    local1.go_local = 1;
-
-    // Result is go_local when none of the above is true
-    routing = west & east & north & south;
-
-    testing_local_west = west;
-    testing_local_east =  east;
-    testing_local_north = north;
-    testing_local_south = south;
-    testing_local_local = local1;
-  endfunction
-
-  // Compute next position for every possible routing except local port
-  noc::xy_t [3:0] next_position_d, next_position_q;
-  // North
-  assign next_position_d[noc::kNorthPort].x = position.x;
-  assign next_position_d[noc::kNorthPort].y = position.y - 1'b1;
-  // South
-  assign next_position_d[noc::kSouthPort].x = position.x;
-  assign next_position_d[noc::kSouthPort].y = position.y + 1'b1;
-  // West
-  assign next_position_d[noc::kWestPort].x = position.x - 1'b1;
-  assign next_position_d[noc::kWestPort].y = position.y;
-  // East
-  assign next_position_d[noc::kEastPort].x = position.x + 1'b1;
-  assign next_position_d[noc::kEastPort].y = position.y;
-
-  always_ff @(posedge clk) begin
-    next_position_q <= next_position_d;
-  end
-
-  always_comb begin
-    // The function processes routing for all destinations.
-    // final next_routing is an OR of all the next_routing computations
-    next_routing = 5'b0;
-    for (int rout_num = 0; rout_num < DEST_SIZE; rout_num++) begin
-        routing_paths[rout_num] = 5'b00000;
-    end
-
-    for (int dest_num = 0; dest_num < DEST_SIZE; dest_num++) begin
-      if (val[dest_num]) begin
-        if (position.x == destination[dest_num].x && position.y == destination[dest_num].y) begin
-          routing_paths[dest_num].go_local = 0;
-          routing_paths[dest_num].go_east = 0;
-          routing_paths[dest_num].go_west = 0;
-          routing_paths[dest_num].go_south = 0;
-          routing_paths[dest_num].go_north = 0;
-        end else if (current_routing.go_west) begin
-          routing_paths[dest_num] = routing(next_position_q[noc::kWestPort], destination[dest_num]);
-        end else if (current_routing.go_east) begin
-          routing_paths[dest_num] = routing(next_position_q[noc::kEastPort], destination[dest_num]);
-        end else if (current_routing.go_north) begin
-          routing_paths[dest_num] = routing(next_position_q[noc::kNorthPort],destination[dest_num]);
-        end else if (current_routing.go_south) begin
-          routing_paths[dest_num] = routing(next_position_q[noc::kSouthPort], destination[dest_num]);
-        end else if(current_routing.go_local) begin
-          routing_paths[dest_num] = routing(next_position_q[noc::kLocalPort], destination[dest_num]);
-        end
+  generate
+    if (PORT_ID == 2'd0) begin : CALC_NEXT_POS_N // North Port
+      always_ff @(posedge clk) begin
+        next_position.x <= position.x;
+        next_position.y <= position.y - 1'b1;
+      end
+    end else if (PORT_ID == 2'd1) begin : CALC_NEXT_POS_S // South Port
+      always_ff @(posedge clk) begin
+        next_position.x <= position.x;
+        next_position.y <= position.y + 1'b1;
+      end
+    end else if (PORT_ID == 2'd2) begin : CALC_NEXT_POS_W // West Port
+      always_ff @(posedge clk) begin
+        next_position.x <= position.x - 1'b1;
+        next_position.y <= position.y;
+      end
+    end else begin : CALC_NEXT_POS_E // East Port
+      always_ff @(posedge clk) begin
+        next_position.x <= position.x + 1'b1;
+        next_position.y <= position.y;
       end
     end
+  endgenerate
 
-    for (int rout_num = 0; rout_num < DEST_SIZE; rout_num++) begin
-        next_routing = next_routing | routing_paths[rout_num];
+  generate
+    genvar i;
+    if (PORT_ID == 2'd0) begin
+      for (i = 0; i < DEST_SIZE; i++) begin
+        assign routing_bit_0[i] = val[i] && (next_position.y > destination[i].y);
+        assign routing_bit_1[i] = 1'b0;
+        assign routing_bit_2[i] = 1'b0;
+        assign routing_bit_3[i] = 1'b0;
+        assign routing_bit_4[i] = val[i] && (next_position.y == destination[i].y);
+      end
+    end else if (PORT_ID == 2'd1) begin
+      for (i = 0; i < DEST_SIZE; i++) begin
+        assign routing_bit_0[i] = 1'b0;
+        assign routing_bit_1[i] = val[i] && (next_position.y < destination[i].y);
+        assign routing_bit_2[i] = 1'b0;
+        assign routing_bit_3[i] = 1'b0;
+        assign routing_bit_4[i] = val[i] && (next_position.y == destination[i].y);
+      end
+    end else if (PORT_ID == 2'd2) begin
+      for (i = 0; i < DEST_SIZE; i++) begin
+        logic match_x, match_y;
+        assign match_x = (next_position.x == destination[i].x);
+        assign match_y = (next_position.y == destination[i].y);
+        assign routing_bit_2[i] = val[i] && (next_position.x > destination[i].x);
+        assign routing_bit_0[i] = val[i] && match_x && (next_position.y > destination[i].y);
+        assign routing_bit_1[i] = val[i] && match_x && (next_position.y < destination[i].y);
+        assign routing_bit_3[i] = 1'b0;
+        assign routing_bit_4[i] = val[i] && match_x && match_y;
+      end
+    end else if (PORT_ID == 2'd3) begin
+      for (i = 0; i < DEST_SIZE; i++) begin
+        logic match_x, match_y;
+        assign match_x = (next_position.x == destination[i].x);
+        assign match_y = (next_position.y == destination[i].y);
+        assign routing_bit_3[i] = val[i] && (next_position.x < destination[i].x);
+        assign routing_bit_0[i] = val[i] && match_x && (next_position.y > destination[i].y);
+        assign routing_bit_1[i] = val[i] && match_x && (next_position.y < destination[i].y);
+        assign routing_bit_2[i] = 1'b0;
+        assign routing_bit_4[i] = val[i] && match_x && match_y;
+      end
     end
-  end
+  endgenerate
 
+  assign next_routing = { |routing_bit_4, |routing_bit_3, |routing_bit_2, |routing_bit_1, |routing_bit_0 };
+endmodule
+
+module lookahead_routing_multicast_mask #(
+    parameter integer W = 4,
+    parameter logic [1:0] PORT_ID = 0
+) (
+  input logic clk,
+  input noc::xy_t position,
+  input noc::xy_t destination,
+  input noc::xy_t destination_mask,
+  output noc::direction_t next_routing
+);
+//  noc::xy_t next_position;
+//  logic [W-1:0] max_x, max_y;
+//  logic match_x;
+//  //noc::direction_t dir_comb;
+//  logic out_north, out_south, out_east, out_west, out_local;
+//
+//  generate
+//    if (PORT_ID == 2'd0) begin : CALC_NEXT_POS_N // North Port
+//      always_ff @(posedge clk) begin
+//        next_position.x <= position.x;
+//        next_position.y <= position.y - 1'b1;
+//      end
+//    end else if (PORT_ID == 2'd1) begin : CALC_NEXT_POS_S // South Port
+//      always_ff @(posedge clk) begin
+//        next_position.x <= position.x;
+//        next_position.y <= position.y + 1'b1;
+//      end
+//    end else if (PORT_ID == 2'd2) begin : CALC_NEXT_POS_W // West Port
+//      always_ff @(posedge clk) begin
+//        next_position.x <= position.x - 1'b1;
+//        next_position.y <= position.y;
+//      end
+//    end else begin : CALC_NEXT_POS_E // East Port
+//      always_ff @(posedge clk) begin
+//        next_position.x <= position.x + 1'b1;
+//        next_position.y <= position.y;
+//      end
+//    end
+//  endgenerate
+//
+//  localparam bit IS_EAST = (PORT_ID == noc::kEastPort[1:0]);
+//  localparam bit IS_WEST = (PORT_ID == noc::kWestPort[1:0]);
+//  localparam bit IS_SOUTH = (PORT_ID == noc::kSouthPort[1:0]);
+//  localparam bit IS_NORTH = (PORT_ID == noc::kNorthPort[1:0]);
+//  
+//  localparam bit IS_X_PHASE = IS_EAST || IS_WEST;
+//
+//  always_comb begin
+//    //dir_comb = '0;
+//    out_north = '0;
+//    out_south = '0;
+//    out_west = '0;
+//    out_east = '0;
+//    out_local = '0;
+//
+//    max_x = destination.x | destination_mask.x;
+//    max_y = destination.y | destination_mask.y;
+//    match_x = ((next_position.x ^ destination.x) & ~destination_mask.x ) == '0;
+//
+//    if (IS_X_PHASE) begin
+//      if ((next_position.x > destination.x) && IS_EAST) begin
+//        out_west = 1'b1;
+//      end
+//      if ((next_position.x < max_x) && IS_WEST) begin
+//        out_east = 1'b1;
+//      end
+//    end
+//    if (match_x || !IS_X_PHASE) begin
+//      if ((next_position.y > destination.y) && IS_SOUTH) begin
+//        out_north = 1'b1;
+//      end
+//      if ((next_position.y < max_y) && IS_NORTH) begin
+//        out_south = 1'b1;
+//      end
+//      if ( ((next_position.y ^ destination.y) & ~destination_mask.y) == '0) begin
+//        out_local = 1'b1;
+//      end
+//    end
+//  end
+//
+//  assign next_routing.go_north = out_north;
+//  assign next_routing.go_south = out_south;
+//  assign next_routing.go_east  = out_east;
+//  assign next_routing.go_west  = out_west;
+//  assign next_routing.go_local = out_local;
+//
 endmodule

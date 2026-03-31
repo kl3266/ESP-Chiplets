@@ -688,13 +688,14 @@ begin  -- architecture rtl
           )
         port map(
           rst   => rstn,
-          clk   => sys_clk(0),
+          clk   => sys_clk(1),
           haddr  => ddr_haddr(this_ddr_index(1)),
           hmask  => ddr_hmask(this_ddr_index(1)),
           ahbsi => ddr_ahbsi(1),
           ahbso => ddr_ahbso(1)
           );
-      --sys_clk(1)       <= not sys_clk(1) after 3.2 ns;
+      sys_clk(1)       <= not sys_clk(1) after 3.2 ns;
+--      sys_clk(1) <= sys_clk(0);
 
       mig_ahbram3 : ahbram_sim
         generic map (
@@ -707,13 +708,15 @@ begin  -- architecture rtl
           )
         port map(
           rst   => rstn,
-          clk   => sys_clk(0),
+          clk   => sys_clk(2),
           haddr  => ddr_haddr(this_ddr_index(2)),
           hmask  => ddr_hmask(this_ddr_index(2)),
           ahbsi => ddr_ahbsi(2),
           ahbso => ddr_ahbso(2)
           );
-      --sys_clk(2)       <= not sys_clk(2) after 3.2 ns;
+      sys_clk(2)       <= not sys_clk(2) after 3.2 ns;
+--      sys_clk(2) <= sys_clk(0);
+
 
       mig_ahbram4 : ahbram_sim
         generic map (
@@ -726,13 +729,14 @@ begin  -- architecture rtl
           )
         port map(
           rst   => rstn,
-          clk   => sys_clk(0),
+          clk   => sys_clk(3),
           haddr  => ddr_haddr(this_ddr_index(3)),
           hmask  => ddr_hmask(this_ddr_index(3)),
           ahbsi => ddr_ahbsi(3),
           ahbso => ddr_ahbso(3)
           );
-      --sys_clk(3)       <= not sys_clk(3) after 3.2 ns;
+      sys_clk(3)       <= not sys_clk(3) after 3.2 ns;
+--      sys_clk(3) <= sys_clk(0);
 
       ddr3_dq           <= (others => 'Z');
       ddr3_dqs_p        <= (others => 'Z');
@@ -818,7 +822,7 @@ begin  -- architecture rtl
         hindex => 0,
         little_end => GLOB_CPU_RISCV)
       port map (
-        clk             => sys_clk(0),  -- KL i -> 0
+        clk             => sys_clk(i),  -- KL i -> 0
         rstn            => rstn,
         fpga_data_in    => fpga_data_in((i + 1) * (CFG_MEM_LINK_BITS) - 1 downto i * (CFG_MEM_LINK_BITS)),
         fpga_data_out   => fpga_data_out((i + 1) * (CFG_MEM_LINK_BITS) - 1 downto i * (CFG_MEM_LINK_BITS)),
@@ -846,7 +850,7 @@ begin  -- architecture rtl
         this_coh_flit_size  => ARCH_NOC_FLIT_SIZE)
       port map (
         rst                       => rstn,
-        clk                       => sys_clk(0),  -- KL i -> 0
+        clk                       => sys_clk(i),  -- KL i -> 0
         local_chip_y              => chip_y(mem_tile_id(i)),
         local_chip_x              => chip_x(mem_tile_id(i)),
         local_y                   => tile_y(mem_tile_id(i)),
@@ -893,7 +897,7 @@ begin  -- architecture rtl
                    rrobin  => CFG_RROBIN, ioaddr => CFG_AHBIO, fpnpen => CFG_FPNPEN,
                    nahbm   => 2, nahbs => 1,
                    cfgmask => 0)
-      port map (rstn, sys_clk(0), ahb_mst_in_ddr(i), ahb_mst_out_ddr(i), ahb_slv_in_ddr(i), ahb_slv_out_ddr(i));  -- KL sys_clk(i) -> 0
+      port map (rstn, sys_clk(i), ahb_mst_in_ddr(i), ahb_mst_out_ddr(i), ahb_slv_in_ddr(i), ahb_slv_out_ddr(i));  -- KL sys_clk(i) -> 0
 
     -- Unused bus ports
     unused_ahbm_gen: for j in 2 to NAHBMST - 1 generate
@@ -910,7 +914,7 @@ begin  -- architecture rtl
         g_size       => 8)
       port map (
         rst_wr_n_i => rstn,
-        clk_wr_i   => sys_clk(0), -- KL sys_clk(i) -> 0
+        clk_wr_i   => sys_clk(i), -- KL sys_clk(i) -> 0
         we_i       => ahbm_snd_wrreq(i),
         d_i        => ahbm_snd_data_in(i),
         wr_full_o  => ahbm_snd_full(i),
@@ -932,7 +936,7 @@ begin  -- architecture rtl
         d_i        => ahbs_snd_data_in(i),
         wr_full_o  => ahbs_snd_full(i),
         rst_rd_n_i => rstn,
-        clk_rd_i   => sys_clk(0), -- KL sys_clk(i) -> 0
+        clk_rd_i   => sys_clk(i), -- KL sys_clk(i) -> 0
         rd_i       => ahbm_rcv_rdreq(i),
         q_o        => ahbm_rcv_data_out(i),
         rd_empty_o => ahbm_rcv_empty(i));

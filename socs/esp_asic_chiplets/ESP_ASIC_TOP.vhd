@@ -121,6 +121,70 @@ end;
 
 architecture rtl of ESP_ASIC_TOP is
 
+  component tile_io_abbrev is
+    generic (
+      SIMULATION : boolean := false;
+      this_has_dco : integer range 0 to 2 := 0;
+      chiplet_index : integer := 0); 
+    port (
+      raw_rstn           : in  std_ulogic;
+      tile_rst           : in  std_ulogic;
+      ext_clk_noc        : in  std_ulogic;
+      clk_div_noc        : out std_ulogic;
+      ext_clk            : in  std_ulogic;
+      clk_div            : out std_ulogic;
+      tile_clk_out       : out std_ulogic;
+      tile_rstn_out      : out std_ulogic;
+      noc_clk_out        : out std_ulogic;
+      noc_clk_lock       : out std_ulogic;
+      dco_freq_sel       : in std_logic_vector(1 downto 0);
+      dco_div_sel        : in std_logic_vector(2 downto 0);
+      dco_fc_sel         : in std_logic_vector(5 downto 0);
+      dco_cc_sel         : in std_logic_vector(5 downto 0);
+      dco_clk_sel        : in std_ulogic;
+      dco_en             : in std_ulogic;  
+      -- NOC Ports
+      test1_output_port    : in coh_noc_flit_type;
+      test1_data_void_out : in std_ulogic;
+      test1_stop_in        : in std_ulogic;
+      test2_output_port    : in coh_noc_flit_type;
+      test2_data_void_out : in std_ulogic;
+      test2_stop_in        : in std_ulogic;
+      test3_output_port    : in coh_noc_flit_type;
+      test3_data_void_out : in std_ulogic;
+      test3_stop_in        : in std_ulogic;
+      test4_output_port    : in dma_noc_flit_type;
+      test4_data_void_out : in std_ulogic;
+      test4_stop_in        : in std_ulogic;
+      test5_output_port    : in misc_noc_flit_type;
+      test5_data_void_out : in std_ulogic;
+      test5_stop_in        : in std_ulogic;
+      test6_output_port    : in dma_noc_flit_type;
+      test6_data_void_out : in std_ulogic;
+      test6_stop_in        : in std_ulogic;
+      test1_input_port     : out coh_noc_flit_type;
+      test1_data_void_in  : out std_ulogic;
+      test1_stop_out       : out std_ulogic;
+      test2_input_port     : out coh_noc_flit_type;
+      test2_data_void_in  : out std_ulogic;
+      test2_stop_out       : out std_ulogic;
+      test3_input_port     : out coh_noc_flit_type;
+      test3_data_void_in  : out std_ulogic;
+      test3_stop_out       : out std_ulogic;
+      test4_input_port     : out dma_noc_flit_type;
+      test4_data_void_in  : out std_ulogic;
+      test4_stop_out       : out std_ulogic;
+      test5_input_port     : out misc_noc_flit_type;
+      test5_data_void_in  : out std_ulogic;
+      test5_stop_out       : out std_ulogic;
+      test6_input_port     : out dma_noc_flit_type;
+      test6_data_void_in  : out std_ulogic;
+      test6_stop_out       : out std_ulogic;
+      mon_noc             : in  monitor_noc_vector(1 to 6);
+      mon_dvfs            : out monitor_dvfs_type
+      );
+    end component;
+
   component d2d_tx_top is
     generic (
       TXCHANNELS    : integer;
@@ -150,6 +214,7 @@ architecture rtl of ESP_ASIC_TOP is
       noc4_data_in        : in  dma_noc_flit_vector(TILES-1 downto 0);
       noc5_data_in        : in  misc_noc_flit_vector(TILES-1 downto 0);
       noc6_data_in        : in  dma_noc_flit_vector(TILES-1 downto 0);
+      bypass_data_in      : in  coh_noc_flit_type;
   
       noc1_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
       noc2_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
@@ -157,6 +222,7 @@ architecture rtl of ESP_ASIC_TOP is
       noc4_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
       noc5_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
       noc6_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
+      bypass_data_void_in : in  std_logic;
   
       -- D2D --> NoC
       noc1_stop_out       : out std_logic_vector(TILES-1 downto 0);
@@ -164,7 +230,8 @@ architecture rtl of ESP_ASIC_TOP is
       noc3_stop_out       : out std_logic_vector(TILES-1 downto 0);
       noc4_stop_out       : out std_logic_vector(TILES-1 downto 0);
       noc5_stop_out       : out std_logic_vector(TILES-1 downto 0);
-      noc6_stop_out       : out std_logic_vector(TILES-1 downto 0)
+      noc6_stop_out       : out std_logic_vector(TILES-1 downto 0);
+      bypass_stop_out     : out std_logic
     );
   end component d2d_tx_top;
   component d2d_rx_top is
@@ -200,6 +267,7 @@ architecture rtl of ESP_ASIC_TOP is
       noc4_data_out      : out dma_noc_flit_vector(TILES-1 downto 0);
       noc5_data_out      : out misc_noc_flit_vector(TILES-1 downto 0);
       noc6_data_out      : out dma_noc_flit_vector(TILES-1 downto 0);
+      bypass_data_out    : out coh_noc_flit_type;
       
       noc1_data_void_out : out std_logic_vector(TILES-1 downto 0);
       noc2_data_void_out : out std_logic_vector(TILES-1 downto 0);
@@ -207,6 +275,7 @@ architecture rtl of ESP_ASIC_TOP is
       noc4_data_void_out : out std_logic_vector(TILES-1 downto 0);
       noc5_data_void_out : out std_logic_vector(TILES-1 downto 0);
       noc6_data_void_out : out std_logic_vector(TILES-1 downto 0);
+      bypass_data_void_out  : out std_logic;
       
       -- NoC --> D2D
       noc1_stop_in       : in  std_logic_vector(TILES-1 downto 0);
@@ -214,9 +283,42 @@ architecture rtl of ESP_ASIC_TOP is
       noc3_stop_in       : in  std_logic_vector(TILES-1 downto 0);
       noc4_stop_in       : in  std_logic_vector(TILES-1 downto 0);
       noc5_stop_in       : in  std_logic_vector(TILES-1 downto 0);
-      noc6_stop_in       : in  std_logic_vector(TILES-1 downto 0)
+      noc6_stop_in       : in  std_logic_vector(TILES-1 downto 0);
+      bypass_stop_in     : in  std_logic
     );
   end component d2d_rx_top;
+  component bypass_router is
+    generic (
+      flow_control        : integer;
+      width               : integer;
+      depth               : integer;
+      ports               : std_logic_vector(3 downto 0);
+      DEST_SIZE           : integer
+    );
+    port (
+      clk                 : in  std_logic;
+      rst                 : in  std_logic;
+      CONST_local_chip_x  : in std_logic_vector(CHIP_YX_WIDTH-1 downto 0);
+      CONST_local_chip_y  : in std_logic_vector(CHIP_YX_WIDTH-1 downto 0);
+
+      data_n_in : in std_logic_vector(width-1 downto 0);
+      data_s_in : in std_logic_vector(width-1 downto 0);
+      data_w_in : in std_logic_vector(width-1 downto 0);
+      data_e_in : in std_logic_vector(width-1 downto 0);
+
+      data_void_in : in std_logic_vector(3 downto 0);
+      stop_in      : in std_logic_vector(3 downto 0);
+
+      data_n_out : out std_logic_vector(width-1 downto 0);
+      data_s_out : out std_logic_vector(width-1 downto 0);
+      data_w_out : out std_logic_vector(width-1 downto 0);
+      data_e_out : out std_logic_vector(width-1 downto 0);
+
+      data_void_out : out std_logic_vector(3 downto 0);
+      stop_out      : out std_logic_vector(3 downto 0)
+    );
+  end component bypass_router;
+
 
   constant CHIPLET_NUM_TILES : integer := CFG_CHIPLET_TILES(chiplet_index);
   constant XLEN : integer := CFG_XLEN(chiplet_index);
@@ -481,6 +583,27 @@ architecture rtl of ESP_ASIC_TOP is
   signal noc5_data_out_mapped_e      : misc_noc_flit_vector(YLEN-1 downto 0);
   signal noc6_data_out_mapped_e      : dma_noc_flit_vector(YLEN-1 downto 0);
 
+  signal bypass_data_out             : coh_noc_flit_vector(3 downto 0); -- 0:N, 1:S, 2:W, 3:E
+  signal bypass_data_void_out        : std_logic_vector(3 downto 0);
+  signal bypass_stop_in              : std_logic_vector(3 downto 0);
+  signal bypass_data_in              : coh_noc_flit_vector(3 downto 0);
+  signal bypass_data_void_in         : std_logic_vector(3 downto 0);
+  signal bypass_stop_out             : std_logic_vector(3 downto 0);
+
+  function b2sl(b : boolean) return std_logic is
+  begin
+    if b then
+      return '1';
+    else
+      return '0';
+    end if;
+  end function;
+
+  constant bypass_ports              : std_logic_vector(3 downto 0) :=  b2sl(D2D_CHANNELS_E > 0) & 
+                                                                        b2sl(D2D_CHANNELS_W > 0) & 
+                                                                        b2sl(D2D_CHANNELS_S > 0) & 
+                                                                        b2sl(D2D_CHANNELS_N > 0);
+  
   type mon_noc_vector is array (CHIPLET_NUM_TILES-1 downto 0) of monitor_noc_vector(1 to 6);
   signal mon_noc                 : mon_noc_vector;
 
@@ -519,6 +642,7 @@ architecture rtl of ESP_ASIC_TOP is
 
   -- External clocks and reset
   signal reset_int   : std_logic;
+  signal resetn_int  : std_logic;
   signal ext_clk_int : std_logic;  -- backup tile clock
   signal clk_div_int : std_logic_vector(0 to CHIPLET_NUM_TILES - 1);  -- tile clock monitor for testing purposes
   signal ext_clk_noc_int : std_logic;
@@ -794,18 +918,21 @@ begin
         noc4_data_in                => noc4_data_n_out(XLEN-1 downto 0),
         noc5_data_in                => noc5_data_n_out(XLEN-1 downto 0),
         noc6_data_in                => noc6_data_n_out(XLEN-1 downto 0),
+        bypass_data_in              => bypass_data_out(0),  -- from the bypass router's perspective, it is out
         noc1_data_void_in           => noc1_data_void_out_mapped_n,
         noc2_data_void_in           => noc2_data_void_out_mapped_n,
         noc3_data_void_in           => noc3_data_void_out_mapped_n,
         noc4_data_void_in           => noc4_data_void_out_mapped_n,
         noc5_data_void_in           => noc5_data_void_out_mapped_n,
         noc6_data_void_in           => noc6_data_void_out_mapped_n,
+        bypass_data_void_in         => bypass_data_void_out(0),
         noc1_stop_out               => noc1_stop_in_mapped_n,
         noc2_stop_out               => noc2_stop_in_mapped_n,
         noc3_stop_out               => noc3_stop_in_mapped_n,
         noc4_stop_out               => noc4_stop_in_mapped_n,
         noc5_stop_out               => noc5_stop_in_mapped_n,
-        noc6_stop_out               => noc6_stop_in_mapped_n
+        noc6_stop_out               => noc6_stop_in_mapped_n,
+        bypass_stop_out             => bypass_stop_in(0)
       );
       d2d_rx_n  : d2d_rx_top
       generic map (
@@ -834,18 +961,21 @@ begin
         noc4_data_out               => noc4_data_n_in(XLEN-1 downto 0),
         noc5_data_out               => noc5_data_n_in(XLEN-1 downto 0),
         noc6_data_out               => noc6_data_n_in(XLEN-1 downto 0),
+        bypass_data_out             => bypass_data_in(0),
         noc1_data_void_out          => noc1_data_void_in_mapped_n,
         noc2_data_void_out          => noc2_data_void_in_mapped_n,
         noc3_data_void_out          => noc3_data_void_in_mapped_n,
         noc4_data_void_out          => noc4_data_void_in_mapped_n,
         noc5_data_void_out          => noc5_data_void_in_mapped_n,
         noc6_data_void_out          => noc6_data_void_in_mapped_n,
+        bypass_data_void_out        => bypass_data_void_in(0),
         noc1_stop_in                => noc1_stop_out_mapped_n,
         noc2_stop_in                => noc2_stop_out_mapped_n,
         noc3_stop_in                => noc3_stop_out_mapped_n,
         noc4_stop_in                => noc4_stop_out_mapped_n,
         noc5_stop_in                => noc5_stop_out_mapped_n,
-        noc6_stop_in                => noc6_stop_out_mapped_n
+        noc6_stop_in                => noc6_stop_out_mapped_n,
+        bypass_stop_in              => bypass_stop_out(0)
       );
   end generate d2dgen_n;
   no_d2dgen_n : if D2D_CHANNELS_N = 0 generate
@@ -853,6 +983,10 @@ begin
     chiplet_data_n_out <= (others => (others => '0'));
     chiplet_valid_out_n <= (others => '0');
     chiplet_credit_out_n <= (others => '0');
+    bypass_data_in(0) <= (others => '0');
+    bypass_data_void_in(0) <= '0';
+    bypass_stop_in(0) <= '1';
+--    bypass_ports(0) <= '0';
   end generate no_d2dgen_n;
 
 
@@ -922,18 +1056,21 @@ begin
         noc4_data_in                => noc4_data_s_out(YLEN*XLEN-1 downto (YLEN-1)*XLEN),
         noc5_data_in                => noc5_data_s_out(YLEN*XLEN-1 downto (YLEN-1)*XLEN),
         noc6_data_in                => noc6_data_s_out(YLEN*XLEN-1 downto (YLEN-1)*XLEN),
+        bypass_data_in              => bypass_data_out(1),
         noc1_data_void_in           => noc1_data_void_out_mapped_s,
         noc2_data_void_in           => noc2_data_void_out_mapped_s,
         noc3_data_void_in           => noc3_data_void_out_mapped_s,
         noc4_data_void_in           => noc4_data_void_out_mapped_s,
         noc5_data_void_in           => noc5_data_void_out_mapped_s,
         noc6_data_void_in           => noc6_data_void_out_mapped_s,
+        bypass_data_void_in         => bypass_data_void_out(1),
         noc1_stop_out               => noc1_stop_in_mapped_s,
         noc2_stop_out               => noc2_stop_in_mapped_s,
         noc3_stop_out               => noc3_stop_in_mapped_s,
         noc4_stop_out               => noc4_stop_in_mapped_s,
         noc5_stop_out               => noc5_stop_in_mapped_s,
-        noc6_stop_out               => noc6_stop_in_mapped_s
+        noc6_stop_out               => noc6_stop_in_mapped_s,
+        bypass_stop_out             => bypass_stop_in(1)
       );
       d2d_rx_s  : d2d_rx_top
       generic map (
@@ -962,18 +1099,21 @@ begin
         noc4_data_out               => noc4_data_s_in(YLEN*XLEN-1 downto (YLEN-1)*XLEN),
         noc5_data_out               => noc5_data_s_in(YLEN*XLEN-1 downto (YLEN-1)*XLEN),
         noc6_data_out               => noc6_data_s_in(YLEN*XLEN-1 downto (YLEN-1)*XLEN),
+        bypass_data_out             => bypass_data_in(1),
         noc1_data_void_out          => noc1_data_void_in_mapped_s,
         noc2_data_void_out          => noc2_data_void_in_mapped_s,
         noc3_data_void_out          => noc3_data_void_in_mapped_s,
         noc4_data_void_out          => noc4_data_void_in_mapped_s,
         noc5_data_void_out          => noc5_data_void_in_mapped_s,
         noc6_data_void_out          => noc6_data_void_in_mapped_s,
+        bypass_data_void_out        => bypass_data_void_in(1),
         noc1_stop_in                => noc1_stop_out_mapped_s,
         noc2_stop_in                => noc2_stop_out_mapped_s,
         noc3_stop_in                => noc3_stop_out_mapped_s,
         noc4_stop_in                => noc4_stop_out_mapped_s,
         noc5_stop_in                => noc5_stop_out_mapped_s,
-        noc6_stop_in                => noc6_stop_out_mapped_s
+        noc6_stop_in                => noc6_stop_out_mapped_s,
+        bypass_stop_in              => bypass_stop_out(1)
       );
   end generate d2dgen_s;
   no_d2dgen_s : if D2D_CHANNELS_S = 0 generate
@@ -981,6 +1121,10 @@ begin
     chiplet_data_s_out <= (others => (others => '0'));
     chiplet_valid_out_s <= (others => '0');
     chiplet_credit_out_s <= (others => '0');
+    bypass_data_in(1) <= (others => '0');
+    bypass_data_void_in(1) <= '1';
+    bypass_stop_in(1) <= '1';
+--    bypass_ports(1) <= '0';
   end generate no_d2dgen_s;
 
   -- E and W modules.
@@ -1050,18 +1194,21 @@ begin
         noc4_data_in                => noc4_data_out_mapped_w,
         noc5_data_in                => noc5_data_out_mapped_w,
         noc6_data_in                => noc6_data_out_mapped_w,
+        bypass_data_in              => bypass_data_out(2),
         noc1_data_void_in           => noc1_data_void_out_mapped_w,
         noc2_data_void_in           => noc2_data_void_out_mapped_w,
         noc3_data_void_in           => noc3_data_void_out_mapped_w,
         noc4_data_void_in           => noc4_data_void_out_mapped_w,
         noc5_data_void_in           => noc5_data_void_out_mapped_w,
         noc6_data_void_in           => noc6_data_void_out_mapped_w,
+        bypass_data_void_in         => bypass_data_void_out(2),
         noc1_stop_out               => noc1_stop_in_mapped_w,
         noc2_stop_out               => noc2_stop_in_mapped_w,
         noc3_stop_out               => noc3_stop_in_mapped_w,
         noc4_stop_out               => noc4_stop_in_mapped_w,
         noc5_stop_out               => noc5_stop_in_mapped_w,
-        noc6_stop_out               => noc6_stop_in_mapped_w
+        noc6_stop_out               => noc6_stop_in_mapped_w,
+        bypass_stop_out             => bypass_stop_in(2)
       );
       d2d_rx_w  : d2d_rx_top
       generic map (
@@ -1090,18 +1237,21 @@ begin
         noc4_data_out               => noc4_data_in_mapped_w,
         noc5_data_out               => noc5_data_in_mapped_w,
         noc6_data_out               => noc6_data_in_mapped_w,
+        bypass_data_out             => bypass_data_in(2),
         noc1_data_void_out          => noc1_data_void_in_mapped_w,
         noc2_data_void_out          => noc2_data_void_in_mapped_w,
         noc3_data_void_out          => noc3_data_void_in_mapped_w,
         noc4_data_void_out          => noc4_data_void_in_mapped_w,
         noc5_data_void_out          => noc5_data_void_in_mapped_w,
         noc6_data_void_out          => noc6_data_void_in_mapped_w,
+        bypass_data_void_out        => bypass_data_void_in(2),
         noc1_stop_in                => noc1_stop_out_mapped_w,
         noc2_stop_in                => noc2_stop_out_mapped_w,
         noc3_stop_in                => noc3_stop_out_mapped_w,
         noc4_stop_in                => noc4_stop_out_mapped_w,
         noc5_stop_in                => noc5_stop_out_mapped_w,
-        noc6_stop_in                => noc6_stop_out_mapped_w
+        noc6_stop_in                => noc6_stop_out_mapped_w,
+        bypass_stop_in              => bypass_stop_out(2)
       );
   end generate d2dgen_w;
   no_d2dgen_w : if D2D_CHANNELS_W = 0 generate
@@ -1109,6 +1259,10 @@ begin
     chiplet_data_w_out <= (others => (others => '0'));
     chiplet_valid_out_w <= (others => '0');
     chiplet_credit_out_w <= (others => '0');
+    bypass_data_in(2) <= (others => '0');
+    bypass_data_void_in(2) <= '1';
+    bypass_stop_in(2) <= '1';
+--    bypass_ports(2) <= '0';
   end generate no_d2dgen_w;
 
 
@@ -1178,18 +1332,21 @@ begin
         noc4_data_in                => noc4_data_out_mapped_e,
         noc5_data_in                => noc5_data_out_mapped_e,
         noc6_data_in                => noc6_data_out_mapped_e,
+        bypass_data_in              => bypass_data_out(3),
         noc1_data_void_in           => noc1_data_void_out_mapped_e,
         noc2_data_void_in           => noc2_data_void_out_mapped_e,
         noc3_data_void_in           => noc3_data_void_out_mapped_e,
         noc4_data_void_in           => noc4_data_void_out_mapped_e,
         noc5_data_void_in           => noc5_data_void_out_mapped_e,
         noc6_data_void_in           => noc6_data_void_out_mapped_e,
+        bypass_data_void_in         => bypass_data_void_out(3),
         noc1_stop_out               => noc1_stop_in_mapped_e,
         noc2_stop_out               => noc2_stop_in_mapped_e,
         noc3_stop_out               => noc3_stop_in_mapped_e,
         noc4_stop_out               => noc4_stop_in_mapped_e,
         noc5_stop_out               => noc5_stop_in_mapped_e,
-        noc6_stop_out               => noc6_stop_in_mapped_e
+        noc6_stop_out               => noc6_stop_in_mapped_e,
+        bypass_stop_out             => bypass_stop_in(3)
       );
       d2d_rx_e  : d2d_rx_top
       generic map (
@@ -1218,18 +1375,21 @@ begin
         noc4_data_out               => noc4_data_in_mapped_e,
         noc5_data_out               => noc5_data_in_mapped_e,
         noc6_data_out               => noc6_data_in_mapped_e,
+        bypass_data_out             => bypass_data_in(3),
         noc1_data_void_out          => noc1_data_void_in_mapped_e,
         noc2_data_void_out          => noc2_data_void_in_mapped_e,
         noc3_data_void_out          => noc3_data_void_in_mapped_e,
         noc4_data_void_out          => noc4_data_void_in_mapped_e,
         noc5_data_void_out          => noc5_data_void_in_mapped_e,
         noc6_data_void_out          => noc6_data_void_in_mapped_e,
+        bypass_data_void_out        => bypass_data_void_in(3),
         noc1_stop_in                => noc1_stop_out_mapped_e,
         noc2_stop_in                => noc2_stop_out_mapped_e,
         noc3_stop_in                => noc3_stop_out_mapped_e,
         noc4_stop_in                => noc4_stop_out_mapped_e,
         noc5_stop_in                => noc5_stop_out_mapped_e,
-        noc6_stop_in                => noc6_stop_out_mapped_e
+        noc6_stop_in                => noc6_stop_out_mapped_e,
+        bypass_stop_in              => bypass_stop_out(3)
       );
   end generate d2dgen_e;
   no_d2dgen_e : if D2D_CHANNELS_E = 0 generate
@@ -1237,6 +1397,10 @@ begin
     chiplet_data_e_out <= (others => (others => '0'));
     chiplet_valid_out_e <= (others => '0');
     chiplet_credit_out_e <= (others => '0');
+    bypass_data_in(3) <= (others => '0');
+    bypass_data_void_in(3) <= '1';
+    bypass_stop_in(3) <= '1';
+--    bypass_ports(3) <= '0';
   end generate no_d2dgen_e;
 
   -----------------------------------------------------------------------------
@@ -2092,6 +2256,103 @@ begin
 
 
     io_tile : if tile_type(GI) = 3 generate
+--      tile_io_i : asic_tile_io
+--        generic map (
+--          SIMULATION   => SIMULATION,
+--          this_has_dco => 0,
+--          HAS_SYNC     => 0,
+--          chiplet_index => chiplet_index)
+--        port map (
+--          rst                     => reset_int,       -- from I/O PAD reset
+--          raw_rstn                => raw_rstn(i),
+--          noc_rstn                => noc_rstn(i),
+--          tile_rstn               => tile_rstn(i),  
+--          tile_clk                => tile_clk(i),
+--          noc_clk_out             => noc_clk,         -- NoC clock out
+--          noc_clk_lock_out        => noc_clk_lock,
+--          ext_clk_noc             => ext_clk_int,     -- backup NoC clock
+--          clk_div_noc             => clk_div_noc_int,
+--          ext_clk                 => noc_clk,  -- backup clock (fixed)
+--          clk_div                 => clk_div_int(i),
+--          reset_o2                => reset_o2_int,
+--          etx_clk                 => etx_clk_int,
+--          erx_clk                 => erx_clk_int,
+--          erxd                    => erxd_int,
+--          erx_dv                  => erx_dv_int,
+--          erx_er                  => erx_er_int,
+--          erx_col                 => erx_col_int,
+--          erx_crs                 => erx_crs_int,
+--          etxd                    => etxd_int,
+--          etx_en                  => etx_en_int,
+--          etx_er                  => etx_er_int,
+--          emdc                    => emdc_int,
+--          emdio_i                 => emdio_i,
+--          emdio_o                 => emdio_o,
+--          emdio_oe                => emdio_oe,
+--          iolink_data_oen         => iolink_data_oen,
+--          iolink_data_in          => iolink_data_in_int,
+--          iolink_data_out         => iolink_data_out_int,
+--          iolink_valid_in         => iolink_valid_in_int,
+--          iolink_valid_out        => iolink_valid_out_int,
+--          iolink_clk_in           => iolink_clk_in_int,
+--          iolink_clk_out          => iolink_clk_out_int,
+--          iolink_credit_in        => iolink_credit_in_int,
+--          iolink_credit_out       => iolink_credit_out_int,
+--          uart_rxd                => uart_rxd_int,
+--          uart_txd                => uart_txd_int,
+--          uart_ctsn               => uart_ctsn_int,
+--          uart_rtsn               => uart_rtsn_int,
+--          tdi                     => tdi_int(i),
+--          tdo                     => tdo_int(i),
+--          tms                     => tms_int,
+--          tclk                    => tclk_int,
+--          -- DCO config
+--          dco_freq_sel            => dco_freq_sel(i),
+--          dco_div_sel             => dco_div_sel(i),
+--          dco_fc_sel              => dco_fc_sel(i),
+--          dco_cc_sel              => dco_cc_sel(i),
+--          dco_clk_sel             => dco_clk_sel(i),
+--          dco_en                  => dco_en(i),
+--          -- Noc interface
+--          noc1_stop_in_tile       => noc1_stop_in_tile(i),
+--          noc1_stop_out_tile      => noc1_stop_out_tile(i),
+--          noc1_data_void_in_tile  => noc1_data_void_in_tile(i),
+--          noc1_data_void_out_tile => noc1_data_void_out_tile(i),
+--          noc2_stop_in_tile       => noc2_stop_in_tile(i),
+--          noc2_stop_out_tile      => noc2_stop_out_tile(i),
+--          noc2_data_void_in_tile  => noc2_data_void_in_tile(i),
+--          noc2_data_void_out_tile => noc2_data_void_out_tile(i),
+--          noc3_stop_in_tile       => noc3_stop_in_tile(i),
+--          noc3_stop_out_tile      => noc3_stop_out_tile(i),
+--          noc3_data_void_in_tile  => noc3_data_void_in_tile(i),
+--          noc3_data_void_out_tile => noc3_data_void_out_tile(i),
+--          noc4_stop_in_tile       => noc4_stop_in_tile(i),
+--          noc4_stop_out_tile      => noc4_stop_out_tile(i),
+--          noc4_data_void_in_tile  => noc4_data_void_in_tile(i),
+--          noc4_data_void_out_tile => noc4_data_void_out_tile(i),
+--          noc5_stop_in_tile       => noc5_stop_in_tile(i),
+--          noc5_stop_out_tile      => noc5_stop_out_tile(i),
+--          noc5_data_void_in_tile  => noc5_data_void_in_tile(i),
+--          noc5_data_void_out_tile => noc5_data_void_out_tile(i),
+--          noc6_stop_in_tile       => noc6_stop_in_tile(i),
+--          noc6_stop_out_tile      => noc6_stop_out_tile(i),
+--          noc6_data_void_in_tile  => noc6_data_void_in_tile(i),
+--          noc6_data_void_out_tile => noc6_data_void_out_tile(i),
+--          noc1_input_port_tile    => noc1_data_l_in(i),  
+--          noc2_input_port_tile    => noc2_data_l_in(i),  
+--          noc3_input_port_tile    => noc3_data_l_in(i),  
+--          noc4_input_port_tile    => noc4_data_l_in(i),  
+--          noc5_input_port_tile    => noc5_data_l_in(i),  
+--          noc6_input_port_tile    => noc6_data_l_in(i),  
+--          noc1_output_port_tile   => noc1_data_l_out(i),
+--          noc2_output_port_tile   => noc2_data_l_out(i),
+--          noc3_output_port_tile   => noc3_data_l_out(i),
+--          noc4_output_port_tile   => noc4_data_l_out(i),
+--          noc5_output_port_tile   => noc5_data_l_out(i),
+--          noc6_output_port_tile   => noc6_data_l_out(i),
+--          mon_noc                 => mon_noc(i));
+-- CASE 1: Main Chiplet (Full IO Tile)
+      main_io: if chiplet_index = 0 generate
       tile_io_i : asic_tile_io
         generic map (
           SIMULATION   => SIMULATION,
@@ -2099,94 +2360,177 @@ begin
           HAS_SYNC     => 0,
           chiplet_index => chiplet_index)
         port map (
-          rst                     => reset_int,       -- from I/O PAD reset
-          raw_rstn                => raw_rstn(i),
-          noc_rstn                => noc_rstn(i),
-          tile_rstn               => tile_rstn(i),  
-          tile_clk                => tile_clk(i),
-          noc_clk_out             => noc_clk,         -- NoC clock out
-          noc_clk_lock_out        => noc_clk_lock,
-          ext_clk_noc             => ext_clk_int,     -- backup NoC clock
-          clk_div_noc             => clk_div_noc_int,
-          ext_clk                 => noc_clk,  -- backup clock (fixed)
-          clk_div                 => clk_div_int(i),
-          reset_o2                => reset_o2_int,
-          etx_clk                 => etx_clk_int,
-          erx_clk                 => erx_clk_int,
-          erxd                    => erxd_int,
-          erx_dv                  => erx_dv_int,
-          erx_er                  => erx_er_int,
-          erx_col                 => erx_col_int,
-          erx_crs                 => erx_crs_int,
-          etxd                    => etxd_int,
-          etx_en                  => etx_en_int,
-          etx_er                  => etx_er_int,
-          emdc                    => emdc_int,
-          emdio_i                 => emdio_i,
-          emdio_o                 => emdio_o,
-          emdio_oe                => emdio_oe,
-          iolink_data_oen         => iolink_data_oen,
-          iolink_data_in          => iolink_data_in_int,
-          iolink_data_out         => iolink_data_out_int,
-          iolink_valid_in         => iolink_valid_in_int,
-          iolink_valid_out        => iolink_valid_out_int,
-          iolink_clk_in           => iolink_clk_in_int,
-          iolink_clk_out          => iolink_clk_out_int,
-          iolink_credit_in        => iolink_credit_in_int,
-          iolink_credit_out       => iolink_credit_out_int,
-          uart_rxd                => uart_rxd_int,
-          uart_txd                => uart_txd_int,
-          uart_ctsn               => uart_ctsn_int,
-          uart_rtsn               => uart_rtsn_int,
-          tdi                     => tdi_int(i),
-          tdo                     => tdo_int(i),
-          tms                     => tms_int,
-          tclk                    => tclk_int,
+          rst              => reset_int,        -- from I/O PAD reset
+          raw_rstn         => raw_rstn(i),
+          noc_rstn         => noc_rstn(i),
+          tile_rstn        => tile_rstn(i),  
+          tile_clk         => tile_clk(i),
+          noc_clk_out      => noc_clk,          -- NoC clock out
+          noc_clk_lock_out => noc_clk_lock,
+          ext_clk_noc      => ext_clk_int,      -- backup NoC clock
+          clk_div_noc      => clk_div_noc_int,
+          ext_clk          => noc_clk,  -- backup clock (fixed)
+          clk_div          => clk_div_int(i),
+          reset_o2         => reset_o2_int,
+          etx_clk          => etx_clk_int,
+          erx_clk          => erx_clk_int,
+          erxd             => erxd_int,
+          erx_dv           => erx_dv_int,
+          erx_er           => erx_er_int,
+          erx_col          => erx_col_int,
+          erx_crs          => erx_crs_int,
+          etxd             => etxd_int,
+          etx_en           => etx_en_int,
+          etx_er           => etx_er_int,
+          emdc             => emdc_int,
+          emdio_i          => emdio_i,
+          emdio_o          => emdio_o,
+          emdio_oe         => emdio_oe,
+          iolink_data_oen  => iolink_data_oen,
+          iolink_data_in   => iolink_data_in_int,
+          iolink_data_out  => iolink_data_out_int,
+          iolink_valid_in  => iolink_valid_in_int,
+          iolink_valid_out => iolink_valid_out_int,
+          iolink_clk_in    => iolink_clk_in_int,
+          iolink_clk_out   => iolink_clk_out_int,
+          iolink_credit_in => iolink_credit_in_int,
+          iolink_credit_out => iolink_credit_out_int,
+          uart_rxd         => uart_rxd_int,
+          uart_txd         => uart_txd_int,
+          uart_ctsn        => uart_ctsn_int,
+          uart_rtsn        => uart_rtsn_int,
+          tdi              => tdi_int(i),
+          tdo              => tdo_int(i),
+          tms              => tms_int,
+          tclk             => tclk_int,
           -- DCO config
-          dco_freq_sel            => dco_freq_sel(i),
-          dco_div_sel             => dco_div_sel(i),
-          dco_fc_sel              => dco_fc_sel(i),
-          dco_cc_sel              => dco_cc_sel(i),
-          dco_clk_sel             => dco_clk_sel(i),
-          dco_en                  => dco_en(i),
+          dco_freq_sel     => dco_freq_sel(i),
+          dco_div_sel      => dco_div_sel(i),
+          dco_fc_sel       => dco_fc_sel(i),
+          dco_cc_sel       => dco_cc_sel(i),
+          dco_clk_sel      => dco_clk_sel(i),
+          dco_en           => dco_en(i),
           -- Noc interface
-          noc1_stop_in_tile       => noc1_stop_in_tile(i),
-          noc1_stop_out_tile      => noc1_stop_out_tile(i),
-          noc1_data_void_in_tile  => noc1_data_void_in_tile(i),
-          noc1_data_void_out_tile => noc1_data_void_out_tile(i),
-          noc2_stop_in_tile       => noc2_stop_in_tile(i),
-          noc2_stop_out_tile      => noc2_stop_out_tile(i),
-          noc2_data_void_in_tile  => noc2_data_void_in_tile(i),
-          noc2_data_void_out_tile => noc2_data_void_out_tile(i),
-          noc3_stop_in_tile       => noc3_stop_in_tile(i),
-          noc3_stop_out_tile      => noc3_stop_out_tile(i),
-          noc3_data_void_in_tile  => noc3_data_void_in_tile(i),
-          noc3_data_void_out_tile => noc3_data_void_out_tile(i),
-          noc4_stop_in_tile       => noc4_stop_in_tile(i),
-          noc4_stop_out_tile      => noc4_stop_out_tile(i),
-          noc4_data_void_in_tile  => noc4_data_void_in_tile(i),
-          noc4_data_void_out_tile => noc4_data_void_out_tile(i),
-          noc5_stop_in_tile       => noc5_stop_in_tile(i),
-          noc5_stop_out_tile      => noc5_stop_out_tile(i),
-          noc5_data_void_in_tile  => noc5_data_void_in_tile(i),
-          noc5_data_void_out_tile => noc5_data_void_out_tile(i),
-          noc6_stop_in_tile       => noc6_stop_in_tile(i),
-          noc6_stop_out_tile      => noc6_stop_out_tile(i),
-          noc6_data_void_in_tile  => noc6_data_void_in_tile(i),
-          noc6_data_void_out_tile => noc6_data_void_out_tile(i),
-          noc1_input_port_tile    => noc1_data_l_in(i),  
-          noc2_input_port_tile    => noc2_data_l_in(i),  
-          noc3_input_port_tile    => noc3_data_l_in(i),  
-          noc4_input_port_tile    => noc4_data_l_in(i),  
-          noc5_input_port_tile    => noc5_data_l_in(i),  
-          noc6_input_port_tile    => noc6_data_l_in(i),  
-          noc1_output_port_tile   => noc1_data_l_out(i),
-          noc2_output_port_tile   => noc2_data_l_out(i),
-          noc3_output_port_tile   => noc3_data_l_out(i),
-          noc4_output_port_tile   => noc4_data_l_out(i),
-          noc5_output_port_tile   => noc5_data_l_out(i),
-          noc6_output_port_tile   => noc6_data_l_out(i),
-          mon_noc                 => mon_noc(i));
+          noc1_stop_in_tile        => noc1_stop_in_tile(i),
+          noc1_stop_out_tile       => noc1_stop_out_tile(i),
+          noc1_data_void_in_tile   => noc1_data_void_in_tile(i),
+          noc1_data_void_out_tile  => noc1_data_void_out_tile(i),
+          noc2_stop_in_tile        => noc2_stop_in_tile(i),
+          noc2_stop_out_tile       => noc2_stop_out_tile(i),
+          noc2_data_void_in_tile   => noc2_data_void_in_tile(i),
+          noc2_data_void_out_tile  => noc2_data_void_out_tile(i),
+          noc3_stop_in_tile        => noc3_stop_in_tile(i),
+          noc3_stop_out_tile       => noc3_stop_out_tile(i),
+          noc3_data_void_in_tile   => noc3_data_void_in_tile(i),
+          noc3_data_void_out_tile  => noc3_data_void_out_tile(i),
+          noc4_stop_in_tile        => noc4_stop_in_tile(i),
+          noc4_stop_out_tile       => noc4_stop_out_tile(i),
+          noc4_data_void_in_tile   => noc4_data_void_in_tile(i),
+          noc4_data_void_out_tile  => noc4_data_void_out_tile(i),
+          noc5_stop_in_tile        => noc5_stop_in_tile(i),
+          noc5_stop_out_tile       => noc5_stop_out_tile(i),
+          noc5_data_void_in_tile   => noc5_data_void_in_tile(i),
+          noc5_data_void_out_tile  => noc5_data_void_out_tile(i),
+          noc6_stop_in_tile        => noc6_stop_in_tile(i),
+          noc6_stop_out_tile       => noc6_stop_out_tile(i),
+          noc6_data_void_in_tile   => noc6_data_void_in_tile(i),
+          noc6_data_void_out_tile  => noc6_data_void_out_tile(i),
+          noc1_input_port_tile     => noc1_data_l_in(i),  
+          noc2_input_port_tile     => noc2_data_l_in(i),  
+          noc3_input_port_tile     => noc3_data_l_in(i),  
+          noc4_input_port_tile     => noc4_data_l_in(i),  
+          noc5_input_port_tile     => noc5_data_l_in(i),  
+          noc6_input_port_tile     => noc6_data_l_in(i),  
+          noc1_output_port_tile    => noc1_data_l_out(i),
+          noc2_output_port_tile    => noc2_data_l_out(i),
+          noc3_output_port_tile    => noc3_data_l_out(i),
+          noc4_output_port_tile    => noc4_data_l_out(i),
+          noc5_output_port_tile    => noc5_data_l_out(i),
+          noc6_output_port_tile    => noc6_data_l_out(i),
+          mon_noc                  => mon_noc(i));
+      end generate main_io;
+
+      -- CASE 2: Auxiliary Chiplet (Abbreviated IO Tile)
+      aux_io: if chiplet_index /= 0 generate
+        -- Tie off unused Top-Level IO for this chiplet
+        reset_o2_int        <= '0';
+        etx_en_int          <= '0';
+        etx_er_int          <= '0';
+        etxd_int            <= (others => '0');
+        emdc_int            <= '0';
+        emdio_o             <= '0';
+        emdio_oe            <= '0';
+        uart_txd_int        <= '1';
+        uart_rtsn_int       <= '1';
+        iolink_data_out_int <= (others => '0');
+        iolink_valid_out_int<= '0';
+        iolink_clk_out_int  <= '0';
+        iolink_credit_out_int <= '0';
+        tdo_int(i)          <= '0';
+
+        tile_io_abbrev_i : tile_io_abbrev
+        generic map (
+          SIMULATION   => SIMULATION,
+          this_has_dco => 0,
+          chiplet_index => chiplet_index)
+        port map (
+          raw_rstn         => raw_rstn(i),
+          tile_rst         => reset_int,  -- Using Global reset
+          ext_clk_noc      => ext_clk_int,
+          clk_div_noc      => clk_div_noc_int,
+          ext_clk          => noc_clk,
+          clk_div          => clk_div_int(i),
+          tile_clk_out     => tile_clk(i),
+          tile_rstn_out    => tile_rstn(i),  
+          noc_clk_out      => noc_clk,
+          noc_clk_lock     => noc_clk_lock,
+          -- DCO config
+          dco_freq_sel     => dco_freq_sel(i),
+          dco_div_sel      => dco_div_sel(i),
+          dco_fc_sel       => dco_fc_sel(i),
+          dco_cc_sel       => dco_cc_sel(i),
+          dco_clk_sel      => dco_clk_sel(i),
+          dco_en           => dco_en(i),
+          -- Noc interface
+          test1_stop_in        => noc1_stop_in_tile(i),
+          test1_stop_out       => noc1_stop_out_tile(i),
+          test1_data_void_in   => noc1_data_void_in_tile(i),
+          test1_data_void_out  => noc1_data_void_out_tile(i),
+          test2_stop_in        => noc2_stop_in_tile(i),
+          test2_stop_out       => noc2_stop_out_tile(i),
+          test2_data_void_in   => noc2_data_void_in_tile(i),
+          test2_data_void_out  => noc2_data_void_out_tile(i),
+          test3_stop_in        => noc3_stop_in_tile(i),
+          test3_stop_out       => noc3_stop_out_tile(i),
+          test3_data_void_in   => noc3_data_void_in_tile(i),
+          test3_data_void_out  => noc3_data_void_out_tile(i),
+          test4_stop_in        => noc4_stop_in_tile(i),
+          test4_stop_out       => noc4_stop_out_tile(i),
+          test4_data_void_in   => noc4_data_void_in_tile(i),
+          test4_data_void_out  => noc4_data_void_out_tile(i),
+          test5_stop_in        => noc5_stop_in_tile(i),
+          test5_stop_out       => noc5_stop_out_tile(i),
+          test5_data_void_in   => noc5_data_void_in_tile(i),
+          test5_data_void_out  => noc5_data_void_out_tile(i),
+          test6_stop_in        => noc6_stop_in_tile(i),
+          test6_stop_out       => noc6_stop_out_tile(i),
+          test6_data_void_in   => noc6_data_void_in_tile(i),
+          test6_data_void_out  => noc6_data_void_out_tile(i),
+          test1_input_port     => noc1_data_l_in(i),  
+          test2_input_port     => noc2_data_l_in(i),  
+          test3_input_port     => noc3_data_l_in(i),  
+          test4_input_port     => noc4_data_l_in(i),  
+          test5_input_port     => noc5_data_l_in(i),  
+          test6_input_port     => noc6_data_l_in(i),  
+          test1_output_port    => noc1_data_l_out(i),
+          test2_output_port    => noc2_data_l_out(i),
+          test3_output_port    => noc3_data_l_out(i),
+          test4_output_port    => noc4_data_l_out(i),
+          test5_output_port    => noc5_data_l_out(i),
+          test6_output_port    => noc6_data_l_out(i),
+          mon_noc              => mon_noc(i));
+      end generate aux_io;
+    
     end generate io_tile;
 
 
@@ -2335,5 +2679,37 @@ begin
     end generate slm_tile;
 
   end generate tiles_gen;
+  
+--  bypass_data_void_in(4) <= '1';
+--  bypass_data_void_out(4) <= '1';
+--  bypass_stop_in(4) <= '1';
+--  bypass_stop_out(4) <= '1';
+  resetn_int <= not reset_int;
+
+  bypass_router_i : bypass_router
+    generic map (
+      flow_control                => 0,
+      width                       => COH_NOC_FLIT_SIZE,
+      depth                       => 4,
+      ports                       => bypass_ports,
+      DEST_SIZE                   => 1)
+    port map (
+      clk                         => noc_clk,
+      rst                         => resetn_int,
+      CONST_local_chip_x          => chip_yx'(std_logic_vector(to_unsigned(COL, CHIP_YX_WIDTH))),
+      CONST_local_chip_y          => chip_yx'(std_logic_vector(to_unsigned(ROW, CHIP_YX_WIDTH))),
+      data_n_in                   => bypass_data_in(0),
+      data_s_in                   => bypass_data_in(1),
+      data_w_in                   => bypass_data_in(2),
+      data_e_in                   => bypass_data_in(3),
+      data_void_in                => bypass_data_void_in,
+      stop_in                     => bypass_stop_in,
+      data_n_out                  => bypass_data_out(0),
+      data_s_out                  => bypass_data_out(1),
+      data_w_out                  => bypass_data_out(2),
+      data_e_out                  => bypass_data_out(3),
+      data_void_out               => bypass_data_void_out,
+      stop_out                    => bypass_stop_out
+    );
 
 end;

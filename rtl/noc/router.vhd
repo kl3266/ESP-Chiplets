@@ -79,7 +79,8 @@ architecture behavior of router is
       FlowControl : std_logic;
       Width       : integer;
       Ports       : std_logic_vector(4 downto 0);
-      DEST_SIZE   : integer
+      ROUTER_TYPE : std_logic;
+      QUEUE_SIZE  : integer
       );
     port(
       clk : in std_logic;
@@ -116,7 +117,9 @@ begin
       FlowControl => to_std_logic(flow_control),
       Width       => width,
       Ports       => Ports,
-      DEST_SIZE   => DEST_SIZE)
+      ROUTER_TYPE => '0',
+      QUEUE_SIZE  => depth
+    )
     port map (
       clk           => clk,
       rst           => rst,

@@ -172,7 +172,7 @@
 //      reg-shift = <2>; // regs are spaced on 32 bit boundary
 //      reg-io-width = <4>; // only 32-bit access are supported
 //    };
-//    l2cache2@6000d300 {
+//    l2cache3@6000d300 {
 //      compatible = "sld,l2_cache";
 //      reg = <0x0 0x6000d300 0x0 0x100>;
 //      reg-shift = <2>; // regs are spaced on 32 bit boundary
@@ -196,7 +196,7 @@
       reg-shift = <2>; // regs are spaced on 32 bit boundary
       reg-io-width = <4>; // only 32-bit access are supported
     };
-    llccache0@6000e300 {
+    llccache3@6000e300 {
       compatible = "sld,llc_cache";
       reg = <0x0 0x6000e300 0x0 0x100>;
       reg-shift = <2>; // regs are spaced on 32 bit boundary

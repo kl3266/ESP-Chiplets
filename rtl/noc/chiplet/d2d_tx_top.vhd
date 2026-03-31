@@ -42,9 +42,9 @@ entity d2d_tx_top is
     TILES         : integer := 3;
     flow_control  : integer := 0;  --0 = AN; 1 = CB
     chwidth       : integer := 66;
-    cohwidth  : integer := 66;
-    miscwidth : integer := 66;
-    dmawidth  : integer := 130
+    cohwidth      : integer := 66;
+    miscwidth     : integer := 66;
+    dmawidth      : integer := 130
   );
   port (
     clk                 : in  std_ulogic;

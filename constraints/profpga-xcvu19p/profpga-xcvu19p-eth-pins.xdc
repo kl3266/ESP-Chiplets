@@ -82,7 +82,7 @@ set_property IOSTANDARD LVCMOS18 [get_ports emdio]
 
 # {bb1_eb1_ETH2_TXD0_TX0}
 set_property PACKAGE_PIN BL35 [get_ports {etxd[0]}]
-set_property IOSTANDARD LVCMOS18 [get_ports etxd[0]]
+set_property IOSTANDARD LVCMOS18 [get_ports {etxd[0]}]
 
 # {bb1_eb1_ETH2_TXD1_TX1}
 set_property PACKAGE_PIN BK35 [get_ports {etxd[1]}]

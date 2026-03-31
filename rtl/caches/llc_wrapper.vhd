@@ -1299,7 +1299,7 @@ begin  -- architecture rtl
                             dma_rcv_data_out, dma_rcv_empty) is
 
     variable reg          : dma_req_in_reg_type;
-    variable msg_type     : noc_msg_type;
+    variable msg          : noc_msg_type;
     variable reserved     : reserved_field_type;
     variable dma_preamble : noc_preamble_type;
     variable word32_tmp   : std_logic_vector(31 downto 0);

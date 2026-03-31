@@ -109,9 +109,14 @@ package noc;
     kFlowControlAckNack = 1'b0,
     kFlowControlCreditBased = 1'b1
   } noc_flow_control_t;
+  
+  typedef enum logic {
+    Unicast = 1'b0,
+    Multicast = 1'b1
+  } noc_router_t;
 
-  parameter int unsigned CreditsWidth = $clog2(PortQueueDepth + 1);
-  typedef logic [4:0][CreditsWidth-1:0] credits_t;
+  //parameter int unsigned CreditsWidth = $clog2(PortQueueDepth + 1);
+  //typedef logic [4:0][CreditsWidth-1:0] credits_t;
 
   //
   // Packet info encoding

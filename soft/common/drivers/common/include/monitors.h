@@ -17,7 +17,7 @@
 #define DVFS_OP_POINTS 4
 #define NOC_PLANES 6
 #define NOC_QUEUES 5
-#define SOC_NTILES (SOC1_ROWS * SOC1_COLS) + (SOC2_ROWS * SOC2_COLS) + (SOC3_ROWS * SOC3_COLS) + (SOC4_ROWS * SOC4_COLS) + (SOC5_ROWS * SOC5_COLS) + (SOC6_ROWS * SOC6_COLS) + (SOC7_ROWS * SOC7_COLS) + (SOC8_ROWS * SOC8_COLS) + (SOC9_ROWS * SOC9_COLS)
+#define SOC_NTILES (SOC1_ROWS * SOC1_COLS) + (SOC2_ROWS * SOC2_COLS) + (SOC3_ROWS * SOC3_COLS) + (SOC4_ROWS * SOC4_COLS)
 
 #define ESP_MON_READ_DDR_ACCESSES 0
 #define ESP_MON_READ_MEM_REQS 1
@@ -114,15 +114,15 @@ typedef struct esp_mon_alloc_node {
 } esp_mon_alloc_node_t;
 
 typedef struct soc_loc{
-  uint8_t chip_row;
-  uint8_t chip_col;
+	uint8_t chip_row;
+	uint8_t chip_col;
 	uint8_t row;
 	uint8_t col;
 } soc_loc_t;
 
 typedef struct chip_tile{
-  uint8_t tile_row;
-  uint8_t tile_col;
+	uint8_t tile_row;
+	uint8_t tile_col;
 } chip_tile_t;
 
 esp_monitor_vals_t esp_monitor_diff(esp_monitor_vals_t vals_start, esp_monitor_vals_t vals_end);

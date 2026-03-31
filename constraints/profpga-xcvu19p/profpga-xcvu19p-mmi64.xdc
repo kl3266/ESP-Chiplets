@@ -174,6 +174,6 @@ set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks prof
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks profpga_clk0_p] -group [get_clocks $clkm4_elab]
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks profpga_clk0_p] -group [get_clocks $clkm5_elab]
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks profpga_clk0_p] -group [get_clocks $clkm6_elab]
-set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks profpga_clk0_p] -group [get_clocks $clkm7_elab]
+# set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks profpga_clk0_p] -group [get_clocks $clkm7_elab]
 set_clock_groups -asynchronous -group [get_clocks $refclk_elab] -group [get_clocks -include_generated_clocks profpga_clk0_p]
 

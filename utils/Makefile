@@ -58,7 +58,9 @@ include $(ESP_ROOT)/utils/make/examples.mk
 
 
 ### Board files ###
-BOARD_FILES = $(wildcard $(ESP_ROOT)/constraints/$(BOARD)/*)
+CONSTRAINTS_DIR ?= $(BOARD)
+CONSTRAINTS_BASE ?= $(BOARD)
+BOARD_FILES = $(wildcard $(ESP_ROOT)/constraints/$(CONSTRAINTS_DIR)/*)
 
 
 ### Default test program ###

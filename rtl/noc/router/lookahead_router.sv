@@ -55,7 +55,8 @@ module lookahead_router
     parameter noc::noc_flow_control_t FlowControl = noc::kFlowControlAckNack,
     parameter int unsigned DataWidth = 64,
     parameter int unsigned PortWidth = DataWidth + $bits(noc::preamble_t),
-    parameter bit [4:0] Ports = noc::AllPorts
+    parameter bit [4:0] Ports = noc::AllPorts,
+    parameter int unsigned QUEUE_SIZE = 4
     )
   (
    input  logic clk,
@@ -84,8 +85,11 @@ module lookahead_router
 
   localparam int unsigned ReservedWidth =
     DataWidth - 2*$bits(noc::xy_t) - $bits(noc::message_t) 
-    - $bits(noc::tile_t) - $bits(noc::plane_t) - $bits(noc::routing_lock_t)
+    - $bits(noc::tile_t) - $bits(noc::plane_t) - $bits(noc::routing_lock_t) 
     - $bits(noc::direction_t);
+
+  parameter int unsigned CreditsWidth = $clog2(QUEUE_SIZE + 1);
+  typedef logic [CreditsWidth-1:0] credits_t [4:0];
 
   typedef struct packed {
     noc::xy_t source;
@@ -115,45 +119,50 @@ module lookahead_router
     kPayloadFlits = 1'b1
   } state_t;
 
-  state_t [4:0] state;
-  state_t [4:0] new_state;
+  state_t state [4:0];
+  state_t new_state [4:0];
 
-  flit_t [4:0] data_in;
-  flit_t [4:0] fifo_head;
-  flit_t [4:0] data_out_crossbar;
-  flit_t [4:0] last_flit;
+  flit_t  data_in [4:0];
+  flit_t  fifo_head [4:0];
+  flit_t  fifo_head_routing [4:0];
+  flit_t  data_out_crossbar [4:0];
+  flit_t  last_flit [4:0];
 
-  logic [4:0][4:0] saved_routing_request;
-  logic [4:0][4:0] final_routing_request;  // ri lint_check_waive NOT_READ
-  logic [4:0][4:0] next_hop_routing;
+  logic [4:0] saved_routing_request [4:0];
+  logic [4:0] final_routing_request [4:0];  // ri lint_check_waive NOT_READ
+  logic [4:0] next_hop_routing [4:0];
 
-  logic [4:0][3:0] transp_final_routing_request;
+  logic [3:0] transp_final_routing_request [4:0];
 
-  logic [4:0][4:0] enhanc_routing_configuration;
+  logic [4:0] enhanc_routing_configuration [4:0];
 
-  logic [4:0][3:0] routing_configuration;
-  logic [4:0][3:0] saved_routing_configuration;
-  logic [4:0][3:0] grant;
-  logic [4:0] grant_valid;
+  logic [3:0] routing_configuration [4:0];
+  logic [3:0] saved_routing_configuration [4:0];
+  logic [3:0] grant [4:0];
+  logic grant_valid [4:0];
 
-  logic [4:0][4:0] rd_fifo;
-  logic [4:0] no_backpressure;
-  logic [4:0] rd_fifo_or;
+  logic [4:0] rd_fifo [4:0];
+  logic no_backpressure [4:0];
+  logic rd_fifo_or [4:0];
 
-  logic [4:0] in_unvalid_flit;
-  logic [4:0] out_unvalid_flit;
-  logic [4:0] in_valid_head;
+//  logic [3:0] arbiter_request_masked [4:0];
+  noc::xy_t la_destination [3:0];
+  noc::routing_lock_t la_lock [3:0];
 
-  logic [4:0] full;
-  logic [4:0] empty;
-  logic [4:0] wr_fifo;
+  logic in_unvalid_flit [4:0];
+  logic out_unvalid_flit [4:0];
+  logic in_valid_head [4:0];
 
-  noc::credits_t credits;
+  logic full [4:0];
+  logic empty [4:0];
+  logic wr_fifo [4:0];
 
-  logic [4:0] forwarding_tail;
-  logic [4:0] forwarding_head;
-  logic [4:0] forwarding_in_progress;
-  logic [4:0] insert_lookahead_routing;
+  credits_t credits;
+
+  logic forwarding_tail [4:0];
+  logic forwarding_head [4:0];
+  logic forwarding_in_progress [4:0];
+  logic insert_lookahead_routing [4:0];
 
   assign data_in[noc::kNorthPort] = data_n_in;
   assign data_in[noc::kSouthPort] = data_s_in;
@@ -197,7 +206,7 @@ module lookahead_router
       router_fifo
         #(
           .BypassEnable(FifoBypassEnable),
-          .Depth(noc::PortQueueDepth),
+          .Depth(QUEUE_SIZE),
           .Width(PortWidth)
           )
       input_queue (
@@ -235,16 +244,6 @@ module lookahead_router
       // CreditBased: send credits when reading from the input FIFO
       assign stop_out[g_i] =  FifoBypassEnable ? full[g_i] :
                                 ~(rd_fifo_or[g_i] & ~in_unvalid_flit[g_i]);
-
-      lookahead_routing lookahead_routing_i
-        (
-         .clk,
-         .position,
-         .destination(fifo_head[g_i].header.info.destination),
-         .routing_lock(fifo_head[g_i].header.info.routing_lock),
-         .current_routing(fifo_head[g_i].header.routing),
-         .next_routing(next_hop_routing[g_i])
-         );
 
     end else begin : gen_input_port_disabled
 
@@ -287,7 +286,19 @@ module lookahead_router
       end // for gen_transpose_routing
 
       // Arbitration
-      router_arbiter arbiter_i (
+//      router_arbiter arbiter_i (
+//        .clk(clk),
+//        .rst(rst),
+//        .request(transp_final_routing_request[g_i]),
+////        .request(arbiter_request_masked[g_i]),
+//        .forwarding_head(forwarding_head[g_i]),
+//        .forwarding_tail(forwarding_tail[g_i]),
+//        .grant(grant[g_i]),
+//        .grant_valid(grant_valid[g_i])
+//      );
+//      assign arbiter_request_masked[g_i] = (state[g_i] == kHeadFlit) ? transp_final_routing_request[g_i] : 4'b0;
+
+      router_arbiter_rtpe arbiter_i (
         .clk(clk),
         .rst(rst),
         .request(transp_final_routing_request[g_i]),
@@ -322,51 +333,40 @@ module lookahead_router
 
       // Crossbar
       always_comb begin
-        data_out_crossbar[g_i] = '0;
-        rd_fifo[g_i] = '0;
+        fifo_head_routing[g_i] = '0;
         out_unvalid_flit[g_i] = 1'b1;
 
-        unique case (enhanc_routing_configuration[g_i])
-          noc::goNorth : begin
-            data_out_crossbar[g_i] = ~insert_lookahead_routing[g_i] ? fifo_head[noc::kNorthPort] :
-            {fifo_head[noc::kNorthPort].flit[PortWidth-1:5], next_hop_routing[noc::kNorthPort]};
-            rd_fifo[g_i][noc::kNorthPort] = no_backpressure[g_i];
-            out_unvalid_flit[g_i] = in_unvalid_flit[noc::kNorthPort];
+        for (int j=0; j<5; j++) begin
+          if (enhanc_routing_configuration[g_i][j]) begin
+            fifo_head_routing[g_i] = fifo_head[j];
+            out_unvalid_flit[g_i] = in_unvalid_flit[j];
           end
-
-          noc::goSouth : begin
-            data_out_crossbar[g_i] = ~insert_lookahead_routing[g_i] ? fifo_head[noc::kSouthPort] :
-              {fifo_head[noc::kSouthPort].flit[PortWidth-1:5], next_hop_routing[noc::kSouthPort]};
-            rd_fifo[g_i][noc::kSouthPort] = no_backpressure[g_i];
-            out_unvalid_flit[g_i] = in_unvalid_flit[noc::kSouthPort];
-          end
-
-          noc::goWest : begin
-            data_out_crossbar[g_i] = ~insert_lookahead_routing[g_i] ? fifo_head[noc::kWestPort] :
-              {fifo_head[noc::kWestPort].flit[PortWidth-1:5], next_hop_routing[noc::kWestPort]};
-            rd_fifo[g_i][noc::kWestPort] = no_backpressure[g_i];
-            out_unvalid_flit[g_i] = in_unvalid_flit[noc::kWestPort];
-          end
-
-          noc::goEast : begin
-            data_out_crossbar[g_i] = ~insert_lookahead_routing[g_i] ? fifo_head[noc::kEastPort] :
-              {fifo_head[noc::kEastPort].flit[PortWidth-1:5], next_hop_routing[noc::kEastPort]};
-            rd_fifo[g_i][noc::kEastPort] = no_backpressure[g_i];
-            out_unvalid_flit[g_i] = in_unvalid_flit[noc::kEastPort];
-          end
-
-          noc::goLocal : begin
-            data_out_crossbar[g_i] = ~insert_lookahead_routing[g_i] ? fifo_head[noc::kLocalPort] :
-              {fifo_head[noc::kLocalPort].flit[PortWidth-1:5], next_hop_routing[noc::kLocalPort]};
-            rd_fifo[g_i][noc::kLocalPort] = no_backpressure[g_i];
-            out_unvalid_flit[g_i] = in_unvalid_flit[noc::kLocalPort];
-          end
-
-          default : begin
-          end
-        endcase
+        end
       end
 
+      if (g_i < 4) begin
+        lookahead_routing #(
+          .PORT_ID(g_i[2:0])
+        ) lookahead_routing_i (
+           .clk,
+           .position,
+           .destination(la_destination[g_i]),
+           .routing_lock(la_lock[g_i]),
+           .next_routing(next_hop_routing[g_i])
+           );
+        assign la_destination[g_i] = insert_lookahead_routing[g_i] ? fifo_head_routing[g_i].header.info.destination : '0;
+        assign la_lock[g_i] = insert_lookahead_routing[g_i] ? fifo_head_routing[g_i].header.info.routing_lock : '0;
+      end else begin  // don't put one for local port
+        assign next_hop_routing[g_i] = '0;
+      end
+
+      assign data_out_crossbar[g_i] = insert_lookahead_routing[g_i] ? {fifo_head_routing[g_i].flit[PortWidth-1:5], next_hop_routing[g_i]} : fifo_head_routing[g_i];
+
+      assign rd_fifo[g_i][noc::kNorthPort]  = no_backpressure[g_i] & forwarding_in_progress[g_i] & enhanc_routing_configuration[g_i][noc::kNorthPort];
+      assign rd_fifo[g_i][noc::kSouthPort]  = no_backpressure[g_i] & forwarding_in_progress[g_i] & enhanc_routing_configuration[g_i][noc::kSouthPort];
+      assign rd_fifo[g_i][noc::kEastPort]   = no_backpressure[g_i] & forwarding_in_progress[g_i] & enhanc_routing_configuration[g_i][noc::kEastPort];
+      assign rd_fifo[g_i][noc::kWestPort]   = no_backpressure[g_i] & forwarding_in_progress[g_i] & enhanc_routing_configuration[g_i][noc::kWestPort];
+      assign rd_fifo[g_i][noc::kLocalPort]  = no_backpressure[g_i] & forwarding_in_progress[g_i] & enhanc_routing_configuration[g_i][noc::kLocalPort];
 
       // Sample output
       always_ff @(posedge clk) begin
@@ -452,12 +452,12 @@ module lookahead_router
                                     out_unvalid_flit[g_i] : 1'b1;
         always_ff @(posedge clk) begin
           if (rst) begin
-            credits[g_i] = noc::PortQueueDepth;
+            credits[g_i] <= QUEUE_SIZE;
           end else begin
             if (~data_void_out[g_i]) begin
-              credits[g_i] = credits[g_i] - stop_in[g_i];
+              credits[g_i] <= credits[g_i] - stop_in[g_i];
             end else begin
-              credits[g_i] = credits[g_i] + ~stop_in[g_i];
+              credits[g_i] <= credits[g_i] + ~stop_in[g_i];
             end
           end
         end
@@ -519,7 +519,7 @@ module lookahead_router
       data_out_crossbar[g_i].header.preamble.head)
       else $error("Fail: a_expect_head_flit");
     a_credits_in_range: assert property (@(posedge clk) disable iff(rst)
-      credits[g_i] <= noc::PortQueueDepth)
+      credits[g_i] <= QUEUE_SIZE)
       else $error("Fail: a_enhanc_routing_configuration_onehot");
   end
 

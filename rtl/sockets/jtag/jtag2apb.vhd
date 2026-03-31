@@ -104,7 +104,7 @@ begin
     async_fifo_01 : inferred_async_fifo
       generic map (
         g_data_width => MAX_NOC_FLIT_SIZE+8,
-        g_size       => 200)
+        g_size       => 128)
       port map (
         rst_wr_n_i => rst,
         clk_wr_i   => tclk,

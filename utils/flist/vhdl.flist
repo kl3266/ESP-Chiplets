@@ -72,8 +72,12 @@ noc/fifo3.vhd
 noc/fifo1.vhd
 noc/sync_noc32_xy.vhd
 noc/router.vhd
-noc/chiplet/d2d_tx_top.vhd
-noc/chiplet/d2d_rx_top.vhd
+noc/relay_station.vhd
+noc/relay_station_agg.vhd
+noc/relay_station_tile.vhd
+noc/chiplet/bypass_router.vhd
+noc/chiplet/d2d_tx_top_bypass.vhd
+noc/chiplet/d2d_rx_top_bypass.vhd
 sockets/proxy/noc2apb.vhd
 sockets/proxy/noc2intreq.vhd
 sockets/proxy/intreq2noc.vhd
@@ -97,6 +101,7 @@ sockets/queues/cpu_tile_q.vhd
 sockets/queues/mem_tile_q.vhd
 sockets/queues/empty_tile_q.vhd
 sockets/queues/misc_tile_q.vhd
+sockets/queues/misc_tile_q_abbrev.vhd
 sockets/csr/esp_tile_csr.vhd
 sockets/csr/esp_noc_csr.vhd
 sockets/monitor/monitor.vhd
@@ -134,6 +139,7 @@ tiles/tile_slm.vhd
 tiles/tile_mem.vhd
 tiles/tile_cpu.vhd
 tiles/tile_io.vhd
+tiles/tile_io_abbrev.vhd
 tiles/asic/asic_tile_acc.vhd
 tiles/asic/asic_tile_cpu.vhd
 tiles/asic/asic_tile_empty.vhd
@@ -147,3 +153,5 @@ tiles/fpga/fpga_tile_empty.vhd
 tiles/fpga/fpga_tile_io.vhd
 tiles/fpga/fpga_tile_mem.vhd
 tiles/fpga/fpga_tile_slm.vhd
+tiles/esp.vhd
+tiles/esp_chiplet_per_tile_rs_no_d2d.vhd

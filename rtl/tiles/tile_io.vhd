@@ -316,7 +316,7 @@ architecture rtl of tile_io is
   constant this_local_chip_y      : chip_yx                            := chip_y(io_tile_id(chiplet_index));
   constant this_local_chip_x      : chip_yx                            := chip_x(io_tile_id(chiplet_index));
 --  constant this_csr_pindex        : integer                            := tile_csr_pindex(io_tile_id(chiplet_index)); -- KL doesn't compile after run after this. overlapping memory space. Why?
-  constant this_csr_pindex        : integer                            := tile_csr_pindex(io_tile_id(0));
+  constant this_csr_pindex        : integer                            := tile_csr_pindex(io_tile_id(0)); -- KL changed from 0
   constant this_csr_pconfig       : apb_config_type                    := fixed_apbo_pconfig(this_csr_pindex);
 
 --  constant this_local_apb_en : std_logic_vector(0 to NAPBSLV - 1) := (
@@ -336,6 +336,20 @@ architecture rtl of tile_io is
 --    2      => to_std_logic(GLOB_CPU_RISCV * GLOB_CPU_AXI),  -- risc-v clint
 --    3      => to_std_logic(CFG_SVGA_ENABLE),  -- frame buffer
 --    others => '0');
+  function set_esp_init (constant chiplet_index : integer)
+    return std_logic is
+  begin
+    if chiplet_index = 0 then
+      -- Main chiplet runs local init.
+      return '0';
+    else
+      -- Satellite chiplets skip local init.
+      return '1';
+    end if;
+  end function set_esp_init;
+
+  constant esp_init_var : std_logic := set_esp_init(chiplet_index);
+
   function set_ahb_constants(constant chiplet_index : integer)
     return std_logic_vector is
       variable ahb : std_logic_vector(0 to NAHBSLV - 1);
@@ -400,7 +414,7 @@ architecture rtl of tile_io is
     r(idx) := '0';       -- don’t expose this tile’s CSR as a remote slave
     return r;
   end;
-  
+ 
   constant this_remote_apb_slv_en : std_logic_vector(0 to NAPBSLV - 1) := remote_apb_slv_mask_misc; -- KL original
 --  constant this_remote_apb_slv_en : std_logic_vector(0 to NAPBSLV - 1) := mask_out_local(remote_apb_slv_mask_misc, this_csr_pindex);  -- KL experiment
   constant this_apb_en            : std_logic_vector(0 to NAPBSLV - 1) := this_local_apb_en or this_remote_apb_slv_en;
@@ -605,7 +619,7 @@ begin
     port map (
       rstn   => rst,
       clk    => tile_clk,
-      noinit => '1',
+      noinit => esp_init_var,  -- '1' for esp_asic_chiplet folder. '0' for profpga_xcvu19p_chiplet
       srst   => srst,
       init_done  => init_done,
       ahbmi  => ahbmi,
@@ -692,7 +706,7 @@ begin
       generic map (
         hindex   => ahbrom_hindex,
         tech     => 0,
-        kbytes   => 32,
+        kbytes   => 128,
         pipe     => 0,
         maccsz   => AHBDW,
         fname    => "prom.srec"
@@ -714,7 +728,7 @@ begin
         hindex   => ahbrom_hindex,
         tech     => CFG_FABTECH,
         large_banks => 0,
-        kbytes   => 32,
+        kbytes   => 128,
         pipe     => 0,
         maccsz   => AHBDW)
       port map (
@@ -1017,7 +1031,7 @@ begin
         haddr2  => CFG_SVGA_MEMORY_HADDR,
         hmask   => fb_hmask,
         tech    => CFG_FABTECH,
-        kbytes  => 32,
+        kbytes  => 512,
         wordsz  => 32)
       port map (
         rst    => rst,

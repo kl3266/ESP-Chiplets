@@ -214,6 +214,27 @@ package tile is
       noc6_in_stop                 : in  std_ulogic);
   end component misc_tile_q;
 
+  component misc_tile_q_abbrev
+    generic (
+      tech : integer);
+    port (
+      rst                           : in  std_ulogic;
+      clk                           : in  std_ulogic;
+      apb_rcv_rdreq                 : in  std_ulogic;
+      apb_rcv_data_out              : out misc_noc_flit_type;
+      apb_rcv_empty                 : out std_ulogic;
+      apb_snd_wrreq                 : in  std_ulogic;
+      apb_snd_data_in               : in  misc_noc_flit_type;
+      apb_snd_full                  : out std_ulogic;
+      noc5_out_data                 : in  misc_noc_flit_type;
+      noc5_out_void                 : in  std_ulogic;
+      noc5_out_stop                 : out std_ulogic;
+      noc5_in_data                  : out misc_noc_flit_type;
+      noc5_in_void                  : out std_ulogic;
+      noc5_in_stop                  : in  std_ulogic
+    );
+  end component misc_tile_q_abbrev;
+
   component mem_tile_q
     generic (
       tech : integer);

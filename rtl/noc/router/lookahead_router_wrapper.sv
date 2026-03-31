@@ -3,7 +3,8 @@ module lookahead_router_wrapper
     parameter bit FlowControl = noc::kFlowControlAckNack,
     parameter int unsigned Width = 64,
     parameter bit [4:0] Ports = noc::AllPorts,
-    parameter int unsigned DEST_SIZE = 1
+    parameter bit ROUTER_TYPE = noc::Unicast,
+    parameter int unsigned QUEUE_SIZE = 4
     )
   (
    input  logic clk,
@@ -32,19 +33,20 @@ module lookahead_router_wrapper
    );
 
   noc::xy_t position;
-  noc::chip_xy_t chip_position;
+//  noc::chip_xy_t chip_position;
   assign position.x = CONST_localx;
   assign position.y = CONST_localy;
-  assign chip_position.x = CONST_local_chip_x;
-  assign chip_position.y = CONST_local_chip_y;
+//  assign chip_position.x = CONST_local_chip_x;
+//  assign chip_position.y = CONST_local_chip_y;
 
   generate
-    if (DEST_SIZE <= 1) begin
+    if (ROUTER_TYPE == 1'b0) begin
       lookahead_router
         #(
           .FlowControl(FlowControl),
           .DataWidth(Width - $bits(noc::preamble_t)),
-          .Ports(Ports)
+          .Ports(Ports),
+          .QUEUE_SIZE(QUEUE_SIZE)
           ) router_impl_i
           (
            .clk,
@@ -71,13 +73,13 @@ module lookahead_router_wrapper
           .FlowControl(FlowControl),
           .DataWidth(Width - $bits(noc::preamble_t)),
           .Ports(Ports),
-          .DEST_SIZE(DEST_SIZE)
+          .QUEUE_SIZE(QUEUE_SIZE)
          ) router_impl_i
           (
            .clk,
            .rst(~rst),
            .position,
-           .chip_position,  // KL not implemented yet
+          // .chip_position,  // KL not implemented yet
            .data_n_in,
            .data_s_in,
            .data_w_in,

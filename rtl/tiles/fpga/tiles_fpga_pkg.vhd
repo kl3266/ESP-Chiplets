@@ -21,7 +21,7 @@ package tiles_fpga_pkg is
     generic (
       SIMULATION         : boolean              := false;
       HAS_SYNC           : integer range 0 to 1 := 1;
-      chiplet_index      : integer := 0);
+      BOARD_NUM          : integer := 0);
     port (
       rst                : in  std_ulogic;
       clk                : in  std_ulogic;
@@ -92,7 +92,7 @@ package tiles_fpga_pkg is
       this_has_l2        : integer range 0 to 1 := 0;
       this_has_token_pm  : integer range 0 to 1 := 0;
       HAS_SYNC           : integer range 0 to 1 := 1;
-      chiplet_index      : integer := 0);
+      BOARD_NUM          : integer := 0);
     port (
       rst                : in  std_ulogic;
       clk                : in  std_ulogic;
@@ -160,7 +160,7 @@ package tiles_fpga_pkg is
     generic (
       SIMULATION   : boolean              := false;
       HAS_SYNC     : integer range 0 to 1 := 1;
-      chiplet_index : integer := 0);
+      BOARD_NUM    : integer := 0);
     port (
       rst                : in  std_ulogic;
       clk                : in  std_ulogic;
@@ -240,7 +240,7 @@ package tiles_fpga_pkg is
     generic (
       SIMULATION   : boolean  := false;
       HAS_SYNC     : integer range 0 to 1 := 1;
-      chiplet_index : integer := 0);
+      BOARD_NUM    : integer := 0);
     port (
       rst                : in  std_ulogic;
       clk                : in  std_ulogic;
@@ -309,7 +309,7 @@ package tiles_fpga_pkg is
     generic (
       SIMULATION   : boolean              := false;
       HAS_SYNC     : integer range 0 to 1 := 1;
-      chiplet_index : integer := 0);
+      BOARD_NUM    : integer := 0);
     port (
       rst                : in  std_logic;
       clk                : in  std_logic;
@@ -373,7 +373,7 @@ package tiles_fpga_pkg is
     generic (
       SIMULATION   : boolean := false;
       HAS_SYNC     : integer range 0 to 1 := 1;
-      chiplet_index : integer := 0);
+      BOARD_NUM    : integer := 0);
     port (
       rst                : in  std_ulogic;
       clk                : in  std_ulogic;

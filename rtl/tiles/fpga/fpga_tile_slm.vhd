@@ -38,7 +38,7 @@ entity fpga_tile_slm is
   generic (
     SIMULATION   : boolean              := false;
     HAS_SYNC     : integer range 0 to 1 := 1;
-    chiplet_index : integer := 0);
+    BOARD_NUM    : integer := 0);
   port (
     rst                : in  std_ulogic;
     clk                : in  std_ulogic;
@@ -249,7 +249,7 @@ begin
       SIMULATION   => SIMULATION,
       this_has_dco => 0,
       this_has_ddr => 0,
-      chiplet_index => chiplet_index)
+      chiplet_index => BOARD_NUM)
     port map (
       raw_rstn            => '0',
       tile_rst            => rst,

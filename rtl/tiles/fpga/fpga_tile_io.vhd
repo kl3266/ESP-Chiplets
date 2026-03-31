@@ -39,7 +39,7 @@ entity fpga_tile_io is
   generic (
     SIMULATION   : boolean   := false;
     HAS_SYNC     : integer range 0 to 1 := 1;
-    chiplet_index : integer := 0);
+    BOARD_NUM    : integer := 0);
   port (
     rst                : in    std_ulogic;  -- Global reset (active high)
     clk                : in    std_ulogic;
@@ -269,7 +269,7 @@ begin
     generic map (
       SIMULATION   => SIMULATION,
       this_has_dco => 0,
-      chiplet_index => chiplet_index)
+      chiplet_index => BOARD_NUM)
     port map (
       raw_rstn           => '0',
       tile_rst           => rst,

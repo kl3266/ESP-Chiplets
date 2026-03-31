@@ -80,17 +80,19 @@ architecture syn of inferred_async_fifo is
 
   type t_counter_block is record
     bin, bin_next, gray, gray_next : t_counter;
-    bin_x, gray_x, gray_xm         : t_counter;
+    bin_x                          : t_counter;
   end record;
 
   type   t_mem_type is array (0 to g_size-1) of std_logic_vector(g_data_width-1 downto 0);
-  signal mem : t_mem_type := (others => (others => '0'));
+  signal mem : t_mem_type;
 
   signal rcb, wcb                          : t_counter_block;
+  signal rcb_gray_x, rcb_gray_xm           : t_counter;
+  signal wcb_gray_x, wcb_gray_xm           : t_counter;
 
   attribute ASYNC_REG : string;
-  attribute ASYNC_REG of wcb: signal is "TRUE";
-  attribute ASYNC_REG of rcb: signal is "TRUE";
+  attribute ASYNC_REG of rcb_gray_xm, rcb_gray_x : signal is "TRUE";
+  attribute ASYNC_REG of wcb_gray_xm, wcb_gray_x : signal is "TRUE";
 
   signal full_int, empty_int               : std_logic;
   signal going_full                        : std_logic;
@@ -152,8 +154,8 @@ begin  -- syn
   p_sync_read_ptr : process(clk_wr_i)
   begin
     if rising_edge(clk_wr_i) then
-      rcb.gray_xm <= rcb.gray;
-      rcb.gray_x  <= rcb.gray_xm;
+      rcb_gray_xm <= rcb.gray;
+      rcb_gray_x  <= rcb_gray_xm;
     end if;
   end process;
 
@@ -161,20 +163,20 @@ begin  -- syn
   p_sync_write_ptr : process(clk_rd_i)
   begin
     if rising_edge(clk_rd_i) then
-      wcb.gray_xm <= wcb.gray;
-      wcb.gray_x  <= wcb.gray_xm;
+      wcb_gray_xm <= wcb.gray;
+      wcb_gray_x  <= wcb_gray_xm;
     end if;
   end process;
 
-  wcb.bin_x <= f_gray2bin(wcb.gray_x);
-  rcb.bin_x <= f_gray2bin(rcb.gray_x);
+  wcb.bin_x <= f_gray2bin(wcb_gray_x);
+  rcb.bin_x <= f_gray2bin(rcb_gray_x);
 
   p_gen_empty : process(clk_rd_i, rst_rd_n_i)
   begin
     if rst_rd_n_i = '0' then
       empty_int <= '1';
     elsif rising_edge (clk_rd_i) then
-      if(rcb.gray = wcb.gray_x or (rd_int = '1' and (wcb.gray_x = rcb.gray_next))) then
+      if(rcb.gray = wcb_gray_x or (rd_int = '1' and (wcb_gray_x = rcb.gray_next))) then
         empty_int <= '1';
       else
         empty_int <= '0';
@@ -195,7 +197,7 @@ begin  -- syn
   p_gen_going_full : process(we_int, wcb, rcb)
   begin
     if ((wcb.bin (wcb.bin'left-1 downto 0) = rcb.bin_x(rcb.bin_x'left-1 downto 0))
-        and (wcb.bin(wcb.bin'left) /= rcb.bin_x(wcb.bin_x'left))) then
+        and (wcb.bin(wcb.bin'left) /= rcb.bin_x(rcb.bin_x'left))) then
       going_full <= '1';
     elsif (we_int = '1'
            and (wcb.bin_next(wcb.bin'left-1 downto 0) = rcb.bin_x(rcb.bin_x'left-1 downto 0))

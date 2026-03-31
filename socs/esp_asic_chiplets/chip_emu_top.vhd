@@ -345,6 +345,13 @@ begin  -- architecture rtl
         reset              => reset,
         d2d_clk            => d2d_clk_int,
         ext_clk            => ext_clk_int,
+--        fpga_data          => fpga_data(63 downto 0),  --HI_LO NEED CHANGES
+--        fpga_valid_in      => fpga_valid_in(0 downto 0),
+--        fpga_valid_out     => fpga_valid_out(0 downto 0),
+--        fpga_clk_in        => fpga_clk_in(0 downto 0),
+--        fpga_clk_out       => fpga_clk_out(0 downto 0),
+--        fpga_credit_in     => fpga_credit_in(0 downto 0),
+--        fpga_credit_out    => fpga_credit_out(0 downto 0),
         fpga_data          => fpga_data(MEM_HI downto MEM_LO),  --HI_LO NEED CHANGES
         fpga_valid_in      => fpga_valid_in(V_HI downto V_LO),
         fpga_valid_out     => fpga_valid_out(V_HI downto V_LO),
@@ -425,6 +432,13 @@ begin  -- architecture rtl
         reset              => reset,
         d2d_clk            => d2d_clk_int,
         ext_clk            => ext_clk_int,
+--        fpga_data          => fpga_data(127 downto 64),  --HI_LO NEED CHANGES
+--        fpga_valid_in      => fpga_valid_in(1 downto 1),
+--        fpga_valid_out     => fpga_valid_out(1 downto 1),
+--        fpga_clk_in        => fpga_clk_in(1 downto 1),
+--        fpga_clk_out       => fpga_clk_out(1 downto 1),
+--        fpga_credit_in     => fpga_credit_in(1 downto 1),
+--        fpga_credit_out    => fpga_credit_out(1 downto 1),
         fpga_data          => fpga_data(MEM_HI downto MEM_LO),
         fpga_valid_in      => fpga_valid_in(V_HI downto V_LO),
         fpga_valid_out     => fpga_valid_out(V_HI downto V_LO),

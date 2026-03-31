@@ -225,8 +225,7 @@ architecture behav of testbench is
 begin
 
   -- clock and reset
-  reset        <= '0'              after 2500 ns;
---  reset <= '0' after 11.2 ms;   -- 16G = 11.2 ms; 8G = 22.4 ms; this is esp system only reset
+  reset      <= '0' after 2500 ns;
   main_clk_p <= not main_clk_p after 5 ns;
   main_clk_n <= not main_clk_n after 5 ns;
 

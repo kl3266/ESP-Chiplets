@@ -41,98 +41,59 @@ module router_fifo
    output logic [Width-1:0] data_out
    );
 
-  logic [Depth-1:0][Width-1:0] mem;
-
-  // Read pointer for FIFO head
-  logic [$clog2(Depth+1)-1:0] head;
-  logic [$clog2(Depth+1)-1:0] head_next;
-
-  // One hot mask for FIFO tail and tilization
-  logic [Depth-1:0] tail;
-  logic [Depth:0] used;
-
-  logic valid_read;
-  logic valid_write;
-  logic [Width-1:0] data_out_nobypass;
-
-  genvar g_i;
-
-  assign valid_read = rdreq & ~empty;
-  assign valid_write = BypassEnable & empty ? wrreq & ~rdreq : wrreq & ~full;
-  assign data_out = BypassEnable & empty ? data_in : data_out_nobypass;
-
-  // Update head
-  assign head_next = head == (Depth - 1'b1) ? '0 : head + 1'b1;
-  always_ff @(posedge clk) begin
-    if (rst) begin
-      head <= '0;
-    end else if (valid_read) begin
-      head <= head_next;
-    end
+  initial begin
+    if ((Depth & (Depth - 1)) != 0) 
+      $error("Error: Depth must be a power of 2 (2,4,8...) for efficiency.");
   end
 
-  // Update tail
-  always_ff @(posedge clk) begin
-    if (rst) begin
-      tail[Depth-1:1] <= '0;
-      tail[0] <= 1'b1;
-    end else if (valid_write) begin
-      tail[Depth-1:1] <= tail[Depth-2:0];
-      tail[0] <= tail[Depth-1];
-    end
-  end
+  localparam int PtrWidth = $clog2(Depth);
 
-  // Update FIFO state
+  logic [PtrWidth:0] wr_ptr, rd_ptr;
+  logic [Width-1:0] mem [Depth-1:0];
+  logic write_en;
+  logic read_en;
+  logic bypass_condition;
+
+  assign empty = (wr_ptr == rd_ptr);
+  assign full = (wr_ptr[PtrWidth-1:0] == rd_ptr[PtrWidth-1:0]) &&
+                (wr_ptr[PtrWidth] != rd_ptr[PtrWidth]);
+  assign bypass_condition = BypassEnable & empty;
+  assign write_en = bypass_condition ? wrreq & ~rdreq : wrreq & ~full;
+  assign read_en = rdreq & ~empty;
+
+  assign data_out = bypass_condition ? data_in : mem[rd_ptr[PtrWidth-1:0]];
+
   always_ff @(posedge clk) begin
     if (rst) begin
-      used[Depth:1] <= '0;
-      used[0] <= 1'b1;
+      wr_ptr <= '0;
+      rd_ptr <= '0;
     end else begin
-      if (valid_write & ~valid_read) begin
-        used[Depth:1] <= used[Depth-1:0];
-        used[0] <= 1'b0;
-      end else if (~valid_write & valid_read) begin
-        used[Depth-1:0] <= used[Depth:1];
-        used[Depth] <= 1'b0;
+      if (write_en) begin
+        mem[wr_ptr[PtrWidth-1:0]] <= data_in;
+        wr_ptr <= wr_ptr + 1'b1;
+      end
+      if (read_en) begin
+        rd_ptr <= rd_ptr + 1'b1;
       end
     end
   end
-
-  assign empty = used[0];
-  assign full = used[Depth];
-
-  // Write
-  for (g_i = 0; g_i < Depth; g_i++) begin : gen_fifo_write
-    always_ff @(posedge clk) begin
-      if (rst) begin
-        mem[g_i] <= '0;
-      end else if (valid_write & tail[g_i]) begin
-        mem[g_i] <= data_in;
-      end
-    end
-  end
-
-  // Read
-  assign data_out_nobypass = mem[head];  // ri lint_check_waive VAR_INDEX_RANGE
 
   //
   // Assertions
   //
 
-`ifndef SYNTHESIS
+//`ifndef SYNTHESIS
 // pragma coverage off
 //VCS coverage off
 
   // FIFO is in good state
-  a_head_lt_depth: assert property (@(posedge clk) disable iff(rst) head < Depth)
-    else $error("Fail: a_head_lt_depth");
-  a_tail_onehot: assert property (@(posedge clk) disable iff(rst) $onehot(tail))
-    else $error("Fail: a_tail_onehot");
-  a_used_onehot: assert property (@(posedge clk) disable iff(rst) $onehot(used))
-    else $error("Fail: a_used_onehot");
+//  a_head_lt_depth: assert property (@(posedge clk) disable iff(rst) head < Depth)
+//    else $error("Fail: a_head_lt_depth");
+//  a_tail_onehot: assert property (@(posedge clk) disable iff(rst) $onehot(tail))
+//    else $error("Fail: a_tail_onehot");
 
 // pragma coverage on
 //VCS coverage on
-`endif // ~SYNTHESIS
+//`endif // ~SYNTHESIS
 
 endmodule

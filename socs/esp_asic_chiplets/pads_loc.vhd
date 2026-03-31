@@ -11,13 +11,25 @@ package pads_loc is
   constant ext_clk_acc0_pad_loc : std_logic := '0';
   constant ext_clk_acc1_pad_loc : std_logic := '0';
   constant ext_clk_cpu_pad_loc : std_logic := '0';
-  constant fpga_clk_in_pad_loc : std_logic_vector(2 downto 0) := "000";
-  constant fpga_clk_out_pad_loc : std_logic_vector(2 downto 0) := "000";
-  constant fpga_credit_in_pad_loc : std_logic_vector(2 downto 0) := "000";
-  constant fpga_credit_out_pad_loc : std_logic_vector(2 downto 0) := "000";
-  constant fpga_data_pad_loc : std_logic_vector(191 downto 0) := "111111111111111111111000000000000000000000000000000000000000000011111111111111111111100000000000000000000000000000000000000000001111111111111111111110000000000000000000000000000000000000000000";
-  constant fpga_valid_in_pad_loc : std_logic_vector(2 downto 0) := "000";
-  constant fpga_valid_out_pad_loc : std_logic_vector(2 downto 0) := "000";
+
+  -- CHANGED: Increased width to 4 bits (3 downto 0)
+  constant fpga_clk_in_pad_loc : std_logic_vector(3 downto 0) := "0000";
+  constant fpga_clk_out_pad_loc : std_logic_vector(3 downto 0) := "0000";
+  constant fpga_credit_in_pad_loc : std_logic_vector(3 downto 0) := "0000";
+  constant fpga_credit_out_pad_loc : std_logic_vector(3 downto 0) := "0000";
+
+  -- CHANGED: Increased width to 256 bits (64 bits * 4 tiles)
+  -- I extended the dummy pattern to match the new length.
+  constant fpga_data_pad_loc : std_logic_vector(255 downto 0) := 
+    "1111111111111111111110000000000000000000000000000000000000000000" & -- Tile 3
+    "1111111111111111111110000000000000000000000000000000000000000000" & -- Tile 2
+    "1111111111111111111110000000000000000000000000000000000000000000" & -- Tile 1
+    "1111111111111111111110000000000000000000000000000000000000000000";   -- Tile 0
+
+  -- CHANGED: Increased width to 4 bits (3 downto 0)
+  constant fpga_valid_in_pad_loc : std_logic_vector(3 downto 0) := "0000";
+  constant fpga_valid_out_pad_loc : std_logic_vector(3 downto 0) := "0000";
+
   constant iolink_clk_in_pad_loc : std_logic := '0';
   constant iolink_clk_out_pad_loc : std_logic := '0';
   constant iolink_credit_in_pad_loc : std_logic := '0';

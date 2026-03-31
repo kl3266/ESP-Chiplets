@@ -38,7 +38,7 @@ entity fpga_tile_acc is
     this_has_l2        : integer range 0 to 1 := 0;
     this_has_token_pm  : integer range 0 to 1 := 0;
     HAS_SYNC           : integer range 0 to 1 := 1;
-    chiplet_index      : integer := 0);
+    BOARD_NUM          : integer := 0);
   port (
     rst                : in  std_ulogic;
     clk                : in  std_ulogic;
@@ -246,7 +246,7 @@ begin
       this_irq_type      => this_irq_type,
       this_has_l2        => this_has_l2,
       this_has_dco       => 0,
-      chiplet_index      => chiplet_index)
+      chiplet_index      => BOARD_NUM)
     port map (
       raw_rstn            => '0',
       tile_rst            => rst,

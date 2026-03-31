@@ -112,7 +112,7 @@ begin  -- architecture rtl
     end if;
   end process count_gen;
 
-  init_fsm: process (init_state, count, rsp, srst, srst_reg, req_reg, timer, tile_id_loc) is
+  init_fsm: process (init_state, count, rsp, srst, srst_reg, req_reg, timer, tile_id_loc, noinit) is
     variable tile_id_address : std_logic_vector(31 downto 0);
     variable tile_id_noc_address : std_logic_vector(31 downto 0);
     variable valid_address : std_logic_vector(31 downto 0);
