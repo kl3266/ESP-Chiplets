@@ -1,0 +1,1 @@
+"./synth_parallel 0 1 2 3" to synthesize FPGA 0 to 3 at once

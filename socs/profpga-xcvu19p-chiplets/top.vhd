@@ -31,6 +31,7 @@ use work.nocpackage.all;
 use work.cachepackage.all;
 use work.coretypes.all;
 use work.config.all;
+use work.d2d_delay_pkg.all;
 use work.esp_global.all;
 use work.socmap.all;
 use work.tiles_pkg.all;
@@ -53,6 +54,8 @@ entity top is
     esp_clk_n         : in    std_ulogic;  -- 100 MHz clock
     d2d_clk_p         : in    std_ulogic;  -- 160 MHz D2D clock
     d2d_clk_n         : in    std_ulogic;  -- 160 MHz D2D clock
+    d2d_delay_refclk_p : in   std_ulogic;  -- 400 MHz IDELAY/ODELAY calibration clock
+    d2d_delay_refclk_n : in   std_ulogic;  -- 400 MHz IDELAY/ODELAY calibration clock
     -- IO Cables
     c0_cable_clk_p      : out     std_logic; -- TX Clock
     c0_cable_clk_n      : out     std_logic;
@@ -267,8 +270,18 @@ end;
 architecture rtl of top is
   constant D2D_RX_MMCM_CLKIN_PERIOD_NS : real := 6.250;
   constant D2D_RX_MMCM_REF_JITTER1_UI  : real := 0.050;
-  constant D2D_RX_MMCM_PHASE_DEG_C0    : real := 45.000;
-  constant D2D_RX_MMCM_PHASE_DEG_C1    : real := 33.750;
+  constant D2D_RX_MMCM_PHASE_DEG_C0    : real := -56.250;
+  constant D2D_RX_MMCM_PHASE_DEG_C1    : real := -67.500;
+  -- constant D2D_RX_MMCM_PHASE_DEG_C0    : real := 39.375;
+  -- constant D2D_RX_MMCM_PHASE_DEG_C1    : real := 33.750;
+  constant D2D_TX_MMCM_PHASE_DEG_C0    : real := 0.000;
+  constant D2D_TX_MMCM_PHASE_DEG_C1    : real := 0.000;
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_C0 : real := 0.000;
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_C1 : real := 0.000;
+  constant D2D_TX_ODELAY_PS_C0 : d2d_delay_vector_t := get_d2d_tx_odelay_ps(0, 0);
+  constant D2D_TX_ODELAY_PS_C1 : d2d_delay_vector_t := get_d2d_tx_odelay_ps(0, 1);
+  constant D2D_RX_IDELAY_PS_C0 : d2d_delay_vector_t := get_d2d_rx_idelay_ps(0, 0);
+  constant D2D_RX_IDELAY_PS_C1 : d2d_delay_vector_t := get_d2d_rx_idelay_ps(0, 1);
   constant ISOLATE_BOARD0_D2D    : boolean := false; -- temporary debug mode: board0 D2D links tied off
 
   component ahb2mig_ebddr4r5 is
@@ -310,13 +323,13 @@ architecture rtl of top is
       width               : integer;
       depth               : integer;
       ports               : std_logic_vector(3 downto 0);
-      DEST_SIZE           : integer
+      DEST_SIZE           : integer;
+      LOCAL_CHIP_X        : integer;
+      LOCAL_CHIP_Y        : integer
     );
     port (
       clk                 : in  std_logic;
       rst                 : in  std_logic;
-      CONST_local_chip_x  : in std_logic_vector(CHIP_YX_WIDTH-1 downto 0);
-      CONST_local_chip_y  : in std_logic_vector(CHIP_YX_WIDTH-1 downto 0);
 
       data_n_in : in std_logic_vector(width-1 downto 0);
       data_s_in : in std_logic_vector(width-1 downto 0);
@@ -338,7 +351,9 @@ architecture rtl of top is
 
   component cdc_gray_pulse is
     generic (
-      N : integer := 4
+      N           : integer := 4;
+      SRC_NEGEDGE : integer := 0;
+      DST_NEGEDGE : integer := 0
     );
     port (
       src_clk   : in  std_logic;
@@ -349,6 +364,16 @@ architecture rtl of top is
       dst_pulse : out std_logic
     );
   end component cdc_gray_pulse;
+
+  function any_high(word : std_logic_vector) return std_logic is
+  begin
+    for i in word'range loop
+      if word(i) = '1' then
+        return '1';
+      end if;
+    end loop;
+    return '0';
+  end function any_high;
 
   function set_ddr_index (
     constant n : integer range 0 to 7)
@@ -394,47 +419,13 @@ architecture rtl of top is
   signal cgo, cgo_d2d                                   : clkgen_out_type;
 
 ---mig signals
-  constant diagnostic_pending_max : unsigned(11 downto 0) := (others => '1');
   signal c0_calib_done        : std_ulogic;
-  signal c0_diagnostic_count  : unsigned(26 downto 0) := (others => '0');
-  signal c0_diagnostic_pending : unsigned(11 downto 0) := (others => '0');
-  signal c0_diagnostic_phase_prev : std_ulogic := '0';
-  signal c0_diagnostic_started : std_ulogic := '0';
-  signal c0_diagnostic_toggle : std_ulogic;
   signal c1_calib_done        : std_ulogic;
-  signal c1_diagnostic_count  : unsigned(26 downto 0) := (others => '0');
-  signal c1_diagnostic_pending : unsigned(11 downto 0) := (others => '0');
-  signal c1_diagnostic_phase_prev : std_ulogic := '0';
-  signal c1_diagnostic_started : std_ulogic := '0';
-  signal c1_diagnostic_toggle : std_ulogic;
   signal c2_calib_done        : std_ulogic;
-  signal c2_diagnostic_count  : unsigned(26 downto 0) := (others => '0');
-  signal c2_diagnostic_pending : unsigned(11 downto 0) := (others => '0');
-  signal c2_diagnostic_phase_prev : std_ulogic := '0';
-  signal c2_diagnostic_started : std_ulogic := '0';
-  signal c2_diagnostic_toggle : std_ulogic;
   signal c3_calib_done        : std_ulogic;
-  signal c3_diagnostic_count  : unsigned(26 downto 0) := (others => '0');
-  signal c3_diagnostic_pending : unsigned(11 downto 0) := (others => '0');
-  signal c3_diagnostic_phase_prev : std_ulogic := '0';
-  signal c3_diagnostic_started : std_ulogic := '0';
-  signal c3_diagnostic_toggle : std_ulogic;
   signal c4_calib_done        : std_ulogic;
-  signal c4_diagnostic_count  : unsigned(26 downto 0) := (others => '0');
-  signal c4_diagnostic_toggle : std_ulogic;
   signal c5_calib_done        : std_ulogic;
-  signal c5_diagnostic_count  : unsigned(26 downto 0) := (others => '0');
-  signal c5_diagnostic_toggle : std_ulogic;
   signal c6_calib_done        : std_ulogic;
-  signal c6_diagnostic_count  : std_logic_vector(26 downto 0);
-  signal c6_diagnostic_toggle : std_ulogic;
---  signal c7_calib_done        : std_ulogic;
---  signal c7_diagnostic_count  : std_logic_vector(26 downto 0);
---  signal c7_diagnostic_toggle : std_ulogic;
-  signal front_panel_blink_count : std_logic_vector(26 downto 0);
-  signal front_panel_blink       : std_ulogic;
-  signal front_led_blue_dbg      : std_ulogic;
-  signal front_led_yellow_dbg    : std_ulogic;
 
 -- Ethernet signals
   signal ethi : eth_in_type;
@@ -550,37 +541,39 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
                                                         b2sl(D2D_CHANNELS_S > 0) &
                                                         b2sl(D2D_CHANNELS_N > 0);
 
-  signal chiplet_data_n_in    : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_in_n  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_in_n   : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  type dma_bypass_flit_vector is array (natural range <>) of std_logic_vector((2*COH_NOC_FLIT_SIZE)-1 downto 0);
 
-  signal chiplet_data_s_in    : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_in_s  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_in_s   : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_n_in    : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_in_n  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_in_n   : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_w_in    : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_in_w  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_in_w   : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_s_in    : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_in_s  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_in_s   : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_e_in    : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_in_e  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_in_e   : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_w_in    : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_in_w  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_in_w   : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_n_out   : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_out_n : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_out_n  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_e_in    : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_in_e  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_in_e   : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_s_out   : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_out_s : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_out_s  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_n_out   : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_out_n : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_out_n  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_w_out   : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_out_w : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_out_w  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_s_out   : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_out_s : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_out_s  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_e_out   : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_out_e : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_out_e  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_w_out   : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_out_w : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_out_w  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+
+  signal chiplet_data_e_out   : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_out_e : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_out_e  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
   signal c0_d2d_link_ready        : std_logic;
   signal c1_d2d_link_ready        : std_logic;
 
@@ -768,12 +761,18 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
   signal d2d_noc5_stop_in_w       : std_logic_vector(CFG_YLEN(BOARD_NUM)-1 downto 0);
   signal d2d_noc6_stop_in_w       : std_logic_vector(CFG_YLEN(BOARD_NUM)-1 downto 0);
 
-  signal bypass_data_out             : coh_noc_flit_vector(3 downto 0); -- 0:N, 1:S, 2:W, 3:E
+  signal bypass_data_out             : coh_noc_flit_vector(3 downto 0); -- CM bypass: 0:N, 1:S, 2:W, 3:E
   signal bypass_data_void_out        : std_logic_vector(3 downto 0);
   signal bypass_stop_in              : std_logic_vector(3 downto 0);
   signal bypass_data_in              : coh_noc_flit_vector(3 downto 0);
   signal bypass_data_void_in         : std_logic_vector(3 downto 0);
   signal bypass_stop_out             : std_logic_vector(3 downto 0);
+  signal dmabypass_data_out          : dma_bypass_flit_vector(3 downto 0);
+  signal dmabypass_data_void_out     : std_logic_vector(3 downto 0);
+  signal dmabypass_stop_in           : std_logic_vector(3 downto 0);
+  signal dmabypass_data_in           : dma_bypass_flit_vector(3 downto 0);
+  signal dmabypass_data_void_in      : std_logic_vector(3 downto 0);
+  signal dmabypass_stop_out          : std_logic_vector(3 downto 0);
 
 
 -- DVI
@@ -839,7 +838,6 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
 
 -- NOC
   signal chip_rstn, chip_rst  : std_ulogic;
-  signal d2d_rx_clocks_locked : std_ulogic;
   signal d2d_ready_c0, d2d_ready_c1   : std_ulogic;
   signal d2d_ready_sync_c0, d2d_ready_sync_c1 : std_ulogic := '0';
   signal d2d_ready_sync_c0_1, d2d_ready_sync_c1_1 : std_ulogic := '0';
@@ -847,6 +845,10 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
   signal sys_clk        : std_logic_vector(0 to MAX_NMEM_TILES - 1);
   signal esp_clk        : std_ulogic;
   signal chip_refclk    : std_ulogic;
+  signal d2d_delay_refclk_ibufds : std_ulogic;
+  signal d2d_delay_refclk       : std_ulogic;
+  signal d2d_delayctrl_rst      : std_ulogic;
+  signal d2d_delayctrl_rdy : std_ulogic;
 
   attribute keep of clkm        : signal is true;
   attribute keep of clkm_1      : signal is true;
@@ -870,37 +872,30 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
   signal mon_acc        : monitor_acc_vector(0 to relu(CFG_NACC_TILE_CHIPLET(BOARD_NUM)-1));
   signal mon_dvfs       : monitor_dvfs_vector(0 to CFG_CHIPLET_TILES(BOARD_NUM)-1);
 
-  signal c0_d2d_data_tx    : std_logic_vector(67 downto 0);
-  signal c1_d2d_data_tx    : std_logic_vector(67 downto 0);
-  signal c0_d2d_data_rx_pipe    : std_logic_vector(67 downto 0);
-  signal c1_d2d_data_rx_pipe    : std_logic_vector(67 downto 0);
-  signal c0_d2d_data_tx_io  : std_logic_vector(67 downto 0);
-  signal c1_d2d_data_tx_io  : std_logic_vector(67 downto 0);
-  
+  signal c0_d2d_data_tx    : std_logic_vector(135 downto 0);
+  signal c1_d2d_data_tx    : std_logic_vector(135 downto 0);
+  signal c0_d2d_data_rx_pipe    : std_logic_vector(135 downto 0);
+  signal c1_d2d_data_rx_pipe    : std_logic_vector(135 downto 0);
+
   signal cable_clk_rcv_raw_0    : std_ulogic;
   signal cable_clk_rcv_core_0   : std_ulogic;
+  signal d2d_tx_mmcm_locked0    : std_ulogic;
   signal d2d_rx_mmcm_locked0    : std_ulogic;
-  signal c0_rx_run              : std_ulogic;
-  signal c0_rx_core_run         : std_ulogic;
-  
+
   signal cable_clk_rcv_raw_1    : std_ulogic;
   signal cable_clk_rcv_core_1   : std_ulogic;
+  signal d2d_tx_mmcm_locked1    : std_ulogic;
   signal d2d_rx_mmcm_locked1    : std_ulogic;
-  signal c1_rx_run              : std_ulogic;
-  signal c1_rx_core_run         : std_ulogic;
-  
+
   signal d2d_clk_ibufds : std_ulogic;
   signal d2d_clk_int    : std_ulogic;
   signal d2d_rstn_c0_d2d : std_ulogic := '0';
   signal d2d_rstn_c1_d2d : std_ulogic := '0';
-  signal d2d_rst_c0_d2d_ff1, d2d_rst_c0_d2d_ff2 : std_ulogic := '1';
-  signal d2d_rst_c1_d2d_ff1, d2d_rst_c1_d2d_ff2 : std_ulogic := '1';
-  
   signal d2d_clk_n_in_int : std_ulogic;
   signal d2d_clk_s_in_int : std_ulogic;
   signal d2d_clk_w_in_int : std_ulogic;
   signal d2d_clk_e_in_int : std_ulogic;
-  
+
   signal d2d_tx_link_ready_n : std_logic;
   signal d2d_tx_link_ready_s : std_logic;
   signal d2d_tx_link_ready_e : std_logic;
@@ -909,14 +904,13 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
   signal d2d_rx_link_ready_s  : std_logic;
   signal d2d_rx_link_ready_e  : std_logic;
   signal d2d_rx_link_ready_w  : std_logic;
-  
-  -- Lossless credit CDC using shared Gray event counters.
+
   constant CREDIT_CDC_CNT_W : integer := 6;
-  
-  signal c0_credit_in_evt_pulse_d2d, c1_credit_in_evt_pulse_d2d : std_logic := '0';
-  
-  signal chiplet_credit_out_n_evt_pulse_d2d, chiplet_credit_out_s_evt_pulse_d2d : std_logic := '0';
-  signal chiplet_credit_out_w_evt_pulse_d2d, chiplet_credit_out_e_evt_pulse_d2d : std_logic := '0';
+
+  signal c0_credit_in_evt_pulse_d2d, c1_credit_in_evt_pulse_d2d : std_logic_vector(1 downto 0) := (others => '0');
+
+  signal chiplet_credit_out_n_evt_pulse_d2d, chiplet_credit_out_s_evt_pulse_d2d : std_logic_vector(1 downto 0) := (others => '0');
+  signal chiplet_credit_out_w_evt_pulse_d2d, chiplet_credit_out_e_evt_pulse_d2d : std_logic_vector(1 downto 0) := (others => '0');
           
   attribute ASYNC_REG : string;          
   attribute SHREG_EXTRACT : string;
@@ -924,73 +918,45 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
   attribute ASYNC_REG of d2d_ready_sync_c0   : signal is "TRUE";
   attribute ASYNC_REG of d2d_ready_sync_c1_1 : signal is "TRUE";
   attribute ASYNC_REG of d2d_ready_sync_c1   : signal is "TRUE";
-  attribute ASYNC_REG of d2d_rst_c0_d2d_ff1  : signal is "TRUE";
-  attribute ASYNC_REG of d2d_rst_c0_d2d_ff2  : signal is "TRUE";
-  attribute ASYNC_REG of d2d_rst_c1_d2d_ff1  : signal is "TRUE";
-  attribute ASYNC_REG of d2d_rst_c1_d2d_ff2  : signal is "TRUE";
   attribute SHREG_EXTRACT of d2d_ready_sync_c0_1 : signal is "NO";
   attribute SHREG_EXTRACT of d2d_ready_sync_c0   : signal is "NO";
   attribute SHREG_EXTRACT of d2d_ready_sync_c1_1 : signal is "NO";
   attribute SHREG_EXTRACT of d2d_ready_sync_c1   : signal is "NO";
-  attribute SHREG_EXTRACT of d2d_rst_c0_d2d_ff1  : signal is "NO";
-  attribute SHREG_EXTRACT of d2d_rst_c0_d2d_ff2  : signal is "NO";
-  attribute SHREG_EXTRACT of d2d_rst_c1_d2d_ff1  : signal is "NO";
-  attribute SHREG_EXTRACT of d2d_rst_c1_d2d_ff2  : signal is "NO";
 
 begin
-
-  d2d_rst_c0_d2d_sync : process (d2d_clk_int, d2d_rst_c0)
-  begin
-    if d2d_rst_c0 = '1' then
-      d2d_rst_c0_d2d_ff1 <= '1';
-      d2d_rst_c0_d2d_ff2 <= '1';
-    elsif rising_edge(d2d_clk_int) then
-      d2d_rst_c0_d2d_ff1 <= '0';
-      d2d_rst_c0_d2d_ff2 <= d2d_rst_c0_d2d_ff1;
-    end if;
-  end process d2d_rst_c0_d2d_sync;
-
-  d2d_rst_c1_d2d_sync : process (d2d_clk_int, d2d_rst_c1)
-  begin
-    if d2d_rst_c1 = '1' then
-      d2d_rst_c1_d2d_ff1 <= '1';
-      d2d_rst_c1_d2d_ff2 <= '1';
-    elsif rising_edge(d2d_clk_int) then
-      d2d_rst_c1_d2d_ff1 <= '0';
-      d2d_rst_c1_d2d_ff2 <= d2d_rst_c1_d2d_ff1;
-    end if;
-  end process d2d_rst_c1_d2d_sync;
-
-  d2d_rstn_c0_d2d <= not d2d_rst_c0_d2d_ff2;
-  d2d_rstn_c1_d2d <= not d2d_rst_c1_d2d_ff2;
+  d2d_rstn_c0_d2d <= not d2d_rst_c0;
+  d2d_rstn_c1_d2d <= not d2d_rst_c1;
 
   c0_cable_frontend_i : entity work.d2d_cable_frontend
     generic map (
       CLKIN_PERIOD_NS  => D2D_RX_MMCM_CLKIN_PERIOD_NS,
       REF_JITTER1_UI   => D2D_RX_MMCM_REF_JITTER1_UI,
-      PHASE_DEG        => D2D_RX_MMCM_PHASE_DEG_C0,
+      RX_PHASE_DEG     => D2D_RX_MMCM_PHASE_DEG_C0,
+      TX_PHASE_DEG     => D2D_TX_MMCM_PHASE_DEG_C0,
+      TX_DATA_PHASE_OFFSET_DEG => D2D_TX_DATA_PHASE_OFFSET_DEG_C0,
       CREDIT_CDC_N     => 3,
       TX_ON_UPPER_PINS => C0_TX_ON_UPPER_PINS,
-      LINK_ACTIVE      => C0_LINK_ACTIVE
+      LINK_ACTIVE      => C0_LINK_ACTIVE,
+      TX_ODELAY_PS     => D2D_TX_ODELAY_PS_C0,
+      RX_IDELAY_PS     => D2D_RX_IDELAY_PS_C0
     )
     port map (
       d2d_clk_int             => d2d_clk_int,
       d2d_rst                 => d2d_rst_c0,
       d2d_rstn                => d2d_rstn_c0,
       d2d_rstn_d2d            => d2d_rstn_c0_d2d,
+      delayctrl_rdy           => d2d_delayctrl_rdy,
       cable_clk_p             => c0_cable_clk_p,
       cable_clk_n             => c0_cable_clk_n,
       cable_clk_p_rcv         => c0_cable_clk_p_rcv,
       cable_clk_n_rcv         => c0_cable_clk_n_rcv,
       cable_io_data           => c0_cable_io_data,
       d2d_data_tx             => c0_d2d_data_tx,
-      d2d_data_tx_io_dbg      => c0_d2d_data_tx_io,
       d2d_data_rx_pipe        => c0_d2d_data_rx_pipe,
       cable_clk_rcv_raw       => cable_clk_rcv_raw_0,
       cable_clk_rcv_core      => cable_clk_rcv_core_0,
+      d2d_tx_mmcm_locked      => d2d_tx_mmcm_locked0,
       d2d_rx_mmcm_locked      => d2d_rx_mmcm_locked0,
-      rx_run                  => c0_rx_run,
-      rx_core_run             => c0_rx_core_run,
       credit_in_evt_pulse_d2d => c0_credit_in_evt_pulse_d2d
     );
 
@@ -998,375 +964,228 @@ begin
     generic map (
       CLKIN_PERIOD_NS  => D2D_RX_MMCM_CLKIN_PERIOD_NS,
       REF_JITTER1_UI   => D2D_RX_MMCM_REF_JITTER1_UI,
-      PHASE_DEG        => D2D_RX_MMCM_PHASE_DEG_C1,
+      RX_PHASE_DEG     => D2D_RX_MMCM_PHASE_DEG_C1,
+      TX_PHASE_DEG     => D2D_TX_MMCM_PHASE_DEG_C1,
+      TX_DATA_PHASE_OFFSET_DEG => D2D_TX_DATA_PHASE_OFFSET_DEG_C1,
       CREDIT_CDC_N     => 3,
       TX_ON_UPPER_PINS => C1_TX_ON_UPPER_PINS,
-      LINK_ACTIVE      => C1_LINK_ACTIVE
+      LINK_ACTIVE      => C1_LINK_ACTIVE,
+      TX_ODELAY_PS     => D2D_TX_ODELAY_PS_C1,
+      RX_IDELAY_PS     => D2D_RX_IDELAY_PS_C1
     )
     port map (
       d2d_clk_int             => d2d_clk_int,
       d2d_rst                 => d2d_rst_c1,
       d2d_rstn                => d2d_rstn_c1,
       d2d_rstn_d2d            => d2d_rstn_c1_d2d,
+      delayctrl_rdy           => d2d_delayctrl_rdy,
       cable_clk_p             => c1_cable_clk_p,
       cable_clk_n             => c1_cable_clk_n,
       cable_clk_p_rcv         => c1_cable_clk_p_rcv,
       cable_clk_n_rcv         => c1_cable_clk_n_rcv,
       cable_io_data           => c1_cable_io_data,
       d2d_data_tx             => c1_d2d_data_tx,
-      d2d_data_tx_io_dbg      => c1_d2d_data_tx_io,
       d2d_data_rx_pipe        => c1_d2d_data_rx_pipe,
       cable_clk_rcv_raw       => cable_clk_rcv_raw_1,
       cable_clk_rcv_core      => cable_clk_rcv_core_1,
+      d2d_tx_mmcm_locked      => d2d_tx_mmcm_locked1,
       d2d_rx_mmcm_locked      => d2d_rx_mmcm_locked1,
-      rx_run                  => c1_rx_run,
-      rx_core_run             => c1_rx_core_run,
       credit_in_evt_pulse_d2d => c1_credit_in_evt_pulse_d2d
     );
 
   gen_chiplet_credit_out_n_cdc : if D2D_CHANNELS_N > 0 generate
   begin
-    chiplet_credit_out_n_cdc_i : cdc_gray_pulse
-      generic map (
-        N => CREDIT_CDC_CNT_W
-      )
-      port map (
-        src_clk   => sys_clk(0),
-        dst_clk   => d2d_clk_int,
-        src_rstn  => d2d_rstn_c1,
-        dst_rstn  => d2d_rstn_c1_d2d,
-        src_pulse => chiplet_credit_out_n(0),
-        dst_pulse => chiplet_credit_out_n_evt_pulse_d2d
-      );
+    gen_chiplet_credit_out_n_lane : for lane in 0 to 1 generate
+      gen_chiplet_credit_out_n_lane_pos : if lane = 1 generate
+        chiplet_credit_out_n_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c1,
+            dst_rstn  => d2d_rstn_c1_d2d,
+            src_pulse => chiplet_credit_out_n(lane),
+            dst_pulse => chiplet_credit_out_n_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_n_lane_pos;
+
+      gen_chiplet_credit_out_n_lane_neg : if lane = 0 generate
+        chiplet_credit_out_n_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c1,
+            dst_rstn  => d2d_rstn_c1_d2d,
+            src_pulse => chiplet_credit_out_n(lane),
+            dst_pulse => chiplet_credit_out_n_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_n_lane_neg;
+    end generate gen_chiplet_credit_out_n_lane;
   end generate gen_chiplet_credit_out_n_cdc;
 
   no_chiplet_credit_out_n_cdc : if D2D_CHANNELS_N = 0 generate
   begin
-    chiplet_credit_out_n_evt_pulse_d2d <= '0';
+    chiplet_credit_out_n_evt_pulse_d2d <= (others => '0');
   end generate no_chiplet_credit_out_n_cdc;
 
   gen_chiplet_credit_out_s_cdc : if D2D_CHANNELS_S > 0 generate
   begin
-    chiplet_credit_out_s_cdc_i : cdc_gray_pulse
-      generic map (
-        N => CREDIT_CDC_CNT_W
-      )
-      port map (
-        src_clk   => sys_clk(0),
-        dst_clk   => d2d_clk_int,
-        src_rstn  => d2d_rstn_c1,
-        dst_rstn  => d2d_rstn_c1_d2d,
-        src_pulse => chiplet_credit_out_s(0),
-        dst_pulse => chiplet_credit_out_s_evt_pulse_d2d
-      );
+    gen_chiplet_credit_out_s_lane : for lane in 0 to 1 generate
+      gen_chiplet_credit_out_s_lane_pos : if lane = 1 generate
+        chiplet_credit_out_s_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c1,
+            dst_rstn  => d2d_rstn_c1_d2d,
+            src_pulse => chiplet_credit_out_s(lane),
+            dst_pulse => chiplet_credit_out_s_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_s_lane_pos;
+
+      gen_chiplet_credit_out_s_lane_neg : if lane = 0 generate
+        chiplet_credit_out_s_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c1,
+            dst_rstn  => d2d_rstn_c1_d2d,
+            src_pulse => chiplet_credit_out_s(lane),
+            dst_pulse => chiplet_credit_out_s_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_s_lane_neg;
+    end generate gen_chiplet_credit_out_s_lane;
   end generate gen_chiplet_credit_out_s_cdc;
 
   no_chiplet_credit_out_s_cdc : if D2D_CHANNELS_S = 0 generate
   begin
-    chiplet_credit_out_s_evt_pulse_d2d <= '0';
+    chiplet_credit_out_s_evt_pulse_d2d <= (others => '0');
   end generate no_chiplet_credit_out_s_cdc;
 
   gen_chiplet_credit_out_w_cdc : if D2D_CHANNELS_W > 0 generate
   begin
-    chiplet_credit_out_w_cdc_i : cdc_gray_pulse
-      generic map (
-        N => CREDIT_CDC_CNT_W
-      )
-      port map (
-        src_clk   => sys_clk(0),
-        dst_clk   => d2d_clk_int,
-        src_rstn  => d2d_rstn_c0,
-        dst_rstn  => d2d_rstn_c0_d2d,
-        src_pulse => chiplet_credit_out_w(0),
-        dst_pulse => chiplet_credit_out_w_evt_pulse_d2d
-      );
+    gen_chiplet_credit_out_w_lane : for lane in 0 to 1 generate
+      gen_chiplet_credit_out_w_lane_pos : if lane = 1 generate
+        chiplet_credit_out_w_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c0,
+            dst_rstn  => d2d_rstn_c0_d2d,
+            src_pulse => chiplet_credit_out_w(lane),
+            dst_pulse => chiplet_credit_out_w_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_w_lane_pos;
+
+      gen_chiplet_credit_out_w_lane_neg : if lane = 0 generate
+        chiplet_credit_out_w_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c0,
+            dst_rstn  => d2d_rstn_c0_d2d,
+            src_pulse => chiplet_credit_out_w(lane),
+            dst_pulse => chiplet_credit_out_w_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_w_lane_neg;
+    end generate gen_chiplet_credit_out_w_lane;
   end generate gen_chiplet_credit_out_w_cdc;
 
   no_chiplet_credit_out_w_cdc : if D2D_CHANNELS_W = 0 generate
   begin
-    chiplet_credit_out_w_evt_pulse_d2d <= '0';
+    chiplet_credit_out_w_evt_pulse_d2d <= (others => '0');
   end generate no_chiplet_credit_out_w_cdc;
 
   gen_chiplet_credit_out_e_cdc : if D2D_CHANNELS_E > 0 generate
   begin
-    chiplet_credit_out_e_cdc_i : cdc_gray_pulse
-      generic map (
-        N => CREDIT_CDC_CNT_W
-      )
-      port map (
-        src_clk   => sys_clk(0),
-        dst_clk   => d2d_clk_int,
-        src_rstn  => d2d_rstn_c0,
-        dst_rstn  => d2d_rstn_c0_d2d,
-        src_pulse => chiplet_credit_out_e(0),
-        dst_pulse => chiplet_credit_out_e_evt_pulse_d2d
-      );
+    gen_chiplet_credit_out_e_lane : for lane in 0 to 1 generate
+      gen_chiplet_credit_out_e_lane_pos : if lane = 1 generate
+        chiplet_credit_out_e_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c0,
+            dst_rstn  => d2d_rstn_c0_d2d,
+            src_pulse => chiplet_credit_out_e(lane),
+            dst_pulse => chiplet_credit_out_e_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_e_lane_pos;
+
+      gen_chiplet_credit_out_e_lane_neg : if lane = 0 generate
+        chiplet_credit_out_e_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c0,
+            dst_rstn  => d2d_rstn_c0_d2d,
+            src_pulse => chiplet_credit_out_e(lane),
+            dst_pulse => chiplet_credit_out_e_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_e_lane_neg;
+    end generate gen_chiplet_credit_out_e_lane;
   end generate gen_chiplet_credit_out_e_cdc;
 
   no_chiplet_credit_out_e_cdc : if D2D_CHANNELS_E = 0 generate
   begin
-    chiplet_credit_out_e_evt_pulse_d2d <= '0';
+    chiplet_credit_out_e_evt_pulse_d2d <= (others => '0');
   end generate no_chiplet_credit_out_e_cdc;
 
   gen_main_board : if BOARD_NUM = 0 generate
-    c0_diagnostic_phase : process (cable_clk_rcv_core_0)
-    begin
-      if rising_edge(cable_clk_rcv_core_0) then
-        if c0_rx_core_run = '0' then
-          c0_diagnostic_count <= (others => '0');
-          c0_diagnostic_phase_prev <= '0';
-        else
-          c0_diagnostic_phase_prev <= c0_diagnostic_count(26);
-          c0_diagnostic_count <= c0_diagnostic_count + 1;
-        end if;
-      end if;
-    end process c0_diagnostic_phase;
-
-    c0_diagnostic_pending_q : process (cable_clk_rcv_core_0)
-      variable next_c0_pending : unsigned(c0_diagnostic_pending'range);
-      variable next_c0_started : std_ulogic;
-    begin
-      if rising_edge(cable_clk_rcv_core_0) then
-        if c0_rx_core_run = '0' then
-          c0_diagnostic_pending <= (others => '0');
-          c0_diagnostic_started <= '0';
-        else
-          next_c0_pending := c0_diagnostic_pending;
-          next_c0_started := c0_diagnostic_started;
-          if c0_d2d_data_rx_pipe(66) = '1' and next_c0_pending /= diagnostic_pending_max then
-            next_c0_pending := next_c0_pending + 1;
-          end if;
-
-          if next_c0_pending = 0 then
-            next_c0_started := '0';
-          elsif c0_diagnostic_phase_prev = '0' and c0_diagnostic_count(26) = '1' then
-            next_c0_started := '1';
-          elsif c0_diagnostic_phase_prev = '1' and c0_diagnostic_count(26) = '0' and next_c0_started = '1' then
-            next_c0_pending := next_c0_pending - 1;
-            if next_c0_pending = 0 then
-              next_c0_started := '0';
-            end if;
-          end if;
-
-          c0_diagnostic_pending <= next_c0_pending;
-          c0_diagnostic_started <= next_c0_started;
-        end if;
-      end if;
-    end process c0_diagnostic_pending_q;
-    c0_diagnostic_toggle <= c0_diagnostic_count(26) when c0_diagnostic_pending /= 0 and c0_diagnostic_started = '1' else '0';
-    c0_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c0_diagnostic_led, c0_diagnostic_toggle);
-  
-    c1_diagnostic_phase : process (d2d_clk_int)
-    begin
-      if rising_edge(d2d_clk_int) then
-        if d2d_rstn_c0_d2d = '0' then
-          c1_diagnostic_count <= (others => '0');
-          c1_diagnostic_phase_prev <= '0';
-        else
-          c1_diagnostic_phase_prev <= c1_diagnostic_count(26);
-          c1_diagnostic_count <= c1_diagnostic_count + 1;
-        end if;
-      end if;
-    end process c1_diagnostic_phase;
-
-    c1_diagnostic_pending_q : process (d2d_clk_int)
-      variable next_c1_pending : unsigned(c1_diagnostic_pending'range);
-      variable next_c1_started : std_ulogic;
-    begin
-      if rising_edge(d2d_clk_int) then
-        if d2d_rstn_c0_d2d = '0' then
-          c1_diagnostic_pending <= (others => '0');
-          c1_diagnostic_started <= '0';
-        else
-          next_c1_pending := c1_diagnostic_pending;
-          next_c1_started := c1_diagnostic_started;
-          if c0_d2d_data_tx_io(65) = '1' and c0_d2d_data_tx_io(67) = '1' and next_c1_pending /= diagnostic_pending_max then
-            next_c1_pending := next_c1_pending + 1;
-          end if;
-
-          if next_c1_pending = 0 then
-            next_c1_started := '0';
-          elsif c1_diagnostic_phase_prev = '0' and c1_diagnostic_count(26) = '1' then
-            next_c1_started := '1';
-          elsif c1_diagnostic_phase_prev = '1' and c1_diagnostic_count(26) = '0' and next_c1_started = '1' then
-            next_c1_pending := next_c1_pending - 1;
-            if next_c1_pending = 0 then
-              next_c1_started := '0';
-            end if;
-          end if;
-
-          c1_diagnostic_pending <= next_c1_pending;
-          c1_diagnostic_started <= next_c1_started;
-        end if;
-      end if;
-    end process c1_diagnostic_pending_q;
-    c1_diagnostic_toggle <= c1_diagnostic_count(26) when c1_diagnostic_pending /= 0 and c1_diagnostic_started = '1' else '0';
-    c1_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c1_diagnostic_led, c1_diagnostic_toggle);
-  
-    c2_diagnostic_phase : process (d2d_clk_int)
-    begin
-      if rising_edge(d2d_clk_int) then
-        if d2d_rstn_c1_d2d = '0' then
-          c2_diagnostic_count <= (others => '0');
-          c2_diagnostic_phase_prev <= '0';
-        else
-          c2_diagnostic_phase_prev <= c2_diagnostic_count(26);
-          c2_diagnostic_count <= c2_diagnostic_count + 1;
-        end if;
-      end if;
-    end process c2_diagnostic_phase;
-
-    c2_diagnostic_pending_q : process (d2d_clk_int)
-      variable next_c2_pending : unsigned(c2_diagnostic_pending'range);
-      variable next_c2_started : std_ulogic;
-    begin
-      if rising_edge(d2d_clk_int) then
-        if d2d_rstn_c1_d2d = '0' then
-          c2_diagnostic_pending <= (others => '0');
-          c2_diagnostic_started <= '0';
-        else
-          next_c2_pending := c2_diagnostic_pending;
-          next_c2_started := c2_diagnostic_started;
-          if c1_credit_in_evt_pulse_d2d = '1' and next_c2_pending /= diagnostic_pending_max then
-            next_c2_pending := next_c2_pending + 1;
-          end if;
-
-          if next_c2_pending = 0 then
-            next_c2_started := '0';
-          elsif c2_diagnostic_phase_prev = '0' and c2_diagnostic_count(26) = '1' then
-            next_c2_started := '1';
-          elsif c2_diagnostic_phase_prev = '1' and c2_diagnostic_count(26) = '0' and next_c2_started = '1' then
-            next_c2_pending := next_c2_pending - 1;
-            if next_c2_pending = 0 then
-              next_c2_started := '0';
-            end if;
-          end if;
-
-          c2_diagnostic_pending <= next_c2_pending;
-          c2_diagnostic_started <= next_c2_started;
-        end if;
-      end if;
-    end process c2_diagnostic_pending_q;
-    c2_diagnostic_toggle <= c2_diagnostic_count(26) when c2_diagnostic_pending /= 0 and c2_diagnostic_started = '1' else '0';
-    c2_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c2_diagnostic_led, c2_diagnostic_toggle);
-  
-    c3_diagnostic_phase : process (d2d_clk_int)
-    begin
-      if rising_edge(d2d_clk_int) then
-        if d2d_rstn_c1_d2d = '0' then
-          c3_diagnostic_count <= (others => '0');
-          c3_diagnostic_phase_prev <= '0';
-        else
-          c3_diagnostic_phase_prev <= c3_diagnostic_count(26);
-          c3_diagnostic_count <= c3_diagnostic_count + 1;
-        end if;
-      end if;
-    end process c3_diagnostic_phase;
-
-    c3_diagnostic_pending_q : process (d2d_clk_int)
-      variable next_c3_pending : unsigned(c3_diagnostic_pending'range);
-      variable next_c3_started : std_ulogic;
-    begin
-      if rising_edge(d2d_clk_int) then
-        if d2d_rstn_c1_d2d = '0' then
-          c3_diagnostic_pending <= (others => '0');
-          c3_diagnostic_started <= '0';
-        else
-          next_c3_pending := c3_diagnostic_pending;
-          next_c3_started := c3_diagnostic_started;
-          if c1_d2d_data_tx_io(65) = '1' and c1_d2d_data_tx_io(67) = '1' and next_c3_pending /= diagnostic_pending_max then
-            next_c3_pending := next_c3_pending + 1;
-          end if;
-
-          if next_c3_pending = 0 then
-            next_c3_started := '0';
-          elsif c3_diagnostic_phase_prev = '0' and c3_diagnostic_count(26) = '1' then
-            next_c3_started := '1';
-          elsif c3_diagnostic_phase_prev = '1' and c3_diagnostic_count(26) = '0' and next_c3_started = '1' then
-            next_c3_pending := next_c3_pending - 1;
-            if next_c3_pending = 0 then
-              next_c3_started := '0';
-            end if;
-          end if;
-
-          c3_diagnostic_pending <= next_c3_pending;
-          c3_diagnostic_started <= next_c3_started;
-        end if;
-      end if;
-    end process c3_diagnostic_pending_q;
-    c3_diagnostic_toggle <= c3_diagnostic_count(26) when c3_diagnostic_pending /= 0 and c3_diagnostic_started = '1' else '0';
-    c3_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c3_diagnostic_led, c3_diagnostic_toggle);
-  
-    c4_diagnostic : process (cable_clk_rcv_core_0)
-    begin
-      if rising_edge(cable_clk_rcv_core_0) then
-        if c0_rx_core_run = '0' then
-          c4_diagnostic_count <= (others => '0');
-        else
-          c4_diagnostic_count <= c4_diagnostic_count + 1;
-        end if;
-      end if;
-    end process c4_diagnostic;
-    c4_diagnostic_toggle <= c4_diagnostic_count(26);
-    c4_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c4_diagnostic_led, c4_diagnostic_toggle);
-  
-    c5_diagnostic : process (cable_clk_rcv_core_1)
-    begin
-      if rising_edge(cable_clk_rcv_core_1) then
-        if c1_rx_core_run = '0' then
-          c5_diagnostic_count <= (others => '0');
-        else
-          c5_diagnostic_count <= c5_diagnostic_count + 1;
-        end if;
-      end if;
-    end process c5_diagnostic;
-    c5_diagnostic_toggle <= c5_diagnostic_count(26);
-    c5_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c5_diagnostic_led, c5_diagnostic_toggle);
-  
-    c6_diagnostic : process (cable_clk_rcv_raw_0, rst)
-    begin  -- process c6_diagnostic
-      if rst = '1' then           -- asynchronous reset (active high)
-        c6_diagnostic_count <= (others => '0');
-      elsif cable_clk_rcv_raw_0'event and cable_clk_rcv_raw_0 = '1' then  -- rising clock edge
-        c6_diagnostic_count <= c6_diagnostic_count + 1;
-      end if;
-    end process c6_diagnostic;
-    c6_diagnostic_toggle <= c6_diagnostic_count(26);
-    c6_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c6_diagnostic_led, c6_diagnostic_toggle);
-  
---  c7_diagnostic : process (clkm_7, clkm_sync_rst_7)
---  begin  -- process c7_diagnostic
---    if clkm_sync_rst_7 = '1' then           -- asynchronous reset (active high)
---      c7_diagnostic_count <= (others => '0');
---    elsif clkm_7'event and clkm_7 = '1' then  -- rising clock edge
---      c7_diagnostic_count <= c7_diagnostic_count + 1;
---    end if;
---  end process c7_diagnostic;
---  c7_diagnostic_toggle <= c7_diagnostic_count(26);
---  c7_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c7_diagnostic_led, c7_diagnostic_toggle);
-end generate gen_main_board;
+    c0_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c0_diagnostic_led, '0');
+    c1_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c1_diagnostic_led, '0');
+    c2_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c2_diagnostic_led, '0');
+    c3_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c3_diagnostic_led, '0');
+    c4_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c4_diagnostic_led, '0');
+    c5_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c5_diagnostic_led, '0');
+    c6_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c6_diagnostic_led, '0');
+  end generate gen_main_board;
 
 -------------------------------------------------------------------------------
 -- Leds -----------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
-  front_panel_blink_gen : process (clkm, rst)
-  begin
-    if rst = '1' then
-      front_panel_blink_count <= (others => '0');
-    elsif clkm'event and clkm = '1' then
-      front_panel_blink_count <= front_panel_blink_count + 1;
-    end if;
-  end process front_panel_blink_gen;
-
-  front_panel_blink <= front_panel_blink_count(26);
-
-
-  -- From memory controllers' PLLs
-  lock_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_GREEN, lock);
-
-  -- From CPU 0 (on chip)
-  cpuerr_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_RED, cpuerr);
+  -- Board LEDs are tied low.
+  lock_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_GREEN, '0');
+  cpuerr_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_RED, '0');
   --pragma translate_off
   process(clkm, rstn)
   begin  -- process
@@ -1389,11 +1208,8 @@ end generate gen_main_board;
   end generate gen_main_board_1;
 
 
-  -- Encode D2D status as blinking LEDs so the indication is still readable
-  -- even if the board LEDs are wired active-low.
-  led3_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_BLUE, front_led_blue_dbg);
-
-  led4_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_YELLOW, front_led_yellow_dbg);
+  led3_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_BLUE, '0');
+  led4_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_YELLOW, '0');
 
 -------------------------------------------------------------------------------
 -- Switches -------------------------------------------------------------------
@@ -1443,13 +1259,22 @@ end generate gen_main_board;
   d2d_rst_c0 <= not d2d_rstn_c0;
   d2d_rst_c1 <= not d2d_rstn_c1;
   d2d_rst <= not d2d_rstn_c0;
-  d2d_rx_clocks_locked <= d2d_rx_mmcm_locked0 and d2d_rx_mmcm_locked1;
+  d2d_delayctrl_rst <= rst;
+
+  d2d_delayctrl_i : IDELAYCTRL
+    generic map (
+      SIM_DEVICE => "ULTRASCALE"
+    )
+    port map (
+      RDY    => d2d_delayctrl_rdy,
+      REFCLK => d2d_delay_refclk,
+      RST    => d2d_delayctrl_rst
+    );
+
   c1_d2d_link_ready <= (d2d_tx_link_ready_n and d2d_rx_link_ready_n) when C1_IS_NORTH else
                        (d2d_tx_link_ready_s and d2d_rx_link_ready_s);
   c0_d2d_link_ready <= (d2d_tx_link_ready_w and d2d_rx_link_ready_w) when C0_IS_WEST else
                        (d2d_tx_link_ready_e and d2d_rx_link_ready_e);
-  front_led_blue_dbg <= (d2d_rx_clocks_locked and front_panel_blink);
-  front_led_yellow_dbg <= (d2d_startup_done and front_panel_blink);
 
   d2d_ready_c0 <= '1' when (BOARD_NUM = 0 and ISOLATE_BOARD0_D2D) else
                   '1' when (D2D_CHANNELS_E = 0 and D2D_CHANNELS_W = 0) else
@@ -1527,6 +1352,23 @@ end generate gen_main_board;
   esp_clkgen : clkgen
     generic map (CFG_FABTECH, 8, 8, 0, 0, 0, 0, 0, CPU_FREQ)
     port map (esp_clk, esp_clk, chip_refclk, open, open, open, open, cgi, cgo, open, open, open);
+
+  d2d_delay_refclk_buf_i : IBUFDS
+    generic map (
+      DIFF_TERM    => TRUE,
+      IBUF_LOW_PWR => FALSE
+    )
+    port map (
+      I  => d2d_delay_refclk_p,
+      IB => d2d_delay_refclk_n,
+      O  => d2d_delay_refclk_ibufds
+    );
+
+  d2d_delay_refclk_global_buf_i : BUFG
+    port map (
+      I => d2d_delay_refclk_ibufds,
+      O => d2d_delay_refclk
+    );
 
   d2d_clk_buf : IBUFDS
     generic map (
@@ -2398,7 +2240,9 @@ end generate gen_main_board;
       noc5_data_void_in   => d2d_noc5_data_void_in_n,
       noc6_data_void_in   => d2d_noc6_data_void_in_n,
       bypass_data_in      => bypass_data_out(0),
+      dmabypass_data_in   => dmabypass_data_out(0),
       bypass_data_void_in => bypass_data_void_out(0),
+      dmabypass_data_void_in => dmabypass_data_void_out(0),
       noc1_stop_out       => d2d_noc1_stop_out_n,
       noc2_stop_out       => d2d_noc2_stop_out_n,
       noc3_stop_out       => d2d_noc3_stop_out_n,
@@ -2406,6 +2250,7 @@ end generate gen_main_board;
       noc5_stop_out       => d2d_noc5_stop_out_n,
       noc6_stop_out       => d2d_noc6_stop_out_n,
       bypass_stop_out     => bypass_stop_in(0),
+      dmabypass_stop_out  => dmabypass_stop_in(0),
       noc1_data_out       => d2d_noc1_data_out_n,
       noc2_data_out       => d2d_noc2_data_out_n,
       noc3_data_out       => d2d_noc3_data_out_n,
@@ -2419,14 +2264,17 @@ end generate gen_main_board;
       noc5_data_void_out  => d2d_noc5_data_void_out_n,
       noc6_data_void_out  => d2d_noc6_data_void_out_n,
       bypass_data_out     => bypass_data_in(0),
+      dmabypass_data_out  => dmabypass_data_in(0),
       bypass_data_void_out => bypass_data_void_in(0),
+      dmabypass_data_void_out => dmabypass_data_void_in(0),
       noc1_stop_in        => d2d_noc1_stop_in_n,
       noc2_stop_in        => d2d_noc2_stop_in_n,
       noc3_stop_in        => d2d_noc3_stop_in_n,
       noc4_stop_in        => d2d_noc4_stop_in_n,
       noc5_stop_in        => d2d_noc5_stop_in_n,
       noc6_stop_in        => d2d_noc6_stop_in_n,
-      bypass_stop_in      => bypass_stop_out(0)
+      bypass_stop_in      => bypass_stop_out(0),
+      dmabypass_stop_in   => dmabypass_stop_out(0)
     );
 
   d2d_link_s_i : entity work.d2d_direction_link
@@ -2465,7 +2313,9 @@ end generate gen_main_board;
       noc5_data_void_in   => d2d_noc5_data_void_in_s,
       noc6_data_void_in   => d2d_noc6_data_void_in_s,
       bypass_data_in      => bypass_data_out(1),
+      dmabypass_data_in   => dmabypass_data_out(1),
       bypass_data_void_in => bypass_data_void_out(1),
+      dmabypass_data_void_in => dmabypass_data_void_out(1),
       noc1_stop_out       => d2d_noc1_stop_out_s,
       noc2_stop_out       => d2d_noc2_stop_out_s,
       noc3_stop_out       => d2d_noc3_stop_out_s,
@@ -2473,6 +2323,7 @@ end generate gen_main_board;
       noc5_stop_out       => d2d_noc5_stop_out_s,
       noc6_stop_out       => d2d_noc6_stop_out_s,
       bypass_stop_out     => bypass_stop_in(1),
+      dmabypass_stop_out  => dmabypass_stop_in(1),
       noc1_data_out       => d2d_noc1_data_out_s,
       noc2_data_out       => d2d_noc2_data_out_s,
       noc3_data_out       => d2d_noc3_data_out_s,
@@ -2486,14 +2337,17 @@ end generate gen_main_board;
       noc5_data_void_out  => d2d_noc5_data_void_out_s,
       noc6_data_void_out  => d2d_noc6_data_void_out_s,
       bypass_data_out     => bypass_data_in(1),
+      dmabypass_data_out  => dmabypass_data_in(1),
       bypass_data_void_out => bypass_data_void_in(1),
+      dmabypass_data_void_out => dmabypass_data_void_in(1),
       noc1_stop_in        => d2d_noc1_stop_in_s,
       noc2_stop_in        => d2d_noc2_stop_in_s,
       noc3_stop_in        => d2d_noc3_stop_in_s,
       noc4_stop_in        => d2d_noc4_stop_in_s,
       noc5_stop_in        => d2d_noc5_stop_in_s,
       noc6_stop_in        => d2d_noc6_stop_in_s,
-      bypass_stop_in      => bypass_stop_out(1)
+      bypass_stop_in      => bypass_stop_out(1),
+      dmabypass_stop_in   => dmabypass_stop_out(1)
     );
 
   d2d_link_e_i : entity work.d2d_direction_link
@@ -2532,7 +2386,9 @@ end generate gen_main_board;
       noc5_data_void_in   => d2d_noc5_data_void_in_e,
       noc6_data_void_in   => d2d_noc6_data_void_in_e,
       bypass_data_in      => bypass_data_out(3),
+      dmabypass_data_in   => dmabypass_data_out(3),
       bypass_data_void_in => bypass_data_void_out(3),
+      dmabypass_data_void_in => dmabypass_data_void_out(3),
       noc1_stop_out       => d2d_noc1_stop_out_e,
       noc2_stop_out       => d2d_noc2_stop_out_e,
       noc3_stop_out       => d2d_noc3_stop_out_e,
@@ -2540,6 +2396,7 @@ end generate gen_main_board;
       noc5_stop_out       => d2d_noc5_stop_out_e,
       noc6_stop_out       => d2d_noc6_stop_out_e,
       bypass_stop_out     => bypass_stop_in(3),
+      dmabypass_stop_out  => dmabypass_stop_in(3),
       noc1_data_out       => d2d_noc1_data_out_e,
       noc2_data_out       => d2d_noc2_data_out_e,
       noc3_data_out       => d2d_noc3_data_out_e,
@@ -2553,14 +2410,17 @@ end generate gen_main_board;
       noc5_data_void_out  => d2d_noc5_data_void_out_e,
       noc6_data_void_out  => d2d_noc6_data_void_out_e,
       bypass_data_out     => bypass_data_in(3),
+      dmabypass_data_out  => dmabypass_data_in(3),
       bypass_data_void_out => bypass_data_void_in(3),
+      dmabypass_data_void_out => dmabypass_data_void_in(3),
       noc1_stop_in        => d2d_noc1_stop_in_e,
       noc2_stop_in        => d2d_noc2_stop_in_e,
       noc3_stop_in        => d2d_noc3_stop_in_e,
       noc4_stop_in        => d2d_noc4_stop_in_e,
       noc5_stop_in        => d2d_noc5_stop_in_e,
       noc6_stop_in        => d2d_noc6_stop_in_e,
-      bypass_stop_in      => bypass_stop_out(3)
+      bypass_stop_in      => bypass_stop_out(3),
+      dmabypass_stop_in   => dmabypass_stop_out(3)
     );
 
   d2d_link_w_i : entity work.d2d_direction_link
@@ -2599,7 +2459,9 @@ end generate gen_main_board;
       noc5_data_void_in   => d2d_noc5_data_void_in_w,
       noc6_data_void_in   => d2d_noc6_data_void_in_w,
       bypass_data_in      => bypass_data_out(2),
+      dmabypass_data_in   => dmabypass_data_out(2),
       bypass_data_void_in => bypass_data_void_out(2),
+      dmabypass_data_void_in => dmabypass_data_void_out(2),
       noc1_stop_out       => d2d_noc1_stop_out_w,
       noc2_stop_out       => d2d_noc2_stop_out_w,
       noc3_stop_out       => d2d_noc3_stop_out_w,
@@ -2607,6 +2469,7 @@ end generate gen_main_board;
       noc5_stop_out       => d2d_noc5_stop_out_w,
       noc6_stop_out       => d2d_noc6_stop_out_w,
       bypass_stop_out     => bypass_stop_in(2),
+      dmabypass_stop_out  => dmabypass_stop_in(2),
       noc1_data_out       => d2d_noc1_data_out_w,
       noc2_data_out       => d2d_noc2_data_out_w,
       noc3_data_out       => d2d_noc3_data_out_w,
@@ -2620,14 +2483,17 @@ end generate gen_main_board;
       noc5_data_void_out  => d2d_noc5_data_void_out_w,
       noc6_data_void_out  => d2d_noc6_data_void_out_w,
       bypass_data_out     => bypass_data_in(2),
+      dmabypass_data_out  => dmabypass_data_in(2),
       bypass_data_void_out => bypass_data_void_in(2),
+      dmabypass_data_void_out => dmabypass_data_void_in(2),
       noc1_stop_in        => d2d_noc1_stop_in_w,
       noc2_stop_in        => d2d_noc2_stop_in_w,
       noc3_stop_in        => d2d_noc3_stop_in_w,
       noc4_stop_in        => d2d_noc4_stop_in_w,
       noc5_stop_in        => d2d_noc5_stop_in_w,
       noc6_stop_in        => d2d_noc6_stop_in_w,
-      bypass_stop_in      => bypass_stop_out(2)
+      bypass_stop_in      => bypass_stop_out(2),
+      dmabypass_stop_in   => dmabypass_stop_out(2)
     );
 
   bypass_router_i : bypass_router
@@ -2636,12 +2502,12 @@ end generate gen_main_board;
       width                       => COH_NOC_FLIT_SIZE,
       depth                       => 4,
       ports                       => bypass_ports,
-      DEST_SIZE                   => 1)
+      DEST_SIZE                   => 1,
+      LOCAL_CHIP_X                => COL,
+      LOCAL_CHIP_Y                => ROW)
     port map (
       clk                         => sys_clk(0),
       rst                         => chip_rst,
-      CONST_local_chip_x          => chip_yx'(std_logic_vector(to_unsigned(COL, CHIP_YX_WIDTH))),
-      CONST_local_chip_y          => chip_yx'(std_logic_vector(to_unsigned(ROW, CHIP_YX_WIDTH))),
       data_n_in                   => bypass_data_in(0),
       data_s_in                   => bypass_data_in(1),
       data_w_in                   => bypass_data_in(2),
@@ -2654,6 +2520,32 @@ end generate gen_main_board;
       data_e_out                  => bypass_data_out(3),
       data_void_out               => bypass_data_void_out,
       stop_out                    => bypass_stop_out
+    );
+
+  dmabypass_router_i : bypass_router
+    generic map (
+      flow_control                => 0,
+      width                       => 2*COH_NOC_FLIT_SIZE,
+      depth                       => 4,
+      ports                       => bypass_ports,
+      DEST_SIZE                   => 2,
+      LOCAL_CHIP_X                => COL,
+      LOCAL_CHIP_Y                => ROW)
+    port map (
+      clk                         => sys_clk(0),
+      rst                         => chip_rst,
+      data_n_in                   => dmabypass_data_in(0),
+      data_s_in                   => dmabypass_data_in(1),
+      data_w_in                   => dmabypass_data_in(2),
+      data_e_in                   => dmabypass_data_in(3),
+      data_void_in                => dmabypass_data_void_in,
+      stop_in                     => dmabypass_stop_in,
+      data_n_out                  => dmabypass_data_out(0),
+      data_s_out                  => dmabypass_data_out(1),
+      data_w_out                  => dmabypass_data_out(2),
+      data_e_out                  => dmabypass_data_out(3),
+      data_void_out               => dmabypass_data_void_out,
+      stop_out                    => dmabypass_stop_out
     );
 
   esp_chiplet_1 : esp_chiplet

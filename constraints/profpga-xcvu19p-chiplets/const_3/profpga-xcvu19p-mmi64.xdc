@@ -159,9 +159,11 @@ set_property DIFF_TERM_ADV TERM_100 [get_ports {profpga_sync0_p}]
 # mmi and the rest of the desing are asynchronous
 set clkm_elab [get_clocks -of_objects [get_nets {clkm}]]
 set refclk_elab [get_clocks -of_objects [get_nets chip_refclk]]
+set d2d_delay_refclk_elab [get_clocks -include_generated_clocks d2d_delay_refclk_p]
 
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks profpga_clk0_p] -group [get_clocks -include_generated_clocks $clkm_elab]
 set_clock_groups -asynchronous -group [get_clocks $refclk_elab] -group [get_clocks -include_generated_clocks profpga_clk0_p]
+set_clock_groups -asynchronous -group [get_clocks $d2d_delay_refclk_elab] -group [get_clocks -include_generated_clocks profpga_clk0_p]
 # set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks profpga_clk0_p] -group [get_clocks -include_generated_clocks d2d_clk_p]
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks profpga_clk0_p] -group [get_clocks -include_generated_clocks c0_rx_clk]
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks profpga_clk0_p] -group [get_clocks -include_generated_clocks c1_rx_clk]

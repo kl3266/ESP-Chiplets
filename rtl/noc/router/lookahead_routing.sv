@@ -102,12 +102,10 @@ module lookahead_routing
   generate
     if (PORT_ID == 0) begin : CALC_NEXT_POS_N // North Port
       always_ff @(posedge clk) begin
-        next_position.x <= position.x;
         next_position.y <= position.y - 1'b1;
       end
     end else if (PORT_ID == 1) begin : CALC_NEXT_POS_S // South Port
       always_ff @(posedge clk) begin
-        next_position.x <= position.x;
         next_position.y <= position.y + 1'b1;
       end
     end else if (PORT_ID == 2) begin : CALC_NEXT_POS_W // West Port

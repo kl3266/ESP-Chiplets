@@ -1,7 +1,3 @@
-techmap/asic/memory_asic.vhd
-techmap/asic/pads_asic.vhd
-techmap/asic/clkgen_gf12.vhd
-techmap/asic/pads_gf12.vhd
 techmap/virtex7/buffer_unisim.vhd
 techmap/virtex7/clkgen_unisim.vhd
 techmap/virtex7/ddr_unisim.vhd
@@ -38,3 +34,7 @@ techmap/virtexup/sgmii_vcu118_clock_reset.vhd
 techmap/virtexup/spictrl_unisim.vhd
 techmap/virtexup/sysmon_unisim.vhd
 techmap/virtexup/tap_unisim.vhd
+techmap/asic/clkgen_gf12.vhd
+techmap/asic/pads_gf12.vhd
+techmap/asic/memory_asic.vhd
+techmap/asic/pads_asic.vhd

@@ -111,6 +111,7 @@ void esp_flush(int coherence)
 	if (coherence < ACC_COH_RECALL) {
 
 		if (nl2 > 0) {
+			int l2_index = -1;
 			/* Set L2 flush (waits for L1 to flush first) */
 			for (i = 0; i < nl2; i++) {
 				struct esp_device *l2 = &l2s[i];
@@ -118,22 +119,27 @@ void esp_flush(int coherence)
 							>> ESP_CACHE_STATUS_CPUID_SHIFT;
 				if (cpuid == pid) {
 					iowrite32(l2, ESP_CACHE_REG_CMD, cmd);
+					l2_index = i;
 					break;
 				}
 			}
 
+			if (l2_index >= 0) {
 #ifdef __sparc
-			/* Flush L1 - also execute L2 flush */
-			__asm__ __volatile__("sta %%g0, [%%g0] %0\n\t" : :
-					"i"(ASI_LEON_DFLUSH) : "memory");
+				/* Flush L1 - also execute L2 flush */
+				__asm__ __volatile__("sta %%g0, [%%g0] %0\n\t" : :
+						"i"(ASI_LEON_DFLUSH) : "memory");
 #endif
 
-			/* Wait for L2 flush to complete */
-			struct esp_device *l2 = &l2s[i];
-			/* Poll for completion */
-			while (!(ioread32(l2, ESP_CACHE_REG_STATUS) & ESP_CACHE_STATUS_DONE_MASK));
-			/* Clear IRQ */
-			iowrite32(l2, ESP_CACHE_REG_CMD, 0);
+				/* Wait for L2 flush to complete */
+				struct esp_device *l2 = &l2s[l2_index];
+				/* Poll for completion */
+				while (!(ioread32(l2, ESP_CACHE_REG_STATUS) & ESP_CACHE_STATUS_DONE_MASK));
+				/* Clear IRQ */
+				iowrite32(l2, ESP_CACHE_REG_CMD, 0);
+			} else {
+				printf("\t-> Warning: no L2 cache matches hart %d; skipping L2 flush\n", pid);
+			}
 		}
 
 		if (nllc > 0) {
@@ -288,14 +294,33 @@ unsigned ioread32(struct esp_device *dev, unsigned offset)
 {
 	const long unsigned addr = dev->addr + offset;
 	volatile unsigned *reg = (unsigned *) addr;
-	return *reg;
+#ifdef __riscv
+	/*
+	 * Ariane can reorder MMIO accesses unless they are fenced explicitly.
+	 * These tests program multiple accelerators back-to-back and then poll
+	 * their status immediately, so we need strong ordering for register
+	 * writes and subsequent reads to observe a coherent device state.
+	 */
+	asm volatile ("fence iorw, iorw" : : : "memory");
+#endif
+	unsigned value = *reg;
+#ifdef __riscv
+	asm volatile ("fence iorw, iorw" : : : "memory");
+#endif
+	return value;
 }
 
 void iowrite32(struct esp_device *dev, unsigned offset, unsigned payload)
 {
 	const long unsigned addr = dev->addr + offset;
 	volatile unsigned *reg = (unsigned *) addr;
+#ifdef __riscv
+	asm volatile ("fence iorw, iorw" : : : "memory");
+#endif
 	*reg = payload;
+#ifdef __riscv
+	asm volatile ("fence iorw, iorw" : : : "memory");
+#endif
 }
 
 void esp_p2p_init(struct esp_device *dev, struct esp_device *srcs, unsigned nsrcs)
@@ -303,15 +328,12 @@ void esp_p2p_init(struct esp_device *dev, struct esp_device *srcs, unsigned nsrc
 	unsigned i;
 
 	esp_p2p_reset(dev);
-	esp_p2p_chip_reset(dev);
-  esp_p2p_enable_src(dev);
+	esp_p2p_enable_src(dev);
 	esp_p2p_set_nsrcs(dev, nsrcs);
 	for (i = 0; i < nsrcs; i++) {
 		esp_p2p_enable_dst(&srcs[i]);
 		esp_p2p_set_y(dev, i, esp_get_y(&srcs[i]));
 		esp_p2p_set_x(dev, i, esp_get_x(&srcs[i]));
-		esp_p2p_set_chip_y(dev, i, esp_get_chip_y(&srcs[i]));
-		esp_p2p_set_chip_x(dev, i, esp_get_chip_x(&srcs[i]));
 	}
 }
 
@@ -320,8 +342,5 @@ void esp_set_acc_yx_table(struct esp_device *dev, struct esp_device *srcs, unsig
         //4 YX coordinates per YX reg
         esp_yx_reg_set_y(dev, esp_get_y(&srcs[i-1]), 4 * (i / 4), i % 4);
         esp_yx_reg_set_x(dev, esp_get_x(&srcs[i-1]), 4 * (i / 4), i % 4);
-        //5 CHIP_YX coordinates per CHIP YX reg
-        esp_chip_yx_reg_set_chip_y(dev, esp_get_chip_y(&srcs[i-1]), 5 * (i / 5), i % 5);
-        esp_chip_yx_reg_set_chip_x(dev, esp_get_chip_x(&srcs[i-1]), 5 * (i / 5), i % 5);
     }
 }

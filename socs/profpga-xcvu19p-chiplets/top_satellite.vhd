@@ -30,6 +30,7 @@ use work.nocpackage.all;
 use work.cachepackage.all;
 use work.coretypes.all;
 use work.config.all;
+use work.d2d_delay_pkg.all;
 use work.esp_global.all;
 use work.socmap.all;
 use work.tiles_pkg.all;
@@ -52,6 +53,8 @@ entity top_satellite is
     esp_clk_n         : in    std_ulogic;  -- 100 MHz clock
     d2d_clk_p         : in    std_ulogic;  -- 160 MHz D2D clock
     d2d_clk_n         : in    std_ulogic;  -- 160 MHz D2D clock
+    d2d_delay_refclk_p : in   std_ulogic;  -- 400 MHz IDELAY/ODELAY calibration clock
+    d2d_delay_refclk_n : in   std_ulogic;  -- 400 MHz IDELAY/ODELAY calibration clock
     -- IO Cables
     c0_cable_clk_p      : out     std_logic; -- TX Clock
     c0_cable_clk_n      : out     std_logic;
@@ -94,7 +97,7 @@ end;
 
 
 architecture rtl of top_satellite is
-  function select_d2d_rx_mmcm_phase (
+  function select_d2d_mmcm_phase (
     board_num : integer;
     phase_board0 : real;
     phase_board1 : real;
@@ -112,20 +115,42 @@ architecture rtl of top_satellite is
       when others =>
         return phase_board3;
     end case;
-  end function select_d2d_rx_mmcm_phase;
+  end function select_d2d_mmcm_phase;
 
   constant D2D_RX_MMCM_CLKIN_PERIOD_NS : real := 6.250;
   constant D2D_RX_MMCM_REF_JITTER1_UI  : real := 0.050;
-  constant D2D_RX_MMCM_PHASE_DEG_BOARD0_C0 : real := -78.750;
-  constant D2D_RX_MMCM_PHASE_DEG_BOARD0_C1 : real := -56.250;
-  constant D2D_RX_MMCM_PHASE_DEG_BOARD1_C0 : real := 39.375;
-  constant D2D_RX_MMCM_PHASE_DEG_BOARD1_C1 : real := 33.750;
-  constant D2D_RX_MMCM_PHASE_DEG_BOARD2_C0 : real := 39.375;
-  constant D2D_RX_MMCM_PHASE_DEG_BOARD2_C1 : real := 39.375;
-  constant D2D_RX_MMCM_PHASE_DEG_BOARD3_C0 : real := 39.375;
-  constant D2D_RX_MMCM_PHASE_DEG_BOARD3_C1 : real := 39.375;
+  constant D2D_RX_MMCM_PHASE_DEG_BOARD0_C0 : real := 90.000;
+  constant D2D_RX_MMCM_PHASE_DEG_BOARD0_C1 : real := 90.000;
+  constant D2D_TX_MMCM_PHASE_DEG_BOARD0_C0 : real := 0.000;
+  constant D2D_TX_MMCM_PHASE_DEG_BOARD0_C1 : real := 0.000;
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD0_C0 : real := 0.000;
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD0_C1 : real := 0.000;
+  constant D2D_RX_MMCM_PHASE_DEG_BOARD1_C0 : real := -56.250;
+  constant D2D_RX_MMCM_PHASE_DEG_BOARD1_C1 : real := -67.500;
+  -- constant D2D_RX_MMCM_PHASE_DEG_BOARD1_C0 : real := 39.375;
+  -- constant D2D_RX_MMCM_PHASE_DEG_BOARD1_C1 : real := 33.750;
+  constant D2D_TX_MMCM_PHASE_DEG_BOARD1_C0 : real := 0.000;
+  constant D2D_TX_MMCM_PHASE_DEG_BOARD1_C1 : real := 0.000;
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD1_C0 : real := 0.000;
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD1_C1 : real := 0.000;
+  constant D2D_RX_MMCM_PHASE_DEG_BOARD2_C0 : real := -56.250;
+  constant D2D_RX_MMCM_PHASE_DEG_BOARD2_C1 : real := -56.250;
+  -- constant D2D_RX_MMCM_PHASE_DEG_BOARD2_C0 : real := 39.375;
+  -- constant D2D_RX_MMCM_PHASE_DEG_BOARD2_C1 : real := 33.750;
+  constant D2D_TX_MMCM_PHASE_DEG_BOARD2_C0 : real := 0.000;
+  constant D2D_TX_MMCM_PHASE_DEG_BOARD2_C1 : real := 0.000;
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD2_C0 : real := 0.000;
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD2_C1 : real := 0.000;
+  constant D2D_RX_MMCM_PHASE_DEG_BOARD3_C0 : real := -61.875;
+  constant D2D_RX_MMCM_PHASE_DEG_BOARD3_C1 : real := -61.875;
+  -- constant D2D_RX_MMCM_PHASE_DEG_BOARD3_C0 : real := 33.750;
+  -- constant D2D_RX_MMCM_PHASE_DEG_BOARD3_C1 : real := 39.375;
+  constant D2D_TX_MMCM_PHASE_DEG_BOARD3_C0 : real := 0.000;
+  constant D2D_TX_MMCM_PHASE_DEG_BOARD3_C1 : real := 0.000;
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD3_C0 : real := 0.000;
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD3_C1 : real := 0.000;
   constant D2D_RX_MMCM_PHASE_DEG_C0 : real :=
-    select_d2d_rx_mmcm_phase(
+    select_d2d_mmcm_phase(
       BOARD_NUM,
       D2D_RX_MMCM_PHASE_DEG_BOARD0_C0,
       D2D_RX_MMCM_PHASE_DEG_BOARD1_C0,
@@ -133,13 +158,51 @@ architecture rtl of top_satellite is
       D2D_RX_MMCM_PHASE_DEG_BOARD3_C0
     );
   constant D2D_RX_MMCM_PHASE_DEG_C1 : real :=
-    select_d2d_rx_mmcm_phase(
+    select_d2d_mmcm_phase(
       BOARD_NUM,
       D2D_RX_MMCM_PHASE_DEG_BOARD0_C1,
       D2D_RX_MMCM_PHASE_DEG_BOARD1_C1,
       D2D_RX_MMCM_PHASE_DEG_BOARD2_C1,
       D2D_RX_MMCM_PHASE_DEG_BOARD3_C1
     );
+  constant D2D_TX_MMCM_PHASE_DEG_C0 : real :=
+    select_d2d_mmcm_phase(
+      BOARD_NUM,
+      D2D_TX_MMCM_PHASE_DEG_BOARD0_C0,
+      D2D_TX_MMCM_PHASE_DEG_BOARD1_C0,
+      D2D_TX_MMCM_PHASE_DEG_BOARD2_C0,
+      D2D_TX_MMCM_PHASE_DEG_BOARD3_C0
+    );
+  constant D2D_TX_MMCM_PHASE_DEG_C1 : real :=
+    select_d2d_mmcm_phase(
+      BOARD_NUM,
+      D2D_TX_MMCM_PHASE_DEG_BOARD0_C1,
+      D2D_TX_MMCM_PHASE_DEG_BOARD1_C1,
+      D2D_TX_MMCM_PHASE_DEG_BOARD2_C1,
+      D2D_TX_MMCM_PHASE_DEG_BOARD3_C1
+    );
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_C0 : real :=
+    select_d2d_mmcm_phase(
+      BOARD_NUM,
+      D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD0_C0,
+      D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD1_C0,
+      D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD2_C0,
+      D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD3_C0
+    );
+  constant D2D_TX_DATA_PHASE_OFFSET_DEG_C1 : real :=
+    select_d2d_mmcm_phase(
+      BOARD_NUM,
+      D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD0_C1,
+      D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD1_C1,
+      D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD2_C1,
+      D2D_TX_DATA_PHASE_OFFSET_DEG_BOARD3_C1
+    );
+  constant D2D_TX_ODELAY_PS_C0 : d2d_delay_vector_t := get_d2d_tx_odelay_ps(BOARD_NUM, 0);
+  constant D2D_TX_ODELAY_PS_C1 : d2d_delay_vector_t := get_d2d_tx_odelay_ps(BOARD_NUM, 1);
+  constant D2D_RX_IDELAY_PS_C0 : d2d_delay_vector_t := get_d2d_rx_idelay_ps(BOARD_NUM, 0);
+  constant D2D_RX_IDELAY_PS_C1 : d2d_delay_vector_t := get_d2d_rx_idelay_ps(BOARD_NUM, 1);
+  -- constant D2D_TX_MMCM_PHASE_DEG_C0 : real := 0.000;
+  -- constant D2D_TX_MMCM_PHASE_DEG_C1 : real := 0.000;
   constant ISOLATE_BOARD0_D2D    : boolean := false; -- temporary debug mode: board0 D2D links tied off
 
   component ahb2mig_ebddr4r5 is
@@ -181,13 +244,13 @@ architecture rtl of top_satellite is
       width        : integer;
       depth        : integer;
       ports        : std_logic_vector(3 downto 0); -- N, S, W, E
-      DEST_SIZE    : integer
+      DEST_SIZE    : integer;
+      LOCAL_CHIP_X : integer;
+      LOCAL_CHIP_Y : integer
     );
     port (
       clk : in std_ulogic;
       rst : in std_ulogic;
-      CONST_local_chip_x : in chip_yx;
-      CONST_local_chip_y : in chip_yx;
 
       data_n_in : in std_logic_vector(width-1 downto 0);
       data_s_in : in std_logic_vector(width-1 downto 0);
@@ -209,7 +272,9 @@ architecture rtl of top_satellite is
 
   component cdc_gray_pulse is
     generic (
-      N : integer := 4
+      N           : integer := 4;
+      SRC_NEGEDGE : integer := 0;
+      DST_NEGEDGE : integer := 0
     );
     port (
       src_clk   : in  std_logic;
@@ -220,6 +285,16 @@ architecture rtl of top_satellite is
       dst_pulse : out std_logic
     );
   end component cdc_gray_pulse;
+
+  function any_high(word : std_logic_vector) return std_logic is
+  begin
+    for i in word'range loop
+      if word(i) = '1' then
+        return '1';
+      end if;
+    end loop;
+    return '0';
+  end function any_high;
 
   function set_ddr_index (
     constant n : integer range 0 to 7)
@@ -264,37 +339,7 @@ architecture rtl of top_satellite is
   signal cgo                                            : clkgen_out_type;
 
 ---mig signals
-  constant led_pending_max    : unsigned(11 downto 0) := (others => '1');
   signal c0_calib_done        : std_ulogic;
-  signal c0_diagnostic_toggle : std_ulogic;
-  signal led_blue_count       : unsigned(26 downto 0) := (others => '0');
-  signal led_blue_pending     : unsigned(11 downto 0) := (others => '0');
-  signal led_blue_phase_prev  : std_ulogic := '0';
-  signal led_blue_started     : std_ulogic := '0';
-  signal led_blue_dbg         : std_ulogic;
-  signal led_blue_pad         : std_ulogic;
-  signal led_red_count        : unsigned(26 downto 0) := (others => '0');
-  signal led_red_pending      : unsigned(11 downto 0) := (others => '0');
-  signal led_red_phase_prev   : std_ulogic := '0';
-  signal led_red_started      : std_ulogic := '0';
-  signal led_red_dbg          : std_ulogic;
-  signal led_red_pad          : std_ulogic;
-  signal led_yellow_count     : unsigned(26 downto 0) := (others => '0');
-  signal led_yellow_pending   : unsigned(11 downto 0) := (others => '0');
-  signal led_yellow_phase_prev : std_ulogic := '0';
-  signal led_yellow_started   : std_ulogic := '0';
-  signal led_yellow_dbg       : std_ulogic;
-  signal led_yellow_pad       : std_ulogic;
-  signal led_green_count      : unsigned(26 downto 0) := (others => '0');
-  signal led_green_pending    : unsigned(11 downto 0) := (others => '0');
-  signal led_green_phase_prev : std_ulogic := '0';
-  signal led_green_started    : std_ulogic := '0';
-  signal led_green_dbg        : std_ulogic;
-  signal led_green_pad        : std_ulogic;
-  signal c0_rx_link_ready_sel : std_ulogic := '0';
-  signal c1_rx_link_ready_sel : std_ulogic := '0';
-  signal c0_credit_back_evt   : std_ulogic := '0';
-  signal c1_credit_back_evt   : std_ulogic := '0';
 
 -- Ethernet signals
   signal ethi : eth_in_type;
@@ -400,37 +445,39 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
                                                            b2sl(D2D_CHANNELS_S > 0) &
                                                            b2sl(D2D_CHANNELS_N > 0);
 
-  signal chiplet_data_n_in    : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_in_n  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_in_n   : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  type dma_bypass_flit_vector is array (natural range <>) of std_logic_vector((2*COH_NOC_FLIT_SIZE)-1 downto 0);
 
-  signal chiplet_data_s_in    : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_in_s  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_in_s   : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_n_in    : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_in_n  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_in_n   : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_w_in    : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_in_w  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_in_w   : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_s_in    : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_in_s  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_in_s   : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_e_in    : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_in_e  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_in_e   : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_w_in    : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_in_w  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_in_w   : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_n_out   : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_out_n : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_out_n  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_e_in    : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_in_e  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_in_e   : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_s_out   : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_out_s : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_out_s  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_n_out   : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_out_n : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_out_n  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_w_out   : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_out_w : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_out_w  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_s_out   : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_out_s : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_out_s  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
 
-  signal chiplet_data_e_out   : coh_noc_flit_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_credit_out_e : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
-  signal chiplet_valid_out_e  : std_logic_vector(WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_data_w_out   : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_out_w : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_out_w  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+
+  signal chiplet_data_e_out   : coh_noc_flit_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_credit_out_e : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
+  signal chiplet_valid_out_e  : std_logic_vector(2*WIRES_PER_CONNECTION-1 downto 0);
   signal c0_d2d_link_ready        : std_logic;
   signal c1_d2d_link_ready        : std_logic;
 
@@ -618,12 +665,18 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
   signal d2d_noc5_stop_in_w       : std_logic_vector(CFG_YLEN(BOARD_NUM)-1 downto 0);
   signal d2d_noc6_stop_in_w       : std_logic_vector(CFG_YLEN(BOARD_NUM)-1 downto 0);
 
-  signal bypass_data_out             : coh_noc_flit_vector(3 downto 0); -- 0:N, 1:S, 2:W, 3:E
+  signal bypass_data_out             : coh_noc_flit_vector(3 downto 0); -- CM bypass: 0:N, 1:S, 2:W, 3:E
   signal bypass_data_void_out        : std_logic_vector(3 downto 0);
   signal bypass_stop_in              : std_logic_vector(3 downto 0);
   signal bypass_data_in              : coh_noc_flit_vector(3 downto 0);
   signal bypass_data_void_in         : std_logic_vector(3 downto 0);
   signal bypass_stop_out             : std_logic_vector(3 downto 0);
+  signal dmabypass_data_out          : dma_bypass_flit_vector(3 downto 0);
+  signal dmabypass_data_void_out     : std_logic_vector(3 downto 0);
+  signal dmabypass_stop_in           : std_logic_vector(3 downto 0);
+  signal dmabypass_data_in           : dma_bypass_flit_vector(3 downto 0);
+  signal dmabypass_data_void_in      : std_logic_vector(3 downto 0);
+  signal dmabypass_stop_out          : std_logic_vector(3 downto 0);
 
 
   signal eth0_apbi   : apb_slv_in_type;
@@ -647,6 +700,10 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
   signal sys_clk        : std_logic_vector(0 to MAX_NMEM_TILES - 1);
   signal esp_clk        : std_ulogic;
   signal chip_refclk    : std_ulogic;
+  signal d2d_delay_refclk_ibufds : std_ulogic;
+  signal d2d_delay_refclk       : std_ulogic;
+  signal d2d_delayctrl_rst      : std_ulogic;
+  signal d2d_delayctrl_rdy : std_ulogic;
 
   attribute keep : boolean;
   attribute keep of clkm        : signal is true;
@@ -671,35 +728,26 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
   signal mon_acc        : monitor_acc_vector(0 to relu(CFG_NACC_TILE_CHIPLET(BOARD_NUM)-1));
   signal mon_dvfs       : monitor_dvfs_vector(0 to CFG_CHIPLET_TILES(BOARD_NUM)-1);
 
-  signal c0_d2d_data_tx    : std_logic_vector(67 downto 0);
-  signal c1_d2d_data_tx    : std_logic_vector(67 downto 0);
-  signal c0_d2d_data_rx_pipe    : std_logic_vector(67 downto 0);
-  signal c1_d2d_data_rx_pipe    : std_logic_vector(67 downto 0);
-  signal c0_d2d_data_tx_io  : std_logic_vector(67 downto 0);
-  signal c1_d2d_data_tx_io  : std_logic_vector(67 downto 0);
-  signal c0_rx_head_prev    : std_logic_vector(67 downto 0) := (others => '0');
-  signal c1_rx_head_prev    : std_logic_vector(67 downto 0) := (others => '0');
+  signal c0_d2d_data_tx    : std_logic_vector(135 downto 0);
+  signal c1_d2d_data_tx    : std_logic_vector(135 downto 0);
+  signal c0_d2d_data_rx_pipe    : std_logic_vector(135 downto 0);
+  signal c1_d2d_data_rx_pipe    : std_logic_vector(135 downto 0);
 
-  
+
   signal cable_clk_rcv_raw_0    : std_ulogic;
   signal cable_clk_rcv_core_0   : std_ulogic;
+  signal d2d_tx_mmcm_locked0    : std_ulogic;
   signal d2d_rx_mmcm_locked0    : std_ulogic;
-  signal c0_rx_run              : std_ulogic;
-  signal c0_rx_core_run         : std_ulogic;
-  
+
   signal cable_clk_rcv_raw_1    : std_ulogic;
   signal cable_clk_rcv_core_1   : std_ulogic;
+  signal d2d_tx_mmcm_locked1    : std_ulogic;
   signal d2d_rx_mmcm_locked1    : std_ulogic;
-  signal c1_rx_run              : std_ulogic;
-  signal c1_rx_core_run         : std_ulogic;
-  
+
   signal d2d_clk_ibufds : std_ulogic;
   signal d2d_clk_int    : std_ulogic;
   signal d2d_rstn_c0_d2d : std_ulogic := '0';
   signal d2d_rstn_c1_d2d : std_ulogic := '0';
-  signal d2d_rst_c0_d2d_ff1, d2d_rst_c0_d2d_ff2 : std_ulogic := '1';
-  signal d2d_rst_c1_d2d_ff1, d2d_rst_c1_d2d_ff2 : std_ulogic := '1';
-  
   signal d2d_clk_n_in_int : std_ulogic;
   signal d2d_clk_s_in_int : std_ulogic;
   signal d2d_clk_w_in_int : std_ulogic;
@@ -712,14 +760,13 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
   signal d2d_rx_link_ready_s  : std_logic;
   signal d2d_rx_link_ready_e  : std_logic;
   signal d2d_rx_link_ready_w  : std_logic;
-  
-  -- Lossless credit CDC using shared Gray event counters.
+
   constant CREDIT_CDC_CNT_W : integer := 5;
-  
-  signal c0_credit_in_evt_pulse_d2d, c1_credit_in_evt_pulse_d2d : std_logic := '0';
-  
-  signal chiplet_credit_out_n_evt_pulse_d2d, chiplet_credit_out_s_evt_pulse_d2d : std_logic := '0';
-  signal chiplet_credit_out_w_evt_pulse_d2d, chiplet_credit_out_e_evt_pulse_d2d : std_logic := '0';
+
+  signal c0_credit_in_evt_pulse_d2d, c1_credit_in_evt_pulse_d2d : std_logic_vector(1 downto 0) := (others => '0');
+
+  signal chiplet_credit_out_n_evt_pulse_d2d, chiplet_credit_out_s_evt_pulse_d2d : std_logic_vector(1 downto 0) := (others => '0');
+  signal chiplet_credit_out_w_evt_pulse_d2d, chiplet_credit_out_e_evt_pulse_d2d : std_logic_vector(1 downto 0) := (others => '0');
                                       
   attribute ASYNC_REG : string;
   attribute SHREG_EXTRACT : string;
@@ -727,73 +774,45 @@ constant CPU_FREQ : integer := 100000;  -- cpu frequency in KHz
   attribute ASYNC_REG of d2d_ready_sync_c0   : signal is "TRUE";
   attribute ASYNC_REG of d2d_ready_sync_c1_1 : signal is "TRUE";
   attribute ASYNC_REG of d2d_ready_sync_c1   : signal is "TRUE";
-  attribute ASYNC_REG of d2d_rst_c0_d2d_ff1  : signal is "TRUE";
-  attribute ASYNC_REG of d2d_rst_c0_d2d_ff2  : signal is "TRUE";
-  attribute ASYNC_REG of d2d_rst_c1_d2d_ff1  : signal is "TRUE";
-  attribute ASYNC_REG of d2d_rst_c1_d2d_ff2  : signal is "TRUE";
   attribute SHREG_EXTRACT of d2d_ready_sync_c0_1 : signal is "NO";
   attribute SHREG_EXTRACT of d2d_ready_sync_c0   : signal is "NO";
   attribute SHREG_EXTRACT of d2d_ready_sync_c1_1 : signal is "NO";
   attribute SHREG_EXTRACT of d2d_ready_sync_c1   : signal is "NO";
-  attribute SHREG_EXTRACT of d2d_rst_c0_d2d_ff1  : signal is "NO";
-  attribute SHREG_EXTRACT of d2d_rst_c0_d2d_ff2  : signal is "NO";
-  attribute SHREG_EXTRACT of d2d_rst_c1_d2d_ff1  : signal is "NO";
-  attribute SHREG_EXTRACT of d2d_rst_c1_d2d_ff2  : signal is "NO";
 
 begin
-
-  d2d_rst_c0_d2d_sync : process (d2d_clk_int, d2d_rst_c0)
-  begin
-    if d2d_rst_c0 = '1' then
-      d2d_rst_c0_d2d_ff1 <= '1';
-      d2d_rst_c0_d2d_ff2 <= '1';
-    elsif rising_edge(d2d_clk_int) then
-      d2d_rst_c0_d2d_ff1 <= '0';
-      d2d_rst_c0_d2d_ff2 <= d2d_rst_c0_d2d_ff1;
-    end if;
-  end process d2d_rst_c0_d2d_sync;
-
-  d2d_rst_c1_d2d_sync : process (d2d_clk_int, d2d_rst_c1)
-  begin
-    if d2d_rst_c1 = '1' then
-      d2d_rst_c1_d2d_ff1 <= '1';
-      d2d_rst_c1_d2d_ff2 <= '1';
-    elsif rising_edge(d2d_clk_int) then
-      d2d_rst_c1_d2d_ff1 <= '0';
-      d2d_rst_c1_d2d_ff2 <= d2d_rst_c1_d2d_ff1;
-    end if;
-  end process d2d_rst_c1_d2d_sync;
-
-  d2d_rstn_c0_d2d <= not d2d_rst_c0_d2d_ff2;
-  d2d_rstn_c1_d2d <= not d2d_rst_c1_d2d_ff2;
+  d2d_rstn_c0_d2d <= not d2d_rst_c0;
+  d2d_rstn_c1_d2d <= not d2d_rst_c1;
 
   c0_cable_frontend_i : entity work.d2d_cable_frontend
     generic map (
       CLKIN_PERIOD_NS  => D2D_RX_MMCM_CLKIN_PERIOD_NS,
       REF_JITTER1_UI   => D2D_RX_MMCM_REF_JITTER1_UI,
-      PHASE_DEG        => D2D_RX_MMCM_PHASE_DEG_C0,
+      RX_PHASE_DEG     => D2D_RX_MMCM_PHASE_DEG_C0,
+      TX_PHASE_DEG     => D2D_TX_MMCM_PHASE_DEG_C0,
+      TX_DATA_PHASE_OFFSET_DEG => D2D_TX_DATA_PHASE_OFFSET_DEG_C0,
       CREDIT_CDC_N     => 3,
       TX_ON_UPPER_PINS => C0_TX_ON_UPPER_PINS,
-      LINK_ACTIVE      => C0_LINK_ACTIVE
+      LINK_ACTIVE      => C0_LINK_ACTIVE,
+      TX_ODELAY_PS     => D2D_TX_ODELAY_PS_C0,
+      RX_IDELAY_PS     => D2D_RX_IDELAY_PS_C0
     )
     port map (
       d2d_clk_int             => d2d_clk_int,
       d2d_rst                 => d2d_rst_c0,
       d2d_rstn                => d2d_rstn_c0,
       d2d_rstn_d2d            => d2d_rstn_c0_d2d,
+      delayctrl_rdy           => d2d_delayctrl_rdy,
       cable_clk_p             => c0_cable_clk_p,
       cable_clk_n             => c0_cable_clk_n,
       cable_clk_p_rcv         => c0_cable_clk_p_rcv,
       cable_clk_n_rcv         => c0_cable_clk_n_rcv,
       cable_io_data           => c0_cable_io_data,
       d2d_data_tx             => c0_d2d_data_tx,
-      d2d_data_tx_io_dbg      => c0_d2d_data_tx_io,
       d2d_data_rx_pipe        => c0_d2d_data_rx_pipe,
       cable_clk_rcv_raw       => cable_clk_rcv_raw_0,
       cable_clk_rcv_core      => cable_clk_rcv_core_0,
+      d2d_tx_mmcm_locked      => d2d_tx_mmcm_locked0,
       d2d_rx_mmcm_locked      => d2d_rx_mmcm_locked0,
-      rx_run                  => c0_rx_run,
-      rx_core_run             => c0_rx_core_run,
       credit_in_evt_pulse_d2d => c0_credit_in_evt_pulse_d2d
     );
 
@@ -801,356 +820,220 @@ begin
     generic map (
       CLKIN_PERIOD_NS  => D2D_RX_MMCM_CLKIN_PERIOD_NS,
       REF_JITTER1_UI   => D2D_RX_MMCM_REF_JITTER1_UI,
-      PHASE_DEG        => D2D_RX_MMCM_PHASE_DEG_C1,
+      RX_PHASE_DEG     => D2D_RX_MMCM_PHASE_DEG_C1,
+      TX_PHASE_DEG     => D2D_TX_MMCM_PHASE_DEG_C1,
+      TX_DATA_PHASE_OFFSET_DEG => D2D_TX_DATA_PHASE_OFFSET_DEG_C1,
       CREDIT_CDC_N     => 3,
       TX_ON_UPPER_PINS => C1_TX_ON_UPPER_PINS,
-      LINK_ACTIVE      => C1_LINK_ACTIVE
+      LINK_ACTIVE      => C1_LINK_ACTIVE,
+      TX_ODELAY_PS     => D2D_TX_ODELAY_PS_C1,
+      RX_IDELAY_PS     => D2D_RX_IDELAY_PS_C1
     )
     port map (
       d2d_clk_int             => d2d_clk_int,
       d2d_rst                 => d2d_rst_c1,
       d2d_rstn                => d2d_rstn_c1,
       d2d_rstn_d2d            => d2d_rstn_c1_d2d,
+      delayctrl_rdy           => d2d_delayctrl_rdy,
       cable_clk_p             => c1_cable_clk_p,
       cable_clk_n             => c1_cable_clk_n,
       cable_clk_p_rcv         => c1_cable_clk_p_rcv,
       cable_clk_n_rcv         => c1_cable_clk_n_rcv,
       cable_io_data           => c1_cable_io_data,
       d2d_data_tx             => c1_d2d_data_tx,
-      d2d_data_tx_io_dbg      => c1_d2d_data_tx_io,
       d2d_data_rx_pipe        => c1_d2d_data_rx_pipe,
       cable_clk_rcv_raw       => cable_clk_rcv_raw_1,
       cable_clk_rcv_core      => cable_clk_rcv_core_1,
+      d2d_tx_mmcm_locked      => d2d_tx_mmcm_locked1,
       d2d_rx_mmcm_locked      => d2d_rx_mmcm_locked1,
-      rx_run                  => c1_rx_run,
-      rx_core_run             => c1_rx_core_run,
       credit_in_evt_pulse_d2d => c1_credit_in_evt_pulse_d2d
     );
 
   gen_chiplet_credit_out_n_cdc : if D2D_CHANNELS_N > 0 generate
   begin
-    chiplet_credit_out_n_cdc_i : cdc_gray_pulse
-      generic map (
-        N => CREDIT_CDC_CNT_W
-      )
-      port map (
-        src_clk   => sys_clk(0),
-        dst_clk   => d2d_clk_int,
-        src_rstn  => d2d_rstn_c1,
-        dst_rstn  => d2d_rstn_c1_d2d,
-        src_pulse => chiplet_credit_out_n(0),
-        dst_pulse => chiplet_credit_out_n_evt_pulse_d2d
-      );
+    gen_chiplet_credit_out_n_lane : for lane in 0 to 1 generate
+      gen_chiplet_credit_out_n_lane_pos : if lane = 1 generate
+        chiplet_credit_out_n_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c1,
+            dst_rstn  => d2d_rstn_c1_d2d,
+            src_pulse => chiplet_credit_out_n(lane),
+            dst_pulse => chiplet_credit_out_n_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_n_lane_pos;
+
+      gen_chiplet_credit_out_n_lane_neg : if lane = 0 generate
+        chiplet_credit_out_n_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c1,
+            dst_rstn  => d2d_rstn_c1_d2d,
+            src_pulse => chiplet_credit_out_n(lane),
+            dst_pulse => chiplet_credit_out_n_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_n_lane_neg;
+    end generate gen_chiplet_credit_out_n_lane;
   end generate gen_chiplet_credit_out_n_cdc;
 
   no_chiplet_credit_out_n_cdc : if D2D_CHANNELS_N = 0 generate
   begin
-    chiplet_credit_out_n_evt_pulse_d2d <= '0';
+    chiplet_credit_out_n_evt_pulse_d2d <= (others => '0');
   end generate no_chiplet_credit_out_n_cdc;
 
   gen_chiplet_credit_out_s_cdc : if D2D_CHANNELS_S > 0 generate
   begin
-    chiplet_credit_out_s_cdc_i : cdc_gray_pulse
-      generic map (
-        N => CREDIT_CDC_CNT_W
-      )
-      port map (
-        src_clk   => sys_clk(0),
-        dst_clk   => d2d_clk_int,
-        src_rstn  => d2d_rstn_c1,
-        dst_rstn  => d2d_rstn_c1_d2d,
-        src_pulse => chiplet_credit_out_s(0),
-        dst_pulse => chiplet_credit_out_s_evt_pulse_d2d
-      );
+    gen_chiplet_credit_out_s_lane : for lane in 0 to 1 generate
+      gen_chiplet_credit_out_s_lane_pos : if lane = 1 generate
+        chiplet_credit_out_s_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c1,
+            dst_rstn  => d2d_rstn_c1_d2d,
+            src_pulse => chiplet_credit_out_s(lane),
+            dst_pulse => chiplet_credit_out_s_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_s_lane_pos;
+
+      gen_chiplet_credit_out_s_lane_neg : if lane = 0 generate
+        chiplet_credit_out_s_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c1,
+            dst_rstn  => d2d_rstn_c1_d2d,
+            src_pulse => chiplet_credit_out_s(lane),
+            dst_pulse => chiplet_credit_out_s_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_s_lane_neg;
+    end generate gen_chiplet_credit_out_s_lane;
   end generate gen_chiplet_credit_out_s_cdc;
 
   no_chiplet_credit_out_s_cdc : if D2D_CHANNELS_S = 0 generate
   begin
-    chiplet_credit_out_s_evt_pulse_d2d <= '0';
+    chiplet_credit_out_s_evt_pulse_d2d <= (others => '0');
   end generate no_chiplet_credit_out_s_cdc;
 
   gen_chiplet_credit_out_w_cdc : if D2D_CHANNELS_W > 0 generate
   begin
-    chiplet_credit_out_w_cdc_i : cdc_gray_pulse
-      generic map (
-        N => CREDIT_CDC_CNT_W
-      )
-      port map (
-        src_clk   => sys_clk(0),
-        dst_clk   => d2d_clk_int,
-        src_rstn  => d2d_rstn_c0,
-        dst_rstn  => d2d_rstn_c0_d2d,
-        src_pulse => chiplet_credit_out_w(0),
-        dst_pulse => chiplet_credit_out_w_evt_pulse_d2d
-      );
+    gen_chiplet_credit_out_w_lane : for lane in 0 to 1 generate
+      gen_chiplet_credit_out_w_lane_pos : if lane = 1 generate
+        chiplet_credit_out_w_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c0,
+            dst_rstn  => d2d_rstn_c0_d2d,
+            src_pulse => chiplet_credit_out_w(lane),
+            dst_pulse => chiplet_credit_out_w_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_w_lane_pos;
+
+      gen_chiplet_credit_out_w_lane_neg : if lane = 0 generate
+        chiplet_credit_out_w_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c0,
+            dst_rstn  => d2d_rstn_c0_d2d,
+            src_pulse => chiplet_credit_out_w(lane),
+            dst_pulse => chiplet_credit_out_w_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_w_lane_neg;
+    end generate gen_chiplet_credit_out_w_lane;
   end generate gen_chiplet_credit_out_w_cdc;
 
   no_chiplet_credit_out_w_cdc : if D2D_CHANNELS_W = 0 generate
   begin
-    chiplet_credit_out_w_evt_pulse_d2d <= '0';
+    chiplet_credit_out_w_evt_pulse_d2d <= (others => '0');
   end generate no_chiplet_credit_out_w_cdc;
 
   gen_chiplet_credit_out_e_cdc : if D2D_CHANNELS_E > 0 generate
   begin
-    chiplet_credit_out_e_cdc_i : cdc_gray_pulse
-      generic map (
-        N => CREDIT_CDC_CNT_W
-      )
-      port map (
-        src_clk   => sys_clk(0),
-        dst_clk   => d2d_clk_int,
-        src_rstn  => d2d_rstn_c0,
-        dst_rstn  => d2d_rstn_c0_d2d,
-        src_pulse => chiplet_credit_out_e(0),
-        dst_pulse => chiplet_credit_out_e_evt_pulse_d2d
-      );
+    gen_chiplet_credit_out_e_lane : for lane in 0 to 1 generate
+      gen_chiplet_credit_out_e_lane_pos : if lane = 1 generate
+        chiplet_credit_out_e_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c0,
+            dst_rstn  => d2d_rstn_c0_d2d,
+            src_pulse => chiplet_credit_out_e(lane),
+            dst_pulse => chiplet_credit_out_e_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_e_lane_pos;
+
+      gen_chiplet_credit_out_e_lane_neg : if lane = 0 generate
+        chiplet_credit_out_e_cdc_i : cdc_gray_pulse
+          generic map (
+            N           => CREDIT_CDC_CNT_W,
+            SRC_NEGEDGE => 0,
+            DST_NEGEDGE => 0
+          )
+          port map (
+            src_clk   => sys_clk(0),
+            dst_clk   => d2d_clk_int,
+            src_rstn  => d2d_rstn_c0,
+            dst_rstn  => d2d_rstn_c0_d2d,
+            src_pulse => chiplet_credit_out_e(lane),
+            dst_pulse => chiplet_credit_out_e_evt_pulse_d2d(lane)
+          );
+      end generate gen_chiplet_credit_out_e_lane_neg;
+    end generate gen_chiplet_credit_out_e_lane;
   end generate gen_chiplet_credit_out_e_cdc;
 
   no_chiplet_credit_out_e_cdc : if D2D_CHANNELS_E = 0 generate
   begin
-    chiplet_credit_out_e_evt_pulse_d2d <= '0';
+    chiplet_credit_out_e_evt_pulse_d2d <= (others => '0');
   end generate no_chiplet_credit_out_e_cdc;
 
-  c0_diagnostic_toggle <= d2d_startup_done;
-  c0_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c0_diagnostic_led, c0_diagnostic_toggle);
+  c0_led_diag_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c0_diagnostic_led, '0');
 
 -------------------------------------------------------------------------------
 -- Leds -----------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
-  c0_rx_link_ready_sel <= d2d_rx_link_ready_w when C0_IS_WEST else d2d_rx_link_ready_e;
-  c1_rx_link_ready_sel <= d2d_rx_link_ready_n when C1_IS_NORTH else d2d_rx_link_ready_s;
-
-  c0_credit_back_evt <= chiplet_credit_out_w_evt_pulse_d2d when C0_IS_WEST else
-                        chiplet_credit_out_e_evt_pulse_d2d;
-  c1_credit_back_evt <= chiplet_credit_out_n_evt_pulse_d2d when C1_IS_NORTH else
-                        chiplet_credit_out_s_evt_pulse_d2d;
-
-  led_blue_phase : process (cable_clk_rcv_core_0)
-  begin
-    if rising_edge(cable_clk_rcv_core_0) then
-      if c0_rx_core_run = '0' then
-        led_blue_count <= (others => '0');
-        led_blue_phase_prev <= '0';
-      else
-        led_blue_phase_prev <= led_blue_count(26);
-        led_blue_count <= led_blue_count + 1;
-      end if;
-    end if;
-  end process led_blue_phase;
-
-  led_blue_pending_q : process (cable_clk_rcv_core_0)
-    variable next_led_blue_pending : unsigned(led_blue_pending'range);
-    variable next_led_blue_started : std_ulogic;
-    variable c0_rx_head_level : std_ulogic;
-  begin
-    if rising_edge(cable_clk_rcv_core_0) then
-      if c0_rx_core_run = '0' then
-        led_blue_pending <= (others => '0');
-        led_blue_started <= '0';
-        c0_rx_head_prev <= (others => '0');
-      else
-        next_led_blue_pending := led_blue_pending;
-        next_led_blue_started := led_blue_started;
-        c0_rx_head_level := '0';
-        if c0_rx_link_ready_sel = '1' and c0_d2d_data_rx_pipe(67) = '1' and c0_d2d_data_rx_pipe(65) = '1' then
-          c0_rx_head_level := '1';
-        end if;
-
-        -- Count a sampled head word once even if capture phase causes it to
-        -- persist for multiple recovered-clock cycles.
-        if c0_rx_head_level = '1' and c0_d2d_data_rx_pipe /= c0_rx_head_prev and next_led_blue_pending /= led_pending_max then
-          next_led_blue_pending := next_led_blue_pending + 1;
-        end if;
-
-        if next_led_blue_pending = 0 then
-          next_led_blue_started := '0';
-        elsif led_blue_phase_prev = '0' and led_blue_count(26) = '1' then
-          next_led_blue_started := '1';
-        elsif led_blue_phase_prev = '1' and led_blue_count(26) = '0' and next_led_blue_started = '1' then
-          next_led_blue_pending := next_led_blue_pending - 1;
-          if next_led_blue_pending = 0 then
-            next_led_blue_started := '0';
-          end if;
-        end if;
-
-        led_blue_pending <= next_led_blue_pending;
-        led_blue_started <= next_led_blue_started;
-        if c0_rx_head_level = '1' then
-          c0_rx_head_prev <= c0_d2d_data_rx_pipe;
-        else
-          c0_rx_head_prev <= (others => '0');
-        end if;
-      end if;
-    end if;
-  end process led_blue_pending_q;
-  led_blue_dbg <= led_blue_count(26) when led_blue_pending /= 0 and led_blue_started = '1' else '0';
-
-  led_red_phase : process (d2d_clk_int)
-  begin
-    if rising_edge(d2d_clk_int) then
-      if d2d_rstn_c0_d2d = '0' then
-        led_red_count <= (others => '0');
-        led_red_phase_prev <= '0';
-      else
-        led_red_phase_prev <= led_red_count(26);
-        led_red_count <= led_red_count + 1;
-      end if;
-    end if;
-  end process led_red_phase;
-
-  led_red_pending_q : process (d2d_clk_int)
-    variable next_led_red_pending : unsigned(led_red_pending'range);
-    variable next_led_red_started : std_ulogic;
-  begin
-    if rising_edge(d2d_clk_int) then
-      if d2d_rstn_c0_d2d = '0' then
-        led_red_pending <= (others => '0');
-        led_red_started <= '0';
-      else
-        next_led_red_pending := led_red_pending;
-        next_led_red_started := led_red_started;
-        if c0_credit_back_evt = '1' and next_led_red_pending /= led_pending_max then
-          next_led_red_pending := next_led_red_pending + 1;
-        end if;
-
-        if next_led_red_pending = 0 then
-          next_led_red_started := '0';
-        elsif led_red_phase_prev = '0' and led_red_count(26) = '1' then
-          next_led_red_started := '1';
-        elsif led_red_phase_prev = '1' and led_red_count(26) = '0' and next_led_red_started = '1' then
-          next_led_red_pending := next_led_red_pending - 1;
-          if next_led_red_pending = 0 then
-            next_led_red_started := '0';
-          end if;
-        end if;
-
-        led_red_pending <= next_led_red_pending;
-        led_red_started <= next_led_red_started;
-      end if;
-    end if;
-  end process led_red_pending_q;
-  led_red_dbg <= led_red_count(26) when led_red_pending /= 0 and led_red_started = '1' else '0';
-
-  led_yellow_phase : process (cable_clk_rcv_core_1)
-  begin
-    if rising_edge(cable_clk_rcv_core_1) then
-      if c1_rx_core_run = '0' then
-        led_yellow_count <= (others => '0');
-        led_yellow_phase_prev <= '0';
-      else
-        led_yellow_phase_prev <= led_yellow_count(26);
-        led_yellow_count <= led_yellow_count + 1;
-      end if;
-    end if;
-  end process led_yellow_phase;
-
-  led_yellow_pending_q : process (cable_clk_rcv_core_1)
-    variable next_led_yellow_pending : unsigned(led_yellow_pending'range);
-    variable next_led_yellow_started : std_ulogic;
-    variable c1_rx_head_level : std_ulogic;
-  begin
-    if rising_edge(cable_clk_rcv_core_1) then
-      if c1_rx_core_run = '0' then
-        led_yellow_pending <= (others => '0');
-        led_yellow_started <= '0';
-        c1_rx_head_prev <= (others => '0');
-      else
-        next_led_yellow_pending := led_yellow_pending;
-        next_led_yellow_started := led_yellow_started;
-        c1_rx_head_level := '0';
-        if c1_rx_link_ready_sel = '1' and c1_d2d_data_rx_pipe(67) = '1' and c1_d2d_data_rx_pipe(65) = '1' then
-          c1_rx_head_level := '1';
-        end if;
-
-        -- Count a sampled head word once even if capture phase causes it to
-        -- persist for multiple recovered-clock cycles.
-        if c1_rx_head_level = '1' and c1_d2d_data_rx_pipe /= c1_rx_head_prev and next_led_yellow_pending /= led_pending_max then
-          next_led_yellow_pending := next_led_yellow_pending + 1;
-        end if;
-
-        if next_led_yellow_pending = 0 then
-          next_led_yellow_started := '0';
-        elsif led_yellow_phase_prev = '0' and led_yellow_count(26) = '1' then
-          next_led_yellow_started := '1';
-        elsif led_yellow_phase_prev = '1' and led_yellow_count(26) = '0' and next_led_yellow_started = '1' then
-          next_led_yellow_pending := next_led_yellow_pending - 1;
-          if next_led_yellow_pending = 0 then
-            next_led_yellow_started := '0';
-          end if;
-        end if;
-
-        led_yellow_pending <= next_led_yellow_pending;
-        led_yellow_started <= next_led_yellow_started;
-        if c1_rx_head_level = '1' then
-          c1_rx_head_prev <= c1_d2d_data_rx_pipe;
-        else
-          c1_rx_head_prev <= (others => '0');
-        end if;
-      end if;
-    end if;
-  end process led_yellow_pending_q;
-  led_yellow_dbg <= led_yellow_count(26) when led_yellow_pending /= 0 and led_yellow_started = '1' else '0';
-
-  led_green_phase : process (d2d_clk_int)
-  begin
-    if rising_edge(d2d_clk_int) then
-      if d2d_rstn_c1_d2d = '0' then
-        led_green_count <= (others => '0');
-        led_green_phase_prev <= '0';
-      else
-        led_green_phase_prev <= led_green_count(26);
-        led_green_count <= led_green_count + 1;
-      end if;
-    end if;
-  end process led_green_phase;
-
-  led_green_pending_q : process (d2d_clk_int)
-    variable next_led_green_pending : unsigned(led_green_pending'range);
-    variable next_led_green_started : std_ulogic;
-  begin
-    if rising_edge(d2d_clk_int) then
-      if d2d_rstn_c1_d2d = '0' then
-        led_green_pending <= (others => '0');
-        led_green_started <= '0';
-      else
-        next_led_green_pending := led_green_pending;
-        next_led_green_started := led_green_started;
-        if c1_credit_back_evt = '1' and next_led_green_pending /= led_pending_max then
-          next_led_green_pending := next_led_green_pending + 1;
-        end if;
-
-        if next_led_green_pending = 0 then
-          next_led_green_started := '0';
-        elsif led_green_phase_prev = '0' and led_green_count(26) = '1' then
-          next_led_green_started := '1';
-        elsif led_green_phase_prev = '1' and led_green_count(26) = '0' and next_led_green_started = '1' then
-          next_led_green_pending := next_led_green_pending - 1;
-          if next_led_green_pending = 0 then
-            next_led_green_started := '0';
-          end if;
-        end if;
-
-        led_green_pending <= next_led_green_pending;
-        led_green_started <= next_led_green_started;
-      end if;
-    end if;
-  end process led_green_pending_q;
-  led_green_dbg <= led_green_count(26) when led_green_pending /= 0 and led_green_started = '1' else '0';
-  led_blue_pad <= not led_blue_dbg;
-  led_red_pad <= not led_red_dbg;
-  led_yellow_pad <= not led_yellow_dbg;
-  led_green_pad <= not led_green_dbg;
-
-  -- From memory controllers' PLLs
-  -- lock_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_GREEN, lock);
-  -- Front-panel LEDs are treated like the main top: drive them active-low so
-  -- they are dark when idle and blink visibly once events are queued.
-  lock_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_GREEN, led_green_pad);
-
-  -- From CPU 0 (on chip)
-  -- cpuerr_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_RED, cpuerr);
-  cpuerr_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_RED, led_red_pad);
+  -- Board LEDs are tied low.
+  lock_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_GREEN, '0');
+  cpuerr_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_RED, '0');
   --pragma translate_off
   process(clkm, rstn)
   begin  -- process
@@ -1163,11 +1046,8 @@ begin
   -- From DDR controller (on FPGA)
   calib0_complete_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x12v) port map (c0_calib_complete, c0_calib_done);
 
-  -- led3_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_BLUE, '0');
-  led3_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_BLUE, led_blue_pad);
-
-  -- led4_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_YELLOW, '0');
-  led4_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_YELLOW, led_yellow_pad);
+  led3_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_BLUE, '0');
+  led4_pad : outpad generic map (tech => CFG_FABTECH, level => cmos, voltage => x18v) port map (LED_YELLOW, '0');
 
 -------------------------------------------------------------------------------
 -- Switches -------------------------------------------------------------------
@@ -1215,6 +1095,18 @@ begin
   d2d_rst <= not d2d_rstn_c0;
   d2d_rst_c1 <= not d2d_rstn_c1;
   d2d_rst_c0 <= not d2d_rstn_c0;
+  d2d_delayctrl_rst <= rst;
+
+  d2d_delayctrl_i : IDELAYCTRL
+    generic map (
+      SIM_DEVICE => "ULTRASCALE"
+    )
+    port map (
+      RDY    => d2d_delayctrl_rdy,
+      REFCLK => d2d_delay_refclk,
+      RST    => d2d_delayctrl_rst
+    );
+
   c1_d2d_link_ready <= (d2d_tx_link_ready_n and d2d_rx_link_ready_n) when C1_IS_NORTH else
                        (d2d_tx_link_ready_s and d2d_rx_link_ready_s);
   c0_d2d_link_ready <= (d2d_tx_link_ready_w and d2d_rx_link_ready_w) when C0_IS_WEST else
@@ -1275,6 +1167,23 @@ begin
   esp_clkgen : clkgen
     generic map (CFG_FABTECH, 8, 8, 0, 0, 0, 0, 0, CPU_FREQ)
     port map (esp_clk, esp_clk, chip_refclk, open, open, open, open, cgi, cgo, open, open, open);
+
+  d2d_delay_refclk_buf_i : IBUFDS
+    generic map (
+      DIFF_TERM    => TRUE,
+      IBUF_LOW_PWR => FALSE
+    )
+    port map (
+      I  => d2d_delay_refclk_p,
+      IB => d2d_delay_refclk_n,
+      O  => d2d_delay_refclk_ibufds
+    );
+
+  d2d_delay_refclk_global_buf_i : BUFG
+    port map (
+      I => d2d_delay_refclk_ibufds,
+      O => d2d_delay_refclk
+    );
 
   d2d_clk_buf : IBUFDS
     generic map (
@@ -1494,7 +1403,9 @@ begin
       noc5_data_void_in   => d2d_noc5_data_void_in_n,
       noc6_data_void_in   => d2d_noc6_data_void_in_n,
       bypass_data_in      => bypass_data_out(0),
+      dmabypass_data_in   => dmabypass_data_out(0),
       bypass_data_void_in => bypass_data_void_out(0),
+      dmabypass_data_void_in => dmabypass_data_void_out(0),
       noc1_stop_out       => d2d_noc1_stop_out_n,
       noc2_stop_out       => d2d_noc2_stop_out_n,
       noc3_stop_out       => d2d_noc3_stop_out_n,
@@ -1502,6 +1413,7 @@ begin
       noc5_stop_out       => d2d_noc5_stop_out_n,
       noc6_stop_out       => d2d_noc6_stop_out_n,
       bypass_stop_out     => bypass_stop_in(0),
+      dmabypass_stop_out  => dmabypass_stop_in(0),
       noc1_data_out       => d2d_noc1_data_out_n,
       noc2_data_out       => d2d_noc2_data_out_n,
       noc3_data_out       => d2d_noc3_data_out_n,
@@ -1515,14 +1427,17 @@ begin
       noc5_data_void_out  => d2d_noc5_data_void_out_n,
       noc6_data_void_out  => d2d_noc6_data_void_out_n,
       bypass_data_out     => bypass_data_in(0),
+      dmabypass_data_out  => dmabypass_data_in(0),
       bypass_data_void_out => bypass_data_void_in(0),
+      dmabypass_data_void_out => dmabypass_data_void_in(0),
       noc1_stop_in        => d2d_noc1_stop_in_n,
       noc2_stop_in        => d2d_noc2_stop_in_n,
       noc3_stop_in        => d2d_noc3_stop_in_n,
       noc4_stop_in        => d2d_noc4_stop_in_n,
       noc5_stop_in        => d2d_noc5_stop_in_n,
       noc6_stop_in        => d2d_noc6_stop_in_n,
-      bypass_stop_in      => bypass_stop_out(0)
+      bypass_stop_in      => bypass_stop_out(0),
+      dmabypass_stop_in   => dmabypass_stop_out(0)
     );
 
   d2d_link_s_i : entity work.d2d_direction_link
@@ -1561,7 +1476,9 @@ begin
       noc5_data_void_in   => d2d_noc5_data_void_in_s,
       noc6_data_void_in   => d2d_noc6_data_void_in_s,
       bypass_data_in      => bypass_data_out(1),
+      dmabypass_data_in   => dmabypass_data_out(1),
       bypass_data_void_in => bypass_data_void_out(1),
+      dmabypass_data_void_in => dmabypass_data_void_out(1),
       noc1_stop_out       => d2d_noc1_stop_out_s,
       noc2_stop_out       => d2d_noc2_stop_out_s,
       noc3_stop_out       => d2d_noc3_stop_out_s,
@@ -1569,6 +1486,7 @@ begin
       noc5_stop_out       => d2d_noc5_stop_out_s,
       noc6_stop_out       => d2d_noc6_stop_out_s,
       bypass_stop_out     => bypass_stop_in(1),
+      dmabypass_stop_out  => dmabypass_stop_in(1),
       noc1_data_out       => d2d_noc1_data_out_s,
       noc2_data_out       => d2d_noc2_data_out_s,
       noc3_data_out       => d2d_noc3_data_out_s,
@@ -1582,14 +1500,17 @@ begin
       noc5_data_void_out  => d2d_noc5_data_void_out_s,
       noc6_data_void_out  => d2d_noc6_data_void_out_s,
       bypass_data_out     => bypass_data_in(1),
+      dmabypass_data_out  => dmabypass_data_in(1),
       bypass_data_void_out => bypass_data_void_in(1),
+      dmabypass_data_void_out => dmabypass_data_void_in(1),
       noc1_stop_in        => d2d_noc1_stop_in_s,
       noc2_stop_in        => d2d_noc2_stop_in_s,
       noc3_stop_in        => d2d_noc3_stop_in_s,
       noc4_stop_in        => d2d_noc4_stop_in_s,
       noc5_stop_in        => d2d_noc5_stop_in_s,
       noc6_stop_in        => d2d_noc6_stop_in_s,
-      bypass_stop_in      => bypass_stop_out(1)
+      bypass_stop_in      => bypass_stop_out(1),
+      dmabypass_stop_in   => dmabypass_stop_out(1)
     );
 
   d2d_link_e_i : entity work.d2d_direction_link
@@ -1628,7 +1549,9 @@ begin
       noc5_data_void_in   => d2d_noc5_data_void_in_e,
       noc6_data_void_in   => d2d_noc6_data_void_in_e,
       bypass_data_in      => bypass_data_out(3),
+      dmabypass_data_in   => dmabypass_data_out(3),
       bypass_data_void_in => bypass_data_void_out(3),
+      dmabypass_data_void_in => dmabypass_data_void_out(3),
       noc1_stop_out       => d2d_noc1_stop_out_e,
       noc2_stop_out       => d2d_noc2_stop_out_e,
       noc3_stop_out       => d2d_noc3_stop_out_e,
@@ -1636,6 +1559,7 @@ begin
       noc5_stop_out       => d2d_noc5_stop_out_e,
       noc6_stop_out       => d2d_noc6_stop_out_e,
       bypass_stop_out     => bypass_stop_in(3),
+      dmabypass_stop_out  => dmabypass_stop_in(3),
       noc1_data_out       => d2d_noc1_data_out_e,
       noc2_data_out       => d2d_noc2_data_out_e,
       noc3_data_out       => d2d_noc3_data_out_e,
@@ -1649,14 +1573,17 @@ begin
       noc5_data_void_out  => d2d_noc5_data_void_out_e,
       noc6_data_void_out  => d2d_noc6_data_void_out_e,
       bypass_data_out     => bypass_data_in(3),
+      dmabypass_data_out  => dmabypass_data_in(3),
       bypass_data_void_out => bypass_data_void_in(3),
+      dmabypass_data_void_out => dmabypass_data_void_in(3),
       noc1_stop_in        => d2d_noc1_stop_in_e,
       noc2_stop_in        => d2d_noc2_stop_in_e,
       noc3_stop_in        => d2d_noc3_stop_in_e,
       noc4_stop_in        => d2d_noc4_stop_in_e,
       noc5_stop_in        => d2d_noc5_stop_in_e,
       noc6_stop_in        => d2d_noc6_stop_in_e,
-      bypass_stop_in      => bypass_stop_out(3)
+      bypass_stop_in      => bypass_stop_out(3),
+      dmabypass_stop_in   => dmabypass_stop_out(3)
     );
 
   d2d_link_w_i : entity work.d2d_direction_link
@@ -1695,7 +1622,9 @@ begin
       noc5_data_void_in   => d2d_noc5_data_void_in_w,
       noc6_data_void_in   => d2d_noc6_data_void_in_w,
       bypass_data_in      => bypass_data_out(2),
+      dmabypass_data_in   => dmabypass_data_out(2),
       bypass_data_void_in => bypass_data_void_out(2),
+      dmabypass_data_void_in => dmabypass_data_void_out(2),
       noc1_stop_out       => d2d_noc1_stop_out_w,
       noc2_stop_out       => d2d_noc2_stop_out_w,
       noc3_stop_out       => d2d_noc3_stop_out_w,
@@ -1703,6 +1632,7 @@ begin
       noc5_stop_out       => d2d_noc5_stop_out_w,
       noc6_stop_out       => d2d_noc6_stop_out_w,
       bypass_stop_out     => bypass_stop_in(2),
+      dmabypass_stop_out  => dmabypass_stop_in(2),
       noc1_data_out       => d2d_noc1_data_out_w,
       noc2_data_out       => d2d_noc2_data_out_w,
       noc3_data_out       => d2d_noc3_data_out_w,
@@ -1716,14 +1646,17 @@ begin
       noc5_data_void_out  => d2d_noc5_data_void_out_w,
       noc6_data_void_out  => d2d_noc6_data_void_out_w,
       bypass_data_out     => bypass_data_in(2),
+      dmabypass_data_out  => dmabypass_data_in(2),
       bypass_data_void_out => bypass_data_void_in(2),
+      dmabypass_data_void_out => dmabypass_data_void_in(2),
       noc1_stop_in        => d2d_noc1_stop_in_w,
       noc2_stop_in        => d2d_noc2_stop_in_w,
       noc3_stop_in        => d2d_noc3_stop_in_w,
       noc4_stop_in        => d2d_noc4_stop_in_w,
       noc5_stop_in        => d2d_noc5_stop_in_w,
       noc6_stop_in        => d2d_noc6_stop_in_w,
-      bypass_stop_in      => bypass_stop_out(2)
+      bypass_stop_in      => bypass_stop_out(2),
+      dmabypass_stop_in   => dmabypass_stop_out(2)
     );
 
   bypass_router_i : bypass_router
@@ -1732,12 +1665,12 @@ begin
       width                       => COH_NOC_FLIT_SIZE,
       depth                       => 4,
       ports                       => bypass_ports,
-      DEST_SIZE                   => 1)
+      DEST_SIZE                   => 1,
+      LOCAL_CHIP_X                => COL,
+      LOCAL_CHIP_Y                => ROW)
     port map (
       clk                         => sys_clk(0),
       rst                         => chip_rst,
-      CONST_local_chip_x          => chip_yx'(std_logic_vector(to_unsigned(COL, CHIP_YX_WIDTH))),
-      CONST_local_chip_y          => chip_yx'(std_logic_vector(to_unsigned(ROW, CHIP_YX_WIDTH))),
       data_n_in                   => bypass_data_in(0),
       data_s_in                   => bypass_data_in(1),
       data_w_in                   => bypass_data_in(2),
@@ -1750,6 +1683,32 @@ begin
       data_e_out                  => bypass_data_out(3),
       data_void_out               => bypass_data_void_out,
       stop_out                    => bypass_stop_out
+    );
+
+  dmabypass_router_i : bypass_router
+    generic map (
+      flow_control                => 0,
+      width                       => 2*COH_NOC_FLIT_SIZE,
+      depth                       => 4,
+      ports                       => bypass_ports,
+      DEST_SIZE                   => 2,
+      LOCAL_CHIP_X                => COL,
+      LOCAL_CHIP_Y                => ROW)
+    port map (
+      clk                         => sys_clk(0),
+      rst                         => chip_rst,
+      data_n_in                   => dmabypass_data_in(0),
+      data_s_in                   => dmabypass_data_in(1),
+      data_w_in                   => dmabypass_data_in(2),
+      data_e_in                   => dmabypass_data_in(3),
+      data_void_in                => dmabypass_data_void_in,
+      stop_in                     => dmabypass_stop_in,
+      data_n_out                  => dmabypass_data_out(0),
+      data_s_out                  => dmabypass_data_out(1),
+      data_w_out                  => dmabypass_data_out(2),
+      data_e_out                  => dmabypass_data_out(3),
+      data_void_out               => dmabypass_data_void_out,
+      stop_out                    => dmabypass_stop_out
     );
 
   esp_chiplet_1 : esp_chiplet

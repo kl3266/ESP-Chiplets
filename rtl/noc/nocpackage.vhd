@@ -333,8 +333,6 @@ package nocpackage is
       rst_tile           : in  std_logic;
       CONST_local_x      : in  std_logic_vector(YX_WIDTH-1 downto 0);
       CONST_local_y      : in  std_logic_vector(YX_WIDTH-1 downto 0);
-      CONST_local_chip_x  : in  std_logic_vector(CHIP_YX_WIDTH-1 downto 0);
-      CONST_local_chip_y  : in  std_logic_vector(CHIP_YX_WIDTH-1 downto 0);
       noc1_data_n_in     : in  coh_noc_flit_type;
       noc1_data_s_in     : in  coh_noc_flit_type;
       noc1_data_w_in     : in  coh_noc_flit_type;
@@ -583,17 +581,37 @@ package nocpackage is
     reserved         : reserved_field_misc_type)
     return std_logic_vector;
 
---  function create_header_mcast (  -- incomplete
---    constant flit_sz  : integer;
---    local_y           : local_yx;
---    local_x           : local_yx;
---    remote_y_arr      : yx_vec(MAX_MCAST_DESTS - 2 downto 0);
---    remote_x_arr      : yx_vec(MAX_MCAST_DESTS - 2 downto 0);
---    remote_y_comb     : local_yx;
---    remote_x_comb     : local_yx;
---    mcast_ndests      : integer;
---    msg_type          : noc_msg_type)
---    return std_logic_vector;
+  function coord_match (
+    local             : std_logic_vector;
+    remote            : std_logic_vector;
+    mask              : std_logic_vector
+  )
+    return std_logic;
+
+  function max_coord (
+    remote            : std_logic_vector;
+    mask              : std_logic_vector;
+    constant MAX      : integer
+  )
+    return std_logic_vector;
+
+  function create_header_mcast (
+    constant flit_sz  : integer;
+    local_y           : local_yx;
+    local_x           : local_yx;
+    remote_y          : local_yx;
+    remote_x          : local_yx;
+    msg_type          : noc_msg_type;
+    local_chip_y      : chip_yx;
+    local_chip_x      : chip_yx;
+    remote_chip_y     : chip_yx;
+    remote_chip_x     : chip_yx;
+    remote_mask_y     : local_yx;
+    remote_mask_x     : local_yx;
+    remote_chip_mask_y  : chip_yx;
+    remote_chip_mask_x  : chip_yx;
+    p2p_mcast_ndests    : integer)
+    return std_logic_vector;
 
   function narrow_to_large_flit (
     narrow_flit : misc_noc_flit_type)
@@ -1054,92 +1072,170 @@ package body nocpackage is
     return header;
   end create_header;
 
---  function create_header_mcast (    -- complete this when MCAST scheme is finalized KL
---    constant flit_sz  : integer;
---    local_y           : local_yx;
---    local_x           : local_yx;
---    remote_y_comb     : local_yx;
---    remote_x_comb     : local_yx;
---    msg_type          : noc_msg_type;
---    local_chip_y      : chip_yx;
---    local_chip_x      : chip_yx;
---    remote_chip_y_arr : chip_yx_vec(MAX_MCAST_DESTS - 1 downto 0);
---    remote_chip_x_arr : chip_yx_vec(MAX_MCAST_DESTS - 1 downto 0);
---    remote_y_arr      : yx_vec(MAX_MCAST_DESTS - 2 downto 0);
---    remote_x_arr      : yx_vec(MAX_MCAST_DESTS - 2 downto 0);
---    mcast_ndests      : integer)
---    return std_logic_vector is
---    variable header : std_logic_vector(flit_sz - 1 downto 0);
---    variable go_right, go_left, go_up, go_down, routing: std_logic_vector(NEXT_ROUTING_WIDTH - 1 downto 0);
---    variable chip_go_right, chip_go_left, chip_go_up, chip_go_down, chip_routing: std_logic_vector(NEXT_ROUTING_WIDTH - 1 downto 0);
---    variable remote_y, remote_x : yx_vec(MAX_MCAST_DESTS - 1 downto 0);
---    variable routing_lock : std_logic;
---
---    variable remote_chip_y, remote_chip_x : chip_yx_vec(MAX_MCAST_DESTS - 1 downto 0);
---    constant RESERVED_OFFSET_MCAST : integer := flit_sz - PREAMBLE_WIDTH - NEXT_ROUTING_WIDTH - MSG_TYPE_WIDTH
---                                                - (1 + MAX_MCAST_DESTS) * 2 * YX_WIDTH - MAX_MCAST_DESTS;
---  begin  -- create_header_ndest
---
---    header := (others => '0');
---
---    remote_y := (others => (others => '0'));
---    remote_x := (others => (others => '0'));
---    remote_y(MAX_MCAST_DESTS - 2 downto 0) := remote_y_arr;
---    remote_x(MAX_MCAST_DESTS - 2 downto 0) := remote_x_arr;
---    remote_y(mcast_ndests) := remote_y_comb;
---    remote_x(mcast_ndests) := remote_x_comb;
---
---    header(flit_sz - 1 downto
---           flit_sz - PREAMBLE_WIDTH) := PREAMBLE_HEADER;
---    header(flit_sz - PREAMBLE_WIDTH - 1 downto
---           flit_sz - PREAMBLE_WIDTH - YX_WIDTH) := local_y;
---    header(flit_sz - PREAMBLE_WIDTH - YX_WIDTH - 1 downto
---           flit_sz - PREAMBLE_WIDTH - 2*YX_WIDTH) := local_x;
---    header(flit_sz - PREAMBLE_WIDTH - 2*YX_WIDTH - 1 downto
---           flit_sz - PREAMBLE_WIDTH - 3*YX_WIDTH) := remote_y(0);
---    header(flit_sz - PREAMBLE_WIDTH - 3*YX_WIDTH - 1 downto
---           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH) := remote_x(0);
---    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - 1 downto
---           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH) := msg_type;
---    for i in 1 to MAX_MCAST_DESTS - 1 loop
---      header(flit_sz - PREAMBLE_WIDTH - (4+2*(i-1))*YX_WIDTH - MSG_TYPE_WIDTH - RESERVED_OFFSET_MCAST - 1 downto
---             flit_sz - PREAMBLE_WIDTH - (5+2*(i-1))*YX_WIDTH - MSG_TYPE_WIDTH - RESERVED_OFFSET_MCAST) := remote_y(i);
---      header(flit_sz - PREAMBLE_WIDTH - (5+2*(i-1))*YX_WIDTH - MSG_TYPE_WIDTH - RESERVED_OFFSET_MCAST - 1 downto
---             flit_sz - PREAMBLE_WIDTH - (6+2*(i-1))*YX_WIDTH - MSG_TYPE_WIDTH - RESERVED_OFFSET_MCAST) := remote_x(i);
---    end loop;
---
---
---    for i in 0 to MAX_MCAST_DESTS - 1 loop
---      header(flit_sz - PREAMBLE_WIDTH - (1 + MAX_MCAST_DESTS) * 2 * YX_WIDTH - MSG_TYPE_WIDTH
---             - MAX_MCAST_DESTS - RESERVED_OFFSET_MCAST + i) := '1';
---      if i <= mcast_ndests then
---          if local_x < remote_x(i) then
---            go_right := "01000";
---          else
---            go_right := "10111";
---          end if;
---
---          if local_x > remote_x(i) then
---            go_left := "00100";
---          else
---            go_left := "11011";
---          end if;
---
---          if local_y < remote_y(i) then
---            routing := "01110" and go_left and go_right;
---          else
---            routing := "01101" and go_left and go_right;
---          end if;
---
---          if local_y = remote_y(i) and local_x = remote_x(i) then
---            routing := "10000";
---          end if;
---      end if;
---      header(NEXT_ROUTING_WIDTH-1 downto 0) := header(NEXT_ROUTING_WIDTH-1 downto 0) or routing;
---    end loop;
---
---    return header;
---  end create_header_mcast;
+  function coord_match (
+    local             : std_logic_vector;
+    remote            : std_logic_vector;
+    mask              : std_logic_vector)
+    return std_logic is
+      variable diff   : std_logic_vector(local'range);
+  begin
+    diff := (local xor remote) and (not mask);
+    if diff = (local'range => '0') then
+      return '1';
+    else
+      return '0';
+    end if;
+  end function;
+
+  function max_coord (
+    remote            : std_logic_vector;
+    mask              : std_logic_vector;
+    constant MAX      : integer)
+    return std_logic_vector is
+      variable v      : std_logic_vector(remote'range);
+      variable result : std_logic_vector(remote'range);
+  begin
+    result := (others => '0');
+
+    if MAX = 2 or MAX = 4 or MAX = 8 or MAX = 16 then
+      return remote or mask;
+    end if;
+
+    for i in 0 to MAX-1 loop
+      v := std_logic_vector(to_unsigned(i, v'length));
+      if coord_match(v, remote, mask) = '1' then
+        result := v;
+      end if;
+    end loop;
+    return result;
+  end function;
+
+  function create_header_mcast (    -- KL IN PROGRESS
+    constant flit_sz  : integer;
+    local_y           : local_yx;
+    local_x           : local_yx;
+    remote_y          : local_yx;
+    remote_x          : local_yx;
+    msg_type          : noc_msg_type;
+    local_chip_y      : chip_yx;
+    local_chip_x      : chip_yx;
+    remote_chip_y     : chip_yx;
+    remote_chip_x     : chip_yx;
+    remote_mask_y     : local_yx;
+    remote_mask_x     : local_yx;
+    remote_chip_mask_y  : chip_yx;
+    remote_chip_mask_x  : chip_yx;
+    p2p_mcast_ndests    : integer
+    )
+    return std_logic_vector is
+    variable header : std_logic_vector(flit_sz - 1 downto 0);
+    variable routing : std_logic_vector(NEXT_ROUTING_WIDTH - 1 downto 0);
+    variable mcast_routing_lock : std_logic_vector(3 downto 0);
+    variable min_chip_x, min_chip_y, max_chip_x, max_chip_y : chip_yx;
+    variable min_x, min_y, max_x, max_y : local_yx;
+    variable match_x, match_chip_x, match_chip_y : std_logic;
+    variable current_chip : std_logic;
+    variable mcast : std_logic;
+    constant DST_CHIP_MASK_PRE_WIDTH : integer := PREAMBLE_WIDTH + 4*YX_WIDTH + MSG_TYPE_WIDTH +
+                                                   TILE_WIDTH + PLANE_WIDTH + ROUTING_LOCK_WIDTH +
+                                                   4*CHIP_YX_WIDTH + 1 + 1 + 2*YX_WIDTH + 2;
+  begin  -- create_header_ndest
+
+    header := (others => '0');
+    if p2p_mcast_ndests = 0 then
+      mcast := '0'; -- unicast
+    else
+      mcast := '1'; -- mcast
+    end if;
+
+    header(flit_sz - 1 downto
+           flit_sz - PREAMBLE_WIDTH) := PREAMBLE_HEADER;
+    header(flit_sz - PREAMBLE_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - YX_WIDTH) := local_y;
+    header(flit_sz - PREAMBLE_WIDTH - YX_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - 2*YX_WIDTH) := local_x;
+    header(flit_sz - PREAMBLE_WIDTH - 2*YX_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - 3*YX_WIDTH) := remote_y;
+    header(flit_sz - PREAMBLE_WIDTH - 3*YX_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH) := remote_x;
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH) := msg_type;
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH) := (others => '0');
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 2 downto
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - CHIP_YX_WIDTH) := local_chip_y;
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - CHIP_YX_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 2*CHIP_YX_WIDTH) := local_chip_x;
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 2*CHIP_YX_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 3*CHIP_YX_WIDTH) := remote_chip_y; 
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 3*CHIP_YX_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 4*CHIP_YX_WIDTH) := remote_chip_x;
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 4*CHIP_YX_WIDTH - 1) := mcast; -- mcast
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 4*CHIP_YX_WIDTH - 2) := '0'; -- tree
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 4*CHIP_YX_WIDTH - 3 downto
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 4*CHIP_YX_WIDTH - 2 - YX_WIDTH) := remote_mask_y;
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 4*CHIP_YX_WIDTH - 2 - YX_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1 - 4*CHIP_YX_WIDTH - 2 - 2*YX_WIDTH) := remote_mask_x;
+    header(flit_sz - DST_CHIP_MASK_PRE_WIDTH - 1 downto
+           flit_sz - DST_CHIP_MASK_PRE_WIDTH - CHIP_YX_WIDTH) := remote_chip_mask_y;
+    header(flit_sz - DST_CHIP_MASK_PRE_WIDTH - CHIP_YX_WIDTH - 1 downto
+           flit_sz - DST_CHIP_MASK_PRE_WIDTH - 2*CHIP_YX_WIDTH) := remote_chip_mask_x;
+
+    min_chip_x := remote_chip_x and (not remote_chip_mask_x);
+    min_chip_y := remote_chip_y and (not remote_chip_mask_y);
+    min_x := remote_x and (not remote_mask_x);
+    min_y := remote_y and (not remote_mask_y);
+    max_chip_x := remote_chip_x;
+    max_chip_y := remote_chip_y;
+    max_x := remote_x;
+    max_y := remote_y;
+    match_chip_x := coord_match(local_chip_x, remote_chip_x, remote_chip_mask_x);
+    match_chip_y := coord_match(local_chip_y, remote_chip_y, remote_chip_mask_y);
+    mcast_routing_lock := (others => '0');
+    match_x := coord_match(local_x, remote_x, remote_mask_x);
+    current_chip := match_chip_y and match_chip_x;
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - 1) := not current_chip; -- routing_lock: 0 enable source chip routing; 1 disable source chip routing
+    
+    if local_chip_x < max_chip_x then
+      mcast_routing_lock(3) := '1'; -- east
+    end if;
+    if local_chip_x > min_chip_x then
+      mcast_routing_lock(2) := '1'; -- west
+    end if;
+    if match_chip_x = '1' then
+      if local_chip_y < max_chip_y then
+        mcast_routing_lock(1) := '1'; -- south
+      end if;
+      if local_chip_y > min_chip_y then
+        mcast_routing_lock(0) := '1'; -- north
+      end if;
+    end if;
+
+    header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - 1 downto
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH) := mcast_routing_lock;
+    routing := '0' & mcast_routing_lock;
+
+    if current_chip = '1' then
+      if local_x < max_x then
+        routing(3) := '1'; -- east
+      end if;
+      if local_x > min_x then
+        routing(2) := '1'; -- west
+      end if;
+      if match_x = '1' then
+        if local_y < max_y then
+          routing(1) := '1'; -- south
+        end if;
+        if local_y > min_y then
+          routing(0) := '1'; -- north
+        end if;
+      end if;
+    end if;
+
+    header(NEXT_ROUTING_WIDTH-1 downto 0) := routing;
+
+    return header;
+  end create_header_mcast;
 
   function create_header_misc (
     constant flit_sz : integer;
@@ -1176,7 +1272,7 @@ package body nocpackage is
     header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - 1 downto
            flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH) := "0000";
     header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - 1 downto
-           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH) := "100"; -- PLANE 5
+           flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH) := "000"; -- PLANE 5
     header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - ROUTING_LOCK_WIDTH - 1 downto
            flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - ROUTING_LOCK_WIDTH - CHIP_YX_WIDTH) := local_chip_y;
     header(flit_sz - PREAMBLE_WIDTH - 4*YX_WIDTH - MSG_TYPE_WIDTH - TILE_WIDTH - PLANE_WIDTH - ROUTING_LOCK_WIDTH - CHIP_YX_WIDTH - 1 downto

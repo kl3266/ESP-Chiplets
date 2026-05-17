@@ -13,7 +13,8 @@ use work.nocpackage.all;
 entity sync_noc_set is
   generic (
     PORTS     : std_logic_vector(4 downto 0);
-    HAS_SYNC  : integer range 0 to 1 := 0);
+    HAS_SYNC  : integer range 0 to 1 := 0
+  );
   port (
     clk           : in  std_logic;
     clk_tile      : in  std_logic;
@@ -21,8 +22,6 @@ entity sync_noc_set is
     rst_tile      : in  std_logic;
     CONST_local_x : in  std_logic_vector(YX_WIDTH-1 downto 0);
     CONST_local_y : in  std_logic_vector(YX_WIDTH-1 downto 0);
-    CONST_local_chip_x  : in std_logic_vector(CHIP_YX_WIDTH-1 downto 0);
-    CONST_local_chip_y  : in std_logic_vector(CHIP_YX_WIDTH-1 downto 0);
     noc1_data_n_in     : in  coh_noc_flit_type;
     noc1_data_s_in     : in  coh_noc_flit_type;
     noc1_data_w_in     : in  coh_noc_flit_type;
@@ -135,8 +134,6 @@ architecture mesh of sync_noc_set is
       rst_tile      : in  std_logic;
       CONST_local_x : in  std_logic_vector(YX_WIDTH-1 downto 0);
       CONST_local_y : in  std_logic_vector(YX_WIDTH-1 downto 0);
-      CONST_local_chip_x : in  std_logic_vector(CHIP_YX_WIDTH-1 downto 0);
-      CONST_local_chip_y : in  std_logic_vector(CHIP_YX_WIDTH-1 downto 0);
       data_n_in     : in  std_logic_vector(this_noc_flit_size - 1 downto 0);
       data_s_in     : in  std_logic_vector(this_noc_flit_size - 1 downto 0);
       data_w_in     : in  std_logic_vector(this_noc_flit_size - 1 downto 0);
@@ -171,8 +168,6 @@ begin
       rst_tile      => rst_tile,
       CONST_local_x => CONST_local_x,
       CONST_local_y => CONST_local_y,
-      CONST_local_chip_x => CONST_local_chip_x,
-      CONST_local_chip_y => CONST_local_chip_y,
       data_n_in     => noc1_data_n_in,
       data_s_in     => noc1_data_s_in,
       data_w_in     => noc1_data_w_in,
@@ -203,8 +198,6 @@ begin
       rst_tile      => rst_tile,
       CONST_local_x => CONST_local_x,
       CONST_local_y => CONST_local_y,
-      CONST_local_chip_x => CONST_local_chip_x,
-      CONST_local_chip_y => CONST_local_chip_y,
       data_n_in     => noc2_data_n_in,
       data_s_in     => noc2_data_s_in,
       data_w_in     => noc2_data_w_in,
@@ -235,8 +228,6 @@ begin
       rst_tile      => rst_tile,
       CONST_local_x => CONST_local_x,
       CONST_local_y => CONST_local_y,
-      CONST_local_chip_x => CONST_local_chip_x,
-      CONST_local_chip_y => CONST_local_chip_y,
       data_n_in     => noc3_data_n_in,
       data_s_in     => noc3_data_s_in,
       data_w_in     => noc3_data_w_in,
@@ -266,8 +257,6 @@ begin
       rst_tile      => rst_tile,
       CONST_local_x => CONST_local_x,
       CONST_local_y => CONST_local_y,
-      CONST_local_chip_x => CONST_local_chip_x,
-      CONST_local_chip_y => CONST_local_chip_y,
       data_n_in     => noc4_data_n_in,
       data_s_in     => noc4_data_s_in,
       data_w_in     => noc4_data_w_in,
@@ -298,8 +287,6 @@ begin
       rst_tile      => rst_tile,
       CONST_local_x => CONST_local_x,
       CONST_local_y => CONST_local_y,
-      CONST_local_chip_x => CONST_local_chip_x,
-      CONST_local_chip_y => CONST_local_chip_y,
       data_n_in     => noc5_data_n_in,
       data_s_in     => noc5_data_s_in,
       data_w_in     => noc5_data_w_in,
@@ -322,7 +309,7 @@ begin
       PORTS    =>  PORTS,
       has_sync =>  HAS_SYNC,
       this_noc_flit_size => DMA_NOC_FLIT_SIZE,
-      DEST_SIZE => MAX_MCAST_DESTS * MULTICAST_NOC_EN)
+      DEST_SIZE => 2)
     port map (
       clk           => clk,
       clk_tile      => clk_tile,
@@ -330,8 +317,6 @@ begin
       rst_tile      => rst_tile,
       CONST_local_x => CONST_local_x,
       CONST_local_y => CONST_local_y,
-      CONST_local_chip_x => CONST_local_chip_x,
-      CONST_local_chip_y => CONST_local_chip_y,
       data_n_in     => noc6_data_n_in,
       data_s_in     => noc6_data_s_in,
       data_w_in     => noc6_data_w_in,

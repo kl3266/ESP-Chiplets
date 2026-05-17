@@ -25,7 +25,7 @@ soft-clean:
 
 soft-distclean: soft-clean
 
-$(SOFT_BUILD)/riscv.dtb: $(ESP_CFG_BUILD)/riscv.dts $(ESP_CFG_BUILD)/socmap.vhd
+$(SOFT_BUILD)/riscv.dtb: $(ESP_CFG_BUILD)/riscv.dts $(ESP_CFG_BUILD)/socmap.vhd FORCE
 	$(QUIET_BUILD) mkdir -p $(SOFT_BUILD)
 	@dtc -I dts $< -O dtb -o $@
 
@@ -227,4 +227,3 @@ VERILOG_ARIANE += $(foreach f, $(shell strings $(FLISTS)/ariane_fpga_vlog.flist)
 endif
 THIRDPARTY_VLOG += $(VERILOG_ARIANE)
 endif
-

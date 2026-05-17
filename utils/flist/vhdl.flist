@@ -75,9 +75,9 @@ noc/router.vhd
 noc/relay_station.vhd
 noc/relay_station_agg.vhd
 noc/relay_station_tile.vhd
-noc/chiplet/bypass_router.vhd
-noc/chiplet/d2d_tx_top_bypass.vhd
-noc/chiplet/d2d_rx_top_bypass.vhd
+noc/chiplet/bypass_router/bypass_router.vhd
+noc/chiplet/d2d_tx_top.vhd
+noc/chiplet/d2d_rx_top.vhd
 sockets/proxy/noc2apb.vhd
 sockets/proxy/noc2intreq.vhd
 sockets/proxy/intreq2noc.vhd
@@ -153,5 +153,4 @@ tiles/fpga/fpga_tile_empty.vhd
 tiles/fpga/fpga_tile_io.vhd
 tiles/fpga/fpga_tile_mem.vhd
 tiles/fpga/fpga_tile_slm.vhd
-tiles/esp.vhd
-tiles/esp_chiplet_per_tile_rs_no_d2d.vhd
+tiles/esp_chiplet.vhd

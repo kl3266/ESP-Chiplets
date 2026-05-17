@@ -55,18 +55,17 @@ enum accelerator_coherence {ACC_COH_NONE = 0, ACC_COH_LLC, ACC_COH_RECALL, ACC_C
 #define P2P_MASK_NSRCS 0x3
 #define P2P_MASK_SRC_IS_P2P BIT(2)
 #define P2P_MASK_DST_IS_P2P BIT(3)
-#define P2P_MASK_SRCS_YX 0xF  // changed from 0x7 to 0xF
-#define P2P_MASK_SRCS_CHIP_YX 0x7
-#define P2P_MASK_MCAST_NDESTS 0xF
-#define P2P_BIT_SRCS_YX 4       // start index is 4
-#define P2P_BIT_SRCS_CHIP_YX 0  // start index is 0
 #define YX_WIDTH 4
 #define CHIP_YX_WIDTH 3
+#define P2P_MASK_SRCS_YX ((1 << YX_WIDTH) - 1)  // changed from 0x7 to 0xF
+#define P2P_MASK_SRCS_CHIP_YX ((1 << CHIP_YX_WIDTH) - 1)
+// #define P2P_MASK_MCAST_NDESTS 0xF
+#define P2P_BIT_SRCS_YX 4       // start index is 4
+#define P2P_BIT_SRCS_CHIP_YX 0  // start index is 0
 #define P2P_SHIFT_SRCS_Y(_n) (P2P_BIT_SRCS_YX + YX_WIDTH + _n * 2 * YX_WIDTH)
 #define P2P_SHIFT_SRCS_X(_n) (P2P_BIT_SRCS_YX + _n * 2 * YX_WIDTH)
 #define P2P_SHIFT_SRCS_CHIP_Y(_n) (P2P_BIT_SRCS_CHIP_YX + CHIP_YX_WIDTH + _n * 2 * CHIP_YX_WIDTH)
 #define P2P_SHIFT_SRCS_CHIP_X(_n) (P2P_BIT_SRCS_CHIP_YX + _n * 2 * CHIP_YX_WIDTH)
-#define P2P_SHIFT_MCAST_NDESTS 28
 
 /* bank(10)       : Point-to-point chip configuration */
 #define P2P_CHIP_REG 0x28
@@ -80,35 +79,77 @@ enum accelerator_coherence {ACC_COH_NONE = 0, ACC_COH_LLC, ACC_COH_RECALL, ACC_C
 /* bank(13)       : RESERVED */
 #define SPANDEX_REG 0x34
 
+/* bank(14)       : Point-to-point configuration */
+#define MCAST_REG               0x38
+#define MCAST_MASK_NDESTS       0x3F
+#define MCAST_SHIFT_NDESTS      0
+#define MCAST_MASK_PACKET       0x1
+#define MCAST_SHIFT_PACKET      6
+#define MCAST_MASK_PACKET_SIZE  0xF
+#define MCAST_SHIFT_PACKET_SIZE 7
+
+/* bank(17 to 96) : USR (user defined) */
+
 /* YX_REGs contain a mapping from an accelerator number to a physical tile coordinate */
-/* bank(14)       : YX_REG - LSBs reserved for local tile's coordinates */
-#define YX_REG 0x38
+/* bank(96)       : YX_REG - LSBs reserved for local tile's coordinates */
+#define YX_REG     0x180
 #define YX_SHIFT_X 0
-#define YX_SHIFT_Y 4
-#define YX_MASK_YX 0xF
-#define YX_WIDTH 4
+#define YX_SHIFT_Y YX_WIDTH
+#define YX_MASK_YX ((1 << YX_WIDTH) - 1)
 
-/* bank(15)       : YX_REG_2 */
-#define YX_REG_2 0x3C
+/* bank(97)       : YX_REG_2 */
+#define YX_REG_2 0x184
 
-/* bank(16)       : YX_REG_3 */
-#define YX_REG_3 0x40
+/* bank(98)       : YX_REG_3 */
+#define YX_REG_3 0x188
 
-/* bank(17)       : CHIP_YX_REG */
-#define CHIP_YX_REG 0x44
+/* bank(99)       : YX_REG_2 */
+#define YX_REG_4 0x18C
+
+/* bank(100)      : YX_REG_3 */
+#define YX_REG_5 0x190
+
+/* bank(101)      : YX_REG_2 */
+#define YX_REG_6 0x194
+
+/* bank(102)      : YX_REG_3 */
+#define YX_REG_7 0x198
+
+/* bank(103)      : YX_REG_2 */
+#define YX_REG_8 0x19C
+
+/* bank(104)      : YX_REG_3 */
+#define YX_REG_9 0x1A0
+
+/* bank(105)       : CHIP_YX_REG */
+#define CHIP_YX_REG 0x1A4
 #define CHIP_YX_SHIFT_CHIP_X 0
-#define CHIP_YX_SHIFT_CHIP_Y 3
-#define CHIP_YX_MASK_CHIP_YX 0x7
-#define CHIP_YX_WIDTH 3
+#define CHIP_YX_SHIFT_CHIP_Y CHIP_YX_WIDTH
+#define CHIP_YX_MASK_CHIP_YX ((1 << CHIP_YX_WIDTH) - 1)
 
-/* bank(18)       : CHIP_YX_REG_2 */
-#define CHIP_YX_REG_2 0x48
+/* bank(106)       : CHIP_YX_REG_2 */
+#define CHIP_YX_REG_2 0x1A8
 
-/* bank(19)       : CHIP_YX_REG_3 */
-#define CHIP_YX_REG_3 0x4C
+/* bank(107)       : CHIP_YX_REG_3 */
+#define CHIP_YX_REG_3 0x1AC
 
+/* bank(108)       : CHIP_YX_REG_4 */
+#define CHIP_YX_REG_4 0x1B0
 
-/* bank(20 to 63) : USR (user defined) */
+/* bank(109)       : CHIP_YX_REG_5 */
+#define CHIP_YX_REG_5 0x1B4
+
+/* bank(110)       : CHIP_YX_REG_6 */
+#define CHIP_YX_REG_6 0x1B8
+
+/* bank(111)       : CHIP_YX_REG_7 */
+#define CHIP_YX_REG_7 0x1BC
+
+/* bank(112)       : CHIP_YX_REG_8 */
+#define CHIP_YX_REG_8 0x1C0
+
+/* bank(113)       : CHIP_YX_REG_9 */
+#define CHIP_YX_REG_9 0x1C4
 
 // Re-enable the following 3 registers if adding an SRAM expanding the register bank
 // /* bank(29)       : EXP_ADDR (bits 29:0 address an SRAM expanding the register bank) */

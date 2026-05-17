@@ -97,3 +97,118 @@ module router_fifo
 //`endif // ~SYNTHESIS
 
 endmodule
+
+// Use if not power of 2.
+//module router_fifo
+//  #(
+//    parameter bit BypassEnable = 1'b1,
+//    parameter int unsigned Depth = 4,
+//    parameter int unsigned Width = 8
+//    )
+//  (
+//   input  logic clk,
+//   input  logic rst,
+//   input  logic rdreq,
+//   input  logic wrreq,
+//   input  logic [Width-1:0] data_in,
+//   output logic empty,
+//   output logic full,
+//   output logic [Width-1:0] data_out
+//   );
+//
+//  // ---------------------------------------------------------
+//  // Local Parameters & Signals
+//  // ---------------------------------------------------------
+//  localparam int PtrWidth = $clog2(Depth);
+//  localparam int CntWidth = $clog2(Depth + 1);
+//
+//  logic [Width-1:0] mem [Depth-1:0];
+//  logic [PtrWidth-1:0] wr_ptr, rd_ptr;
+//  logic [CntWidth-1:0] count;
+//
+//  logic bypass_active;
+//  logic write_en;
+//  logic read_en;
+//
+//  // ---------------------------------------------------------
+//  // Control Logic
+//  // ---------------------------------------------------------
+//
+//  assign empty = (count == '0);
+//  assign full  = (count == Depth[CntWidth-1:0]);
+//
+//  // Bypass Condition:
+//  // If enabled, empty, and both requesting -> Pass data straight through.
+//  // We do NOT write to memory (save power) and do NOT move pointers.
+//  assign bypass_active = BypassEnable & empty & rdreq & wrreq;
+//
+//  // Write Enable: Write if requested, not full, and not currently bypassing
+//  assign write_en = wrreq & ~full & ~bypass_active;
+//
+//  // Read Enable: Read if requested, not empty (Bypass handled purely combinatorially)
+//  assign read_en  = rdreq & ~empty;
+//
+//  // ---------------------------------------------------------
+//  // Datapath (Output Mux)
+//  // ---------------------------------------------------------
+//
+//  // If bypassing, output data_in directly. Otherwise output from Memory.
+//  // Note: mem[rd_ptr] creates the read-mux automatically.
+//  assign data_out = (BypassEnable & empty) ? data_in : mem[rd_ptr];
+//
+//  // ---------------------------------------------------------
+//  // Sequential Logic (Pointers & Memory)
+//  // ---------------------------------------------------------
+//  always_ff @(posedge clk) begin
+//    if (rst) begin
+//      wr_ptr <= '0;
+//      rd_ptr <= '0;
+//      count  <= '0;
+//    end else begin
+//
+//      // Write Operation
+//      if (write_en) begin
+//        mem[wr_ptr] <= data_in;
+//        // Wrap-around logic for generic Depth
+//        wr_ptr <= (wr_ptr == Depth[PtrWidth-1:0] - 1'b1) ? '0 : wr_ptr + 1'b1;
+//      end
+//
+//      // Read Operation
+//      if (read_en) begin
+//        // Wrap-around logic for generic Depth
+//        rd_ptr <= (rd_ptr == Depth[PtrWidth-1:0] - 1'b1) ? '0 : rd_ptr + 1'b1;
+//      end
+//
+//      // Count Update
+//      case ({write_en, read_en})
+//        2'b10: count <= count + 1'b1; // Write only
+//        2'b01: count <= count - 1'b1; // Read only
+//        default: count <= count;      // Both or None
+//      endcase
+//    end
+//  end
+//
+//  // ---------------------------------------------------------
+//  // Assertions (Simulation Only)
+//  // ---------------------------------------------------------
+//`ifndef SYNTHESIS
+//  // pragma coverage off
+//
+//  default clocking cb @(posedge clk); endclocking
+//
+//  // Check for Overflow/Underflow
+//  property p_no_overflow;
+//    disable iff (rst) (wrreq && full && !rdreq) |-> ##1 ($stable(count));
+//  endproperty
+//
+//  property p_no_underflow;
+//    disable iff (rst) (rdreq && empty && !wrreq) |-> ##1 ($stable(count));
+//  endproperty
+//
+//  a_no_overflow:  assert property (p_no_overflow)  else $error("FIFO Overflow Write");
+//  a_no_underflow: assert property (p_no_underflow) else $error("FIFO Underflow Read");
+//
+//  // pragma coverage on
+//`endif
+//
+//endmodule

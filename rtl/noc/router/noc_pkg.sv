@@ -136,9 +136,14 @@ package noc;
     parameter int unsigned tWidth = $clog2(xMax);
     parameter int unsigned pWidth = $clog2(6);
     parameter int unsigned routing_lock_width = 1;
+    parameter int unsigned mcast_routing_lock_width = 4;
 
     typedef logic [tWidth-1:0] tile_t;
     typedef logic [2:0] plane_t;
     typedef logic [routing_lock_width-1:0] routing_lock_t;
+    typedef logic [mcast_routing_lock_width-1:0] mcast_routing_lock_t;
+    typedef logic mcast_t;  // 0 - tree; 1 - brcp
+    typedef logic pkt_type_t; // 0 - unicast; 1 - mcast; if unicast, disables bypass router's chip mask to use as reserved
+    typedef logic src_chip_dest_t; // 1 - disable source chip multicast; 0 - enable source chip multicast/source chip unicast
 
 endpackage

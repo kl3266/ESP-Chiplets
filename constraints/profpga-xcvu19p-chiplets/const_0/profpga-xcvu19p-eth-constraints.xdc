@@ -47,7 +47,7 @@ set clkm6_elab [get_clocks -of_objects [get_nets clkm_6]]
 #set clkm7_elab [get_clocks -of_objects [get_nets clkm_7]]
 set refclk_elab [get_clocks -of_objects [get_nets chip_refclk]]
 
-set_clock_groups -asynchronous -group [get_clocks erx_clk] -group [get_clocks -include_generated_clocks $clkm_elab]
+set_clock_groups -asynchronous -group [get_clocks erx_clk] -group [get_clocks $clkm_elab]
 set_clock_groups -asynchronous -group [get_clocks erx_clk] -group [get_clocks $clkm1_elab]
 set_clock_groups -asynchronous -group [get_clocks erx_clk] -group [get_clocks $clkm2_elab]
 set_clock_groups -asynchronous -group [get_clocks erx_clk] -group [get_clocks $clkm3_elab]
@@ -57,7 +57,7 @@ set_clock_groups -asynchronous -group [get_clocks erx_clk] -group [get_clocks $c
 #set_clock_groups -asynchronous -group [get_clocks erx_clk] -group [get_clocks $clkm7_elab]
 set_clock_groups -asynchronous -group [get_clocks erx_clk] -group [get_clocks $refclk_elab]
 
-set_clock_groups -asynchronous -group [get_clocks etx_clk] -group [get_clocks -include_generated_clocks $clkm_elab]
+set_clock_groups -asynchronous -group [get_clocks etx_clk] -group [get_clocks $clkm_elab]
 set_clock_groups -asynchronous -group [get_clocks etx_clk] -group [get_clocks $clkm1_elab]
 set_clock_groups -asynchronous -group [get_clocks etx_clk] -group [get_clocks $clkm2_elab]
 set_clock_groups -asynchronous -group [get_clocks etx_clk] -group [get_clocks $clkm3_elab]
@@ -70,7 +70,9 @@ set_clock_groups -asynchronous -group [get_clocks etx_clk] -group [get_clocks -i
 set_clock_groups -asynchronous -group [get_clocks etx_clk] -group [get_clocks {*_sys_clk_p}]
 
 # Cable receive clocks come from remote FPGA d2d_clk_p domains.
+set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks d2d_clk_p] -group [get_clocks erx_clk]
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks c0_rx_clk] -group [get_clocks erx_clk]
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks c1_rx_clk] -group [get_clocks erx_clk]
+set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks d2d_clk_p] -group [get_clocks etx_clk]
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks c0_rx_clk] -group [get_clocks etx_clk]
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks c1_rx_clk] -group [get_clocks etx_clk]

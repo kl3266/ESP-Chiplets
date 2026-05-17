@@ -79,6 +79,8 @@ architecture behav of testbench is
   signal esp_clk_n    : std_ulogic := '1';
   signal d2d_clk_p    : std_ulogic := '0';
   signal d2d_clk_n    : std_ulogic := '1';
+  signal d2d_delay_refclk_p : std_ulogic := '0';
+  signal d2d_delay_refclk_n : std_ulogic := '1';
 
   -- IO Cables
   signal b0_b1_cable_clk_p  : std_logic := '0';
@@ -278,6 +280,8 @@ architecture behav of testbench is
       esp_clk_n         : in    std_ulogic;  -- 50 MHz clock
       d2d_clk_p         : in    std_ulogic;  -- 50 MHz clock
       d2d_clk_n         : in    std_ulogic;  -- 50 MHz clock
+      d2d_delay_refclk_p : in   std_ulogic;  -- 400 MHz clock
+      d2d_delay_refclk_n : in   std_ulogic;  -- 400 MHz clock
       reset             : in    std_ulogic;
       -- IO Cable
       c0_cable_clk_p    : out   std_logic;
@@ -496,6 +500,8 @@ architecture behav of testbench is
       esp_clk_n         : in    std_ulogic;  -- 50 MHz clock
       d2d_clk_p         : in    std_ulogic;  -- 50 MHz clock
       d2d_clk_n         : in    std_ulogic;  -- 50 MHz clock
+      d2d_delay_refclk_p : in   std_ulogic;  -- 400 MHz clock
+      d2d_delay_refclk_n : in   std_ulogic;  -- 400 MHz clock
       reset             : in    std_ulogic;
       -- IO Cable
       c0_cable_clk_p    : out   std_logic;
@@ -571,6 +577,8 @@ begin
   esp_clk_n    <= not esp_clk_n    after 5.0 ns;
   d2d_clk_p    <= not d2d_clk_p    after 3.2 ns;
   d2d_clk_n    <= not d2d_clk_n    after 3.2 ns;
+  d2d_delay_refclk_p <= not d2d_delay_refclk_p after 1.25 ns;
+  d2d_delay_refclk_n <= not d2d_delay_refclk_n after 1.25 ns;
 
   -- UART
   uart_rxd  <= '0';
@@ -629,6 +637,8 @@ begin
           esp_clk_n         => esp_clk_n,
           d2d_clk_p         => d2d_clk_p,
           d2d_clk_n         => d2d_clk_n,
+          d2d_delay_refclk_p => d2d_delay_refclk_p,
+          d2d_delay_refclk_n => d2d_delay_refclk_n,
           reset             => reset,
 
           -- IO Cable (blue-ribbon)
@@ -846,6 +856,8 @@ begin
           esp_clk_n         => esp_clk_n,
           d2d_clk_p         => d2d_clk_p,
           d2d_clk_n         => d2d_clk_n,
+          d2d_delay_refclk_p => d2d_delay_refclk_p,
+          d2d_delay_refclk_n => d2d_delay_refclk_n,
           reset             => reset,
 
           -- IO Cable (blue-ribbon)
@@ -1062,6 +1074,8 @@ begin
           esp_clk_n         => esp_clk_n,
           d2d_clk_p         => d2d_clk_p,
           d2d_clk_n         => d2d_clk_n,
+          d2d_delay_refclk_p => d2d_delay_refclk_p,
+          d2d_delay_refclk_n => d2d_delay_refclk_n,
           reset             => reset,
           -- IO Cable (blue-ribbon)
           c0_cable_clk_p    => b2_b3_cable_clk_p,
@@ -1276,6 +1290,8 @@ begin
           esp_clk_n         => esp_clk_n,
           d2d_clk_p         => d2d_clk_p,
           d2d_clk_n         => d2d_clk_n,
+          d2d_delay_refclk_p => d2d_delay_refclk_p,
+          d2d_delay_refclk_n => d2d_delay_refclk_n,
           reset             => reset,
           -- IO Cable (blue-ribbon)
           c0_cable_clk_p    => b3_b2_cable_clk_p,

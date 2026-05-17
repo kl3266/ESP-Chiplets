@@ -44,19 +44,26 @@ entity d2d_tx_top is
     chwidth       : integer := 66;
     cohwidth      : integer := 66;
     miscwidth     : integer := 66;
-    dmawidth      : integer := 130
+    dmawidth      : integer := 130;
+    d2d_position  : std_logic_vector(1 downto 0);
+    local_chip_y  : chip_yx;
+    local_chip_x  : chip_yx
   );
   port (
     clk                 : in  std_ulogic;
     rst                 : in  std_ulogic;
+    d2d_rst             : in  std_ulogic;
     d2d_clk_in          : in  std_ulogic;
 
     -- D2D Tx --> D2D Rx
-    d2d_snd_data_out    : out coh_noc_flit_vector(TXCHANNELS-1 downto 0);
-    d2d_valid_out       : out std_logic_vector(TXCHANNELS-1 downto 0);
+    -- Flat DDR half-lane view: lane 2*i is negedge, lane 2*i+1 is posedge.
+    d2d_snd_data_out    : out coh_noc_flit_vector(2*TXCHANNELS-1 downto 0);
+    d2d_valid_out       : out std_logic_vector(2*TXCHANNELS-1 downto 0);
+    d2d_link_ready      : out std_logic;
 
     -- D2D Rx --> D2D Tx
-    d2d_credit_in       : in  std_logic_vector(TXCHANNELS-1 downto 0);
+    -- Flat DDR half-lane credit return aligned with d2d_snd_data_out.
+    d2d_credit_in       : in  std_logic_vector(2*TXCHANNELS-1 downto 0);
     
     -- NoC --> D2D
     noc1_data_in        : in  coh_noc_flit_vector(TILES-1 downto 0);
@@ -65,6 +72,8 @@ entity d2d_tx_top is
     noc4_data_in        : in  dma_noc_flit_vector(TILES-1 downto 0);
     noc5_data_in        : in  misc_noc_flit_vector(TILES-1 downto 0);
     noc6_data_in        : in  dma_noc_flit_vector(TILES-1 downto 0);
+    bypass_data_in      : in  coh_noc_flit_type;
+    dmabypass_data_in   : in  std_logic_vector(2*chwidth-1 downto 0) := (others => '0');
 
     noc1_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
     noc2_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
@@ -72,6 +81,8 @@ entity d2d_tx_top is
     noc4_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
     noc5_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
     noc6_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
+    bypass_data_void_in : in  std_logic;
+    dmabypass_data_void_in : in  std_logic := '1';
 
     -- D2D --> NoC
     noc1_stop_out       : out std_logic_vector(TILES-1 downto 0);
@@ -79,7 +90,9 @@ entity d2d_tx_top is
     noc3_stop_out       : out std_logic_vector(TILES-1 downto 0);
     noc4_stop_out       : out std_logic_vector(TILES-1 downto 0);
     noc5_stop_out       : out std_logic_vector(TILES-1 downto 0);
-    noc6_stop_out       : out std_logic_vector(TILES-1 downto 0)
+    noc6_stop_out       : out std_logic_vector(TILES-1 downto 0);
+    bypass_stop_out     : out std_logic;
+    dmabypass_stop_out  : out std_logic
   );
 end d2d_tx_top;
 
@@ -102,19 +115,24 @@ architecture rtl of d2d_tx_top is
       CHDataWidth   : integer;
       COHDataWidth  : integer;
       MISCDataWidth : integer;
-      DMADataWidth  : integer
+      DMADataWidth  : integer;
+      d2d_position  : std_logic_vector(1 downto 0);
+      local_chip_y  : chip_yx;
+      local_chip_x  : chip_yx
     );
     port (
       clk                 : in  std_ulogic;
       rst                 : in  std_ulogic;
+      d2d_rst             : in  std_ulogic;
       d2d_clk_in          : in  std_ulogic;
   
       -- D2D Tx --> D2D Rx
-      d2d_snd_data_out    : out std_logic_vector(TXCHANNELS*CHDataWidth-1 downto 0);
-      d2d_valid_out       : out std_logic_vector(TXCHANNELS-1 downto 0);
+      d2d_snd_data_out    : out std_logic_vector(2*TXCHANNELS*CHDataWidth-1 downto 0);
+      d2d_valid_out       : out std_logic_vector(2*TXCHANNELS-1 downto 0);
+      d2d_link_ready      : out std_logic;
   
       -- D2D Rx --> D2D Tx
-      d2d_credit_in       : in  std_logic_vector(TXCHANNELS-1 downto 0);
+      d2d_credit_in       : in  std_logic_vector(2*TXCHANNELS-1 downto 0);
       
       -- NoC --> D2D
       noc1_data_in        : in  std_logic_vector(TILES*COHDataWidth-1 downto 0);
@@ -123,6 +141,8 @@ architecture rtl of d2d_tx_top is
       noc4_data_in        : in  std_logic_vector(TILES*DMADataWidth-1 downto 0);
       noc5_data_in        : in  std_logic_vector(TILES*MISCDataWidth-1 downto 0);
       noc6_data_in        : in  std_logic_vector(TILES*DMADataWidth-1 downto 0);
+      bypass_data_in      : in  std_logic_vector(CHDataWidth-1 downto 0);
+      dmabypass_data_in   : in  std_logic_vector(2*CHDataWidth-1 downto 0);
       
       noc1_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
       noc2_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
@@ -130,6 +150,8 @@ architecture rtl of d2d_tx_top is
       noc4_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
       noc5_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
       noc6_data_void_in   : in  std_logic_vector(TILES-1 downto 0);
+      bypass_data_void_in : in  std_logic;
+      dmabypass_data_void_in : in  std_logic;
 
       -- D2D --> NoC
       noc1_stop_out       : out std_logic_vector(TILES-1 downto 0);
@@ -137,11 +159,13 @@ architecture rtl of d2d_tx_top is
       noc3_stop_out       : out std_logic_vector(TILES-1 downto 0);
       noc4_stop_out       : out std_logic_vector(TILES-1 downto 0);
       noc5_stop_out       : out std_logic_vector(TILES-1 downto 0);
-      noc6_stop_out       : out std_logic_vector(TILES-1 downto 0)
+      noc6_stop_out       : out std_logic_vector(TILES-1 downto 0);
+      bypass_stop_out     : out std_logic;
+      dmabypass_stop_out  : out std_logic
     );
   end component;
 
-  signal d2d_snd_data_out_arr : std_logic_vector(TXCHANNELS*chwidth-1 downto 0);
+  signal d2d_snd_data_out_arr : std_logic_vector(2*TXCHANNELS*chwidth-1 downto 0);
   signal noc1_data_in_arr : std_logic_vector(TILES*cohwidth-1 downto 0);
   signal noc2_data_in_arr : std_logic_vector(TILES*cohwidth-1 downto 0);
   signal noc3_data_in_arr : std_logic_vector(TILES*cohwidth-1 downto 0);
@@ -159,7 +183,7 @@ begin
     noc5_data_in_arr(miscwidth*(i+1)-1 downto miscwidth*i) <= noc5_data_in(i);
     noc6_data_in_arr(dmawidth*(i+1)-1 downto dmawidth*i) <= noc6_data_in(i);
   end generate flatten_1d;
-  build_2d  : for i in 0 to TXCHANNELS-1 generate
+  build_2d  : for i in 0 to 2*TXCHANNELS-1 generate
     d2d_snd_data_out(i) <= d2d_snd_data_out_arr((i+1)*chwidth-1 downto i*chwidth);
   end generate build_2d;
 
@@ -173,14 +197,19 @@ begin
       CHDataWidth       => chwidth,
       COHDataWidth      => cohwidth,
       MISCDataWidth     => miscwidth,
-      DMADataWidth      => dmawidth
+      DMADataWidth      => dmawidth,
+      d2d_position      => d2d_position,
+      local_chip_y      => local_chip_y,
+      local_chip_x      => local_chip_x
     )
     port map (
       clk               => clk,
       rst               => rst,
+      d2d_rst           => d2d_rst,
       d2d_clk_in        => d2d_clk_in,
       d2d_snd_data_out  => d2d_snd_data_out_arr,
       d2d_valid_out     => d2d_valid_out,
+      d2d_link_ready    => d2d_link_ready,
       d2d_credit_in     => d2d_credit_in,
       noc1_data_in      => noc1_data_in_arr,
       noc2_data_in      => noc2_data_in_arr,
@@ -188,18 +217,24 @@ begin
       noc4_data_in      => noc4_data_in_arr,
       noc5_data_in      => noc5_data_in_arr,
       noc6_data_in      => noc6_data_in_arr,
+      bypass_data_in    => bypass_data_in,
+      dmabypass_data_in => dmabypass_data_in,
       noc1_data_void_in => noc1_data_void_in,
       noc2_data_void_in => noc2_data_void_in,
       noc3_data_void_in => noc3_data_void_in,
       noc4_data_void_in => noc4_data_void_in,
       noc5_data_void_in => noc5_data_void_in,
       noc6_data_void_in => noc6_data_void_in,
+      bypass_data_void_in => bypass_data_void_in,
+      dmabypass_data_void_in => dmabypass_data_void_in,
       noc1_stop_out     => noc1_stop_out,
       noc2_stop_out     => noc2_stop_out,
       noc3_stop_out     => noc3_stop_out,
       noc4_stop_out     => noc4_stop_out,
       noc5_stop_out     => noc5_stop_out,
-      noc6_stop_out     => noc6_stop_out
+      noc6_stop_out     => noc6_stop_out,
+      bypass_stop_out   => bypass_stop_out,
+      dmabypass_stop_out => dmabypass_stop_out
     );     
 
 end rtl;

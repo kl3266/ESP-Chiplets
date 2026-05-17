@@ -152,6 +152,8 @@ architecture rtl of esp_acc_dma is
   constant dma_word_bits : integer := ncpu_log(dma_words);
   constant dma_word_pad : std_logic_vector(dma_word_bits - 1 downto 0) := (others => '0');
 
+  constant YX_REG_ENTRIES : integer := 36;
+
   -- Fix endianness
   function fix_endian (
     din : std_logic_vector(DMA_NOC_WIDTH - 1 downto 0);
@@ -204,20 +206,37 @@ architecture rtl of esp_acc_dma is
   signal p2p_dst_x            : local_yx;
   signal p2p_dst_chip_y       : chip_yx;
   signal p2p_dst_chip_x       : chip_yx;
+  signal p2p_dst_max_y        : local_yx;
+  signal p2p_dst_max_x        : local_yx;
+  signal p2p_dst_max_chip_y   : chip_yx;
+  signal p2p_dst_max_chip_x   : chip_yx;
+  signal p2p_dst_mask_y       : local_yx;
+  signal p2p_dst_mask_x       : local_yx;
+  signal p2p_dst_mask_chip_y  : chip_yx;
+  signal p2p_dst_mask_chip_x  : chip_yx;
+  signal p2p_dst_max_y_reg        : local_yx;
+  signal p2p_dst_max_x_reg        : local_yx;
+  signal p2p_dst_max_chip_y_reg   : chip_yx;
+  signal p2p_dst_max_chip_x_reg   : chip_yx;
+  signal p2p_dst_mask_y_reg       : local_yx;
+  signal p2p_dst_mask_x_reg       : local_yx;
+  signal p2p_dst_mask_chip_y_reg  : chip_yx;
+  signal p2p_dst_mask_chip_x_reg  : chip_yx;
   signal p2p_req_rcv_rdreq    : std_ulogic;
   signal p2p_req_rcv_data_out : dma_noc_flit_type;
   signal p2p_req_rcv_empty    : std_ulogic;
   signal p2p_rsp_snd_wrreq    : std_ulogic;
   signal p2p_rsp_snd_data_in  : dma_noc_flit_type;
   signal p2p_rsp_snd_full     : std_ulogic;
-  signal p2p_dst_arr_x        : yx_vec(MAX_MCAST_DESTS - 1 downto 0);
-  signal p2p_dst_arr_y        : yx_vec(MAX_MCAST_DESTS - 1 downto 0);
-  signal p2p_dst_arr_chip_x   : chip_yx_vec(MAX_MCAST_DESTS - 1 downto 0);
-  signal p2p_dst_arr_chip_y   : chip_yx_vec(MAX_MCAST_DESTS - 1 downto 0);
   signal count_n_dest         : integer range 0 to MAX_MCAST_DESTS - 1;
   signal p2p_mcast_ndests     : integer range 0 to MAX_MCAST_DESTS - 1;
   signal p2p_load             : std_ulogic;
   signal p2p_store            : std_ulogic;
+
+  -- MCAST PACKET
+  signal p2p_mcast_packet     : std_ulogic; -- segmentation
+  signal p2p_mcast_packet_size: integer range 0 to 15;
+  signal p2p_mcast_depth      : std_logic_vector(3 downto 0);
 
   -- IRQ
   signal irq      : std_ulogic;
@@ -231,7 +250,7 @@ architecture rtl of esp_acc_dma is
   signal payload_length, payload_length_r    : dma_noc_flit_type;
   signal sample_flits                        : std_ulogic;
   signal sample_rd, sample_wr                : std_ulogic;
-  signal source_r                            : integer range 0 to 14;
+  signal source_r                            : integer range 0 to YX_REG_ENTRIES - 1;
   signal size_r                              : std_logic_vector(2 downto 0);
   signal irq_header_i, irq_header            : misc_noc_flit_type;
   signal irq_info                            : std_logic_vector(RESERVED_WIDTH_MISC - 1 downto 0);
@@ -260,12 +279,15 @@ architecture rtl of esp_acc_dma is
 
   -- DMA word count
   signal burst_count            : std_logic_vector(31 downto 0);
+  signal burst_count_mcast      : std_logic_vector(3  downto 0);
   signal tlb_count              : std_logic_vector(31 downto 0);
   signal word_count             : std_logic_vector(31 downto 0);
   signal increment_burst_count  : std_ulogic;
+  signal increment_burst_count_mcast : std_ulogic;
   signal increment_tlb_count    : std_ulogic;
   signal increment_word_count   : std_ulogic;
   signal clear_burst_count      : std_ulogic;
+  signal clear_burst_count_mcast : std_ulogic;
   signal clear_tlb_count        : std_ulogic;
   signal clear_word_count       : std_ulogic;
   signal set_word_count         : std_ulogic;
@@ -488,11 +510,15 @@ begin  -- rtl
   p2p_dst_x <= get_origin_x(DMA_NOC_FLIT_SIZE, dma_noc_flit_pad & p2p_req_rcv_data_out);
   p2p_dst_chip_y <= get_chip_origin_y(DMA_NOC_FLIT_SIZE, dma_noc_flit_pad & p2p_req_rcv_data_out);
   p2p_dst_chip_x <= get_chip_origin_x(DMA_NOC_FLIT_SIZE, dma_noc_flit_pad & p2p_req_rcv_data_out);
+  p2p_mcast_packet <= bankreg(MCAST_REG)(MCAST_BIT_PACKET);
+  p2p_mcast_packet_size <= to_integer(unsigned(bankreg(MCAST_REG)(MCAST_BIT_PACKET_SIZE + MCAST_WIDTH_PACKET_SIZE - 1 downto MCAST_BIT_PACKET_SIZE)));
+  p2p_mcast_depth <= conv_std_logic_vector(p2p_mcast_packet_size, MCAST_WIDTH_PACKET_SIZE); 
 
   make_packet: process (bankreg, pending_dma_write, tlb_empty, dma_address, dma_length,
-                        p2p_src_index_r, p2p_dst_arr_y, p2p_dst_arr_x, p2p_dst_y, p2p_dst_x,
-                        p2p_dst_chip_y, p2p_dst_chip_x, p2p_dst_arr_chip_y, p2p_dst_arr_chip_x, 
-                        coherence, local_y, local_x, local_chip_y, local_chip_x, 
+                        p2p_src_index_r, p2p_dst_max_y, p2p_dst_max_x, p2p_dst_y, p2p_dst_x,
+                        p2p_dst_chip_y, p2p_dst_chip_x, p2p_dst_max_chip_y, p2p_dst_max_chip_x,
+                        p2p_dst_mask_y, p2p_dst_mask_x, p2p_dst_mask_chip_y, p2p_dst_mask_chip_x,
+                        coherence, local_y, local_x, local_chip_y, local_chip_x,
                         dma_tran_done, source_r)
     variable msg_type : noc_msg_type;
     variable header_v : dma_noc_flit_type;
@@ -593,13 +619,15 @@ begin  -- rtl
       p2p_header_v := create_header(DMA_NOC_FLIT_SIZE, local_y, local_x, p2p_src_y, p2p_src_x, msg_type, local_chip_y, local_chip_x, p2p_src_chip_y, p2p_src_chip_x, hprot);
       p2p_header_v(DMA_NOC_FLIT_SIZE-1 downto DMA_NOC_FLIT_SIZE-PREAMBLE_WIDTH) := PREAMBLE_HEADER;
     else
-      p2p_header_v := create_header(DMA_NOC_FLIT_SIZE, local_y, local_x, p2p_dst_y, p2p_dst_x, msg_type, local_chip_y, local_chip_x, p2p_dst_chip_y, p2p_dst_chip_x, hprot);
+      --p2p_header_v := create_header(DMA_NOC_FLIT_SIZE, local_y, local_x, p2p_dst_y, p2p_dst_x, msg_type, local_chip_y, local_chip_x, p2p_dst_chip_y, p2p_dst_chip_x, hprot);
+      p2p_header_v := create_header_mcast(DMA_NOC_FLIT_SIZE, local_y, local_x,
+                                          p2p_dst_max_y, p2p_dst_max_x, msg_type,
+                                          local_chip_y, local_chip_x,
+                                          p2p_dst_max_chip_y, p2p_dst_max_chip_x,
+                                          p2p_dst_mask_y, p2p_dst_mask_x,
+                                          p2p_dst_mask_chip_y, p2p_dst_mask_chip_x,
+                                          p2p_mcast_ndests);
       p2p_header_v(DMA_NOC_FLIT_SIZE-1 downto DMA_NOC_FLIT_SIZE-PREAMBLE_WIDTH) := PREAMBLE_HEADER;
-      -- KL NEED TO CHANGE THIS... TBD
-      --p2p_header_v := create_header_mcast(DMA_NOC_FLIT_SIZE, local_y, local_x,
-      --                                    p2p_dst_arr_y(MAX_MCAST_DESTS - 2 downto 0),
-      --                                    p2p_dst_arr_x(MAX_MCAST_DESTS - 2 downto 0),
-      --                                    p2p_dst_y, p2p_dst_x, p2p_mcast_ndests, msg_type);
     end if;
 
     header_v := (others => '0');
@@ -630,6 +658,7 @@ begin  -- rtl
       payload_address_r <= (others => '0');
       payload_length_r <= (others => '0');
       burst_count <= conv_std_logic_vector(1, 32);
+      burst_count_mcast <= (others => '0');
       p2p_count <= conv_std_logic_vector(1, 32);
       size_r <= HSIZE_WORD;
       p2p_src_index_r <= 0;
@@ -654,6 +683,12 @@ begin  -- rtl
       end if;
       if clear_burst_count = '1' then
         burst_count <= conv_std_logic_vector(1, 32);
+      end if;
+      if increment_burst_count_mcast = '1' then
+        burst_count_mcast <= burst_count_mcast + 1;
+      end if;
+      if clear_burst_count_mcast = '1' then
+        burst_count_mcast <= (others => '0');
       end if;
       if increment_tlb_count = '1' then
         tlb_count <= tlb_count + 1;
@@ -689,7 +724,7 @@ begin  -- rtl
       elsif sample_wr   = '1' then
         size_r <= wr_size;
         if wr_ndests = conv_std_logic_vector(0, 5) then
-          p2p_mcast_ndests <= to_integer(unsigned(bankreg(P2P_REG)(P2P_BIT_MCAST_DESTS + P2P_WIDTH_MCAST_DESTS - 1 downto P2P_BIT_MCAST_DESTS)));
+          p2p_mcast_ndests <= to_integer(unsigned(bankreg(MCAST_REG)(MCAST_BIT_DESTS + MCAST_WIDTH_DESTS - 1 downto MCAST_BIT_DESTS)));
           p2p_store <= bankreg(P2P_REG)(P2P_BIT_DST_IS_P2P);
         else
           p2p_mcast_ndests <= to_integer(unsigned(wr_ndests)) - 1;
@@ -769,6 +804,11 @@ begin  -- rtl
     word_count_int := to_integer(unsigned(word_count));
     increment_p2p_count <= '0';
     clear_p2p_count <= '0';
+
+    -- MCAST PACKET
+    clear_burst_count_mcast <= '0';
+    increment_burst_count_mcast <= '0';
+
     --TLB
     tlb_wr_address_next := tlb_count;
     tlb_wr_address <= tlb_wr_address_next(log2xx(tlb_entries) - 1 downto 0);
@@ -802,7 +842,7 @@ begin  -- rtl
     else
       len := payload_length_r(31 downto 0);
     end if;
-    if burst_count = len or burst_count = rcv_p2p_length then
+    if burst_count = len or burst_count = rcv_p2p_length or ((burst_count_mcast = p2p_mcast_depth) and (p2p_mcast_packet = '1') and (msg = RSP_P2P)) then
       payload_data(DMA_NOC_FLIT_SIZE-1 downto DMA_NOC_FLIT_SIZE-PREAMBLE_WIDTH) := PREAMBLE_TAIL;
     else
       payload_data(DMA_NOC_FLIT_SIZE-1 downto DMA_NOC_FLIT_SIZE-PREAMBLE_WIDTH) := PREAMBLE_BODY;
@@ -1112,7 +1152,7 @@ begin  -- rtl
 
             -- local accelerator has finished its write burst
             if burst_count = len then
-              if p2p_count < rcv_p2p_length then
+              if p2p_count < rcv_p2p_length and msg = RSP_P2P then
                 -- burst length is less than what consumer accelerator requested
                 continue_p2p := '1';
               else
@@ -1120,11 +1160,14 @@ begin  -- rtl
                 continue_p2p := '0';
                 clear_p2p_count <= '1';
               end if;
+              if p2p_mcast_packet = '1' then
+                clear_burst_count_mcast <= '1';
+              end if;
               clear_burst_count <= '1';
               dma_tran_done <= '1';
               dma_next <= running;
             -- the amount request by the consumer has been sent, but the accelerator burst is not complete
-            elsif burst_count > conv_std_logic_vector(0, 32) and burst_count = rcv_p2p_length then
+            elsif burst_count > conv_std_logic_vector(0, 32) and burst_count = rcv_p2p_length and msg = RSP_P2P then
               continue_p2p := '0';
               if (p2p_count = len) then
                 --if burst completes, go back to idle
@@ -1140,6 +1183,15 @@ begin  -- rtl
             else
               increment_burst_count <= '1';
               increment_p2p_count <= '1';
+              if p2p_mcast_packet = '1' then
+                if burst_count_mcast = p2p_mcast_depth then
+                  clear_burst_count_mcast <= '1';
+                  dma_next <= send_header;
+                  continue_p2p := '1';
+                else
+                  increment_burst_count_mcast <= '1';
+                end if;
+              end if;
             end if;
           end if;
         end if;
@@ -1180,7 +1232,7 @@ begin  -- rtl
             increment_burst_count <= '1';
             if preamble = PREAMBLE_TAIL then
               --if producer sends less data than requested, then wait for another header
-              if msg = REQ_P2P and (burst_count < read_length - 1) then
+              if msg = REQ_P2P and (burst_count < read_length) then
                   dma_next <= reply_header;
               else
                 dma_tran_done <= '1';
@@ -1261,22 +1313,95 @@ begin  -- rtl
     end if;
   end process;
 
-  dest_arr_mod : process (clk, rst, dma_state, p2p_req_rcv_rdreq, p2p_dst_x, p2p_dst_y, p2p_dst_chip_x, p2p_dst_chip_y)
+  dest_mask_mod : process (clk, rst)
   begin
-  --KL Need to change for chiplet... TBD
-  if rst = '0' then                   -- asynchronous reset (active low)
-      p2p_dst_arr_x <= (others => (others => '0'));
-      p2p_dst_arr_y <= (others => (others => '0'));
-      p2p_dst_arr_chip_x <= (others => (others => '0'));
-      p2p_dst_arr_chip_y <= (others => (others => '0'));
+    if rst = '0' then                   -- asynchronous reset (active low)
+      p2p_dst_max_x_reg <= (others => '0');
+      p2p_dst_max_y_reg <= (others => '0');
+      p2p_dst_max_chip_x_reg <= (others => '0');
+      p2p_dst_max_chip_y_reg <= (others => '0');
+      p2p_dst_mask_x_reg <= (others => '0');
+      p2p_dst_mask_y_reg <= (others => '0');
+      p2p_dst_mask_chip_x_reg <= (others => '0');
+      p2p_dst_mask_chip_y_reg <= (others => '0');
     elsif clk'event and clk = '1' then  -- rising clock edge
+      if dma_state = receive_p2p_length and p2p_req_rcv_empty = '0' and count_n_dest = p2p_mcast_ndests then
+        p2p_dst_max_x_reg <= (others => '0');
+        p2p_dst_max_y_reg <= (others => '0');
+        p2p_dst_max_chip_x_reg <= (others => '0');
+        p2p_dst_max_chip_y_reg <= (others => '0');
+        p2p_dst_mask_x_reg <= (others => '0');
+        p2p_dst_mask_y_reg <= (others => '0');
+        p2p_dst_mask_chip_x_reg <= (others => '0');
+        p2p_dst_mask_chip_y_reg <= (others => '0');
+      end if;
       if dma_state = wait_req_p2p and p2p_req_rcv_rdreq = '1' then
-        p2p_dst_arr_x(count_n_dest) <= p2p_dst_x;
-        p2p_dst_arr_y(count_n_dest) <= p2p_dst_y;
-        p2p_dst_arr_chip_x(count_n_dest) <= p2p_dst_chip_x;
-        p2p_dst_arr_chip_y(count_n_dest) <= p2p_dst_chip_y;
+        p2p_dst_max_x_reg <= p2p_dst_max_x;
+        p2p_dst_max_y_reg <= p2p_dst_max_y;
+        p2p_dst_max_chip_x_reg <= p2p_dst_max_chip_x;
+        p2p_dst_max_chip_y_reg <= p2p_dst_max_chip_y;
+        p2p_dst_mask_x_reg <= p2p_dst_mask_x;
+        p2p_dst_mask_y_reg <= p2p_dst_mask_y;
+        p2p_dst_mask_chip_x_reg <= p2p_dst_mask_chip_x;
+        p2p_dst_mask_chip_y_reg <= p2p_dst_mask_chip_y;
       end if;
     end if;
+  end process;
+
+  dest_mask_mod_comb : process (dma_state, p2p_req_rcv_rdreq, count_n_dest, p2p_dst_x, p2p_dst_y, p2p_dst_chip_x, p2p_dst_chip_y,
+    p2p_dst_max_x_reg, p2p_dst_max_y_reg, p2p_dst_max_chip_x_reg, p2p_dst_max_chip_y_reg,
+    p2p_dst_mask_x_reg, p2p_dst_mask_y_reg, p2p_dst_mask_chip_x_reg, p2p_dst_mask_chip_y_reg
+    )
+    variable p2p_dst_max_x_var, p2p_dst_max_y_var, p2p_dst_mask_x_var, p2p_dst_mask_y_var : local_yx;
+    variable p2p_dst_max_chip_x_var, p2p_dst_max_chip_y_var, p2p_dst_mask_chip_x_var, p2p_dst_mask_chip_y_var : chip_yx;
+  begin
+    p2p_dst_max_x_var := p2p_dst_max_x_reg;
+    p2p_dst_max_y_var := p2p_dst_max_y_reg;
+    p2p_dst_max_chip_x_var := p2p_dst_max_chip_x_reg;
+    p2p_dst_max_chip_y_var := p2p_dst_max_chip_y_reg;
+    p2p_dst_mask_x_var := p2p_dst_mask_x_reg;
+    p2p_dst_mask_y_var := p2p_dst_mask_y_reg;
+    p2p_dst_mask_chip_x_var := p2p_dst_mask_chip_x_reg;
+    p2p_dst_mask_chip_y_var := p2p_dst_mask_chip_y_reg;
+
+    if dma_state = wait_req_p2p and p2p_req_rcv_rdreq = '1' then
+      if count_n_dest = 0 then
+        p2p_dst_max_x_var := p2p_dst_x;
+        p2p_dst_max_y_var := p2p_dst_y;
+        p2p_dst_max_chip_x_var := p2p_dst_chip_x;
+        p2p_dst_max_chip_y_var := p2p_dst_chip_y;
+        p2p_dst_mask_x_var := (others => '0');
+        p2p_dst_mask_y_var := (others => '0');
+        p2p_dst_mask_chip_x_var := (others => '0');
+        p2p_dst_mask_chip_y_var := (others => '0');
+      else
+        p2p_dst_mask_x_var := p2p_dst_mask_x_reg or (p2p_dst_max_x_reg xor p2p_dst_x);
+        p2p_dst_mask_y_var := p2p_dst_mask_y_reg or (p2p_dst_max_y_reg xor p2p_dst_y);
+        p2p_dst_mask_chip_x_var := p2p_dst_mask_chip_x_reg or (p2p_dst_max_chip_x_reg xor p2p_dst_chip_x);
+        p2p_dst_mask_chip_y_var := p2p_dst_mask_chip_y_reg or (p2p_dst_max_chip_y_reg xor p2p_dst_chip_y);
+        if p2p_dst_max_x_reg < p2p_dst_x then
+          p2p_dst_max_x_var := p2p_dst_x;
+        end if;
+        if p2p_dst_max_y_reg < p2p_dst_y then
+          p2p_dst_max_y_var := p2p_dst_y;
+        end if;
+        if p2p_dst_max_chip_x_reg < p2p_dst_chip_x then
+          p2p_dst_max_chip_x_var := p2p_dst_chip_x;
+        end if;
+        if p2p_dst_max_chip_y_reg < p2p_dst_chip_y then
+          p2p_dst_max_chip_y_var := p2p_dst_chip_y;
+        end if;
+      end if;
+    end if;
+
+    p2p_dst_max_x <= p2p_dst_max_x_var;
+    p2p_dst_max_y <= p2p_dst_max_y_var;
+    p2p_dst_max_chip_x <= p2p_dst_max_chip_x_var;
+    p2p_dst_max_chip_y <= p2p_dst_max_chip_y_var;
+    p2p_dst_mask_x <= p2p_dst_mask_x_var;
+    p2p_dst_mask_y <= p2p_dst_mask_y_var;
+    p2p_dst_mask_chip_x <= p2p_dst_mask_chip_x_var;
+    p2p_dst_mask_chip_y <= p2p_dst_mask_chip_y_var;
   end process;
 
   -------------------------------------------------------------------------------

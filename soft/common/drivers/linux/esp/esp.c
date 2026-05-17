@@ -295,11 +295,13 @@ static bool esp_xfer_input_ok(struct esp_device *esp, const struct contig_desc *
 #define esp_p2p_set_x(_dev, _n, _x) iowrite32be(ioread32be(_dev->iomem + P2P_REG) | ((P2P_MASK_SRCS_YX & _x) << P2P_SHIFT_SRCS_X(_n)), _dev->iomem + P2P_REG)
 #define esp_p2p_set_chip_y(_dev, _n, _chip_y) iowrite32be(ioread32be(_dev->iomem + P2P_CHIP_REG) | ((P2P_MASK_SRCS_CHIP_YX & _chip_y) << P2P_SHIFT_SRCS_CHIP_Y(_n)), _dev->iomem + P2P_CHIP_REG)
 #define esp_p2p_set_chip_x(_dev, _n, _chip_x) iowrite32be(ioread32be(_dev->iomem + P2P_CHIP_REG) | ((P2P_MASK_SRCS_CHIP_YX & _chip_x) << P2P_SHIFT_SRCS_CHIP_X(_n)), _dev->iomem + P2P_CHIP_REG)
-#define esp_p2p_set_mcast_ndests(_dev, _n) iowrite32be(ioread32be(_dev->iomem + P2P_REG) | ((P2P_MASK_MCAST_NDESTS & (_n - 1)) << P2P_SHIFT_MCAST_NDESTS), _dev->iomem + P2P_REG)
 #define esp_yx_reg_set_y(_dev, _y, _n, _i) iowrite32be(ioread32be(_dev->iomem + YX_REG + _n) | (_y << (_i * 2 * YX_WIDTH + YX_WIDTH)), _dev->iomem + YX_REG + _n)
 #define esp_yx_reg_set_x(_dev, _x, _n, _i) iowrite32be(ioread32be(_dev->iomem + YX_REG + _n) | (_x << (_i * 2 * YX_WIDTH)), _dev->iomem + YX_REG + _n)
 #define esp_chip_yx_reg_set_y(_dev, _chip_y, _n, _i) iowrite32be(ioread32be(_dev->iomem + CHIP_YX_REG + _n) | (_chip_y << (_i * 2 * CHIP_YX_WIDTH + CHIP_YX_WIDTH)), _dev->iomem + CHIP_YX_REG + _n)
 #define esp_chip_yx_reg_set_x(_dev, _chip_x, _n, _i) iowrite32be(ioread32be(_dev->iomem + CHIP_YX_REG + _n) | (_chip_x << (_i * 2 * CHIP_YX_WIDTH)), _dev->iomem + CHIP_YX_REG + _n)
+#define esp_p2p_set_mcast_ndests(_dev, _n) iowrite32be(ioread32be(_dev->iomem + MCAST_REG) | ((MCAST_MASK_NDESTS & (_n - 1)) << MCAST_SHIFT_NDESTS), _dev->iomem + MCAST_REG)
+#define esp_p2p_set_mcast_packet(_dev, _n) iowrite32be(ioread32be(_dev->iomem + MCAST_REG) | ((MCAST_MASK_PACKET & _n) << MCAST_SHIFT_PACKET), _dev->iomem + MCAST_REG)
+#define esp_p2p_set_mcast_packet_size(_dev, _n) iowrite32be(ioread32be(_dev->iomem + MCAST_REG) | ((MCAST_MASK_PACKET_SIZE & (_n - 2)) << MCAST_SHIFT_PACKET_SIZE), _dev->iomem + MCAST_REG)
 
 static long esp_set_src(struct esp_device *esp, char *src_name, int src_index, int is_yx)
 {
@@ -313,8 +315,8 @@ static long esp_set_src(struct esp_device *esp, char *src_name, int src_index, i
 		if (!strncmp(src_name, dev->dev->kobj.name, strlen(dev->dev->kobj.name))) {
 			unsigned y = esp_get_y(dev);
 			unsigned x = esp_get_x(dev);
-      unsigned chip_y = esp_get_chip_y(dev);
-      unsigned chip_x = esp_get_chip_x(dev);
+			unsigned chip_y = esp_get_chip_y(dev);
+			unsigned chip_x = esp_get_chip_x(dev);
             if (is_yx) {
                 esp_yx_reg_set_y(esp, y, 4 * (src_index / 4), src_index % 4);
                 esp_yx_reg_set_x(esp, x, 4 * (src_index / 4), src_index % 4);
@@ -323,8 +325,8 @@ static long esp_set_src(struct esp_device *esp, char *src_name, int src_index, i
             } else {
 			    esp_p2p_set_y(esp, src_index, y);
 			    esp_p2p_set_x(esp, src_index, x);
-          esp_p2p_set_chip_y(esp, src_index, chip_y);
-          esp_p2p_set_chip_x(esp, src_index, chip_x);
+				esp_p2p_set_chip_y(esp, src_index, chip_y);
+				esp_p2p_set_chip_x(esp, src_index, chip_x);
 			}
             spin_unlock(&esp_devices_lock);
 			dev_dbg(esp->pdev, "P2P source %s on tile %d,%d,%d,%d\n", dev->dev->kobj.name, y, x, chip_y, chip_x);

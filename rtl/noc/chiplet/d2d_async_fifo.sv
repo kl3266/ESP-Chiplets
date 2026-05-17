@@ -18,7 +18,6 @@ module d2d_async_fifo #(
   logic rst_i;
   logic full_int;
   logic empty_int;
-  logic prog_full_int;
   logic data_valid_int;
   logic wr_rst_busy;
   logic rd_rst_busy;
@@ -35,9 +34,9 @@ module d2d_async_fifo #(
   assign rst_i = ~rst_wr_n_i | ~rst_rd_n_i;
 
 `ifdef SYNTHESIS
-// `define D2D_USE_XPM_FIFO
+ `define D2D_USE_XPM_FIFO
 `elsif XILINX_FPGA
-// `define D2D_USE_XPM_FIFO
+ `define D2D_USE_XPM_FIFO
 `endif
 
 `ifdef D2D_USE_XPM_FIFO
@@ -50,16 +49,16 @@ module d2d_async_fifo #(
     .READ_MODE          ( "fwft"         ),
     .FIFO_READ_LATENCY  ( 0              ),
     .FULL_RESET_VALUE   ( 0              ),
-    .CDC_SYNC_STAGES    ( 3              ),
+    .CDC_SYNC_STAGES    ( 2              ),
     .DOUT_RESET_VALUE   ( "0"            ),
     .ECC_MODE           ( "no_ecc"       ),
     .SIM_ASSERT_CHK     ( 0              ),
-    .USE_ADV_FEATURES   ( "1002"         ),
+    .USE_ADV_FEATURES   ( "1000"         ),
     .WAKEUP_TIME        ( 0              ),
     .WR_DATA_COUNT_WIDTH( 1              ),
     .RD_DATA_COUNT_WIDTH( 1              ),
-    .PROG_FULL_THRESH   ( g_size / 2     ),
-    .PROG_EMPTY_THRESH  ( 10             )
+    .PROG_FULL_THRESH   ( 10             ),
+    .PROG_EMPTY_THRESH  ( 5              )
   ) i_xpm_fifo_async (
     .sleep          ( 1'b0      ),
     .rst            ( rst_i     ),
@@ -67,7 +66,7 @@ module d2d_async_fifo #(
     .wr_en          ( we_i      ),
     .din            ( d_i       ),
     .full           ( full_int  ),
-    .prog_full      ( prog_full_int ),
+    .prog_full      (           ),
     .wr_data_count  (           ),
     .overflow       (           ),
     .wr_rst_busy    ( wr_rst_busy ),
@@ -89,7 +88,7 @@ module d2d_async_fifo #(
     .dbiterr        (           )
   );
 
-  assign wr_full_o  = prog_full_int | full_int | wr_rst_busy;
+  assign wr_full_o  = full_int | wr_rst_busy;
   assign rd_empty_o = ~data_valid_int | rd_rst_busy;
 `else
   inferred_async_fifo #(

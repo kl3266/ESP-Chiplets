@@ -336,17 +336,33 @@ module lookahead_router
         fifo_head_routing[g_i] = '0;
         out_unvalid_flit[g_i] = 1'b1;
 
-        for (int j=0; j<5; j++) begin
-          if (enhanc_routing_configuration[g_i][j]) begin
-            fifo_head_routing[g_i] = fifo_head[j];
-            out_unvalid_flit[g_i] = in_unvalid_flit[j];
+        unique0 case (1'b1)
+          enhanc_routing_configuration[g_i][0]: begin
+            fifo_head_routing[g_i]    = fifo_head[0];
+            out_unvalid_flit[g_i]     = in_unvalid_flit[0];
           end
-        end
+          enhanc_routing_configuration[g_i][1]: begin
+            fifo_head_routing[g_i]    = fifo_head[1];
+            out_unvalid_flit[g_i]     = in_unvalid_flit[1];
+          end
+          enhanc_routing_configuration[g_i][2]: begin
+            fifo_head_routing[g_i] = fifo_head[2];
+            out_unvalid_flit[g_i]  = in_unvalid_flit[2];
+          end
+          enhanc_routing_configuration[g_i][3]: begin
+            fifo_head_routing[g_i] = fifo_head[3];
+            out_unvalid_flit[g_i]  = in_unvalid_flit[3];
+          end
+          enhanc_routing_configuration[g_i][4]: begin
+            fifo_head_routing[g_i] = fifo_head[4];
+            out_unvalid_flit[g_i]  = in_unvalid_flit[4];
+          end
+        endcase
       end
 
       if (g_i < 4) begin
         lookahead_routing #(
-          .PORT_ID(g_i[2:0])
+          .PORT_ID(g_i[1:0])
         ) lookahead_routing_i (
            .clk,
            .position,

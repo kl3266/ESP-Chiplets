@@ -1,5 +1,7 @@
 module cdc_gray_pulse #(
-  parameter int unsigned N = 4  // can handle < 2^N
+  parameter int unsigned N = 4,  // can handle < 2^N
+  parameter int unsigned SRC_NEGEDGE = 0,
+  parameter int unsigned DST_NEGEDGE = 0
 )(
   input   logic src_clk,
   input   logic dst_clk,
@@ -30,39 +32,80 @@ module cdc_gray_pulse #(
   logic [N-1:0] new_events;
   logic [N:0] pending_events;
 
-  always_ff @(posedge src_clk or negedge src_rstn) begin
-    if (!src_rstn) begin
-      src_bin_count <= '0;
-      src_gray_count <= '0;
-    end else begin
-      if (src_pulse) begin
-        src_bin_count <= src_bin_count + 1;
-        src_gray_count <= bin2gray(src_bin_count + 1);
+  generate
+    if (SRC_NEGEDGE == 0) begin : gen_src_posedge
+      always_ff @(posedge src_clk or negedge src_rstn) begin
+        if (!src_rstn) begin
+          src_bin_count <= '0;
+          src_gray_count <= '0;
+        end else begin
+          if (src_pulse) begin
+            src_bin_count <= src_bin_count + 1;
+            src_gray_count <= bin2gray(src_bin_count + 1);
+          end
+        end
+      end
+    end else begin : gen_src_negedge
+      always_ff @(negedge src_clk or negedge src_rstn) begin
+        if (!src_rstn) begin
+          src_bin_count <= '0;
+          src_gray_count <= '0;
+        end else begin
+          if (src_pulse) begin
+            src_bin_count <= src_bin_count + 1;
+            src_gray_count <= bin2gray(src_bin_count + 1);
+          end
+        end
       end
     end
-  end
+  endgenerate
 
   assign dst_bin_count = gray2bin(gray_ff2);
   assign new_events = dst_bin_count - dst_bin_count_prev;
 
-  always_ff @(posedge dst_clk or negedge dst_rstn) begin
-    if (!dst_rstn) begin
-      dst_pulse <= 1'b0;
-      gray_ff1 <= '0;
-      gray_ff2 <= '0;
-      dst_bin_count_prev <= '0;
-      pending_events <= '0;
-    end else begin
-      gray_ff1 <= src_gray_count;
-      gray_ff2 <= gray_ff1;
-      dst_bin_count_prev <= dst_bin_count;
-      if ((pending_events + new_events) != 0) begin
-        dst_pulse <= 1'b1;
-        pending_events <= pending_events + new_events - 1'b1;
-      end else begin
-        dst_pulse <= 1'b0;
-        pending_events <= '0;
+  generate
+    if (DST_NEGEDGE == 0) begin : gen_dst_posedge
+      always_ff @(posedge dst_clk or negedge dst_rstn) begin
+        if (!dst_rstn) begin
+          dst_pulse <= 1'b0;
+          gray_ff1 <= '0;
+          gray_ff2 <= '0;
+          dst_bin_count_prev <= '0;
+          pending_events <= '0;
+        end else begin
+          gray_ff1 <= src_gray_count;
+          gray_ff2 <= gray_ff1;
+          dst_bin_count_prev <= dst_bin_count;
+          if ((pending_events + new_events) != 0) begin
+            dst_pulse <= 1'b1;
+            pending_events <= pending_events + new_events - 1'b1;
+          end else begin
+            dst_pulse <= 1'b0;
+            pending_events <= '0;
+          end
+        end
+      end
+    end else begin : gen_dst_negedge
+      always_ff @(negedge dst_clk or negedge dst_rstn) begin
+        if (!dst_rstn) begin
+          dst_pulse <= 1'b0;
+          gray_ff1 <= '0;
+          gray_ff2 <= '0;
+          dst_bin_count_prev <= '0;
+          pending_events <= '0;
+        end else begin
+          gray_ff1 <= src_gray_count;
+          gray_ff2 <= gray_ff1;
+          dst_bin_count_prev <= dst_bin_count;
+          if ((pending_events + new_events) != 0) begin
+            dst_pulse <= 1'b1;
+            pending_events <= pending_events + new_events - 1'b1;
+          end else begin
+            dst_pulse <= 1'b0;
+            pending_events <= '0;
+          end
+        end
       end
     end
-  end
+  endgenerate
 endmodule

@@ -533,7 +533,8 @@ begin  -- architecture rtl
   sync_noc_set_acc : sync_noc_set
     generic map (
       PORTS    => ROUTER_PORTS,
-      HAS_SYNC => HAS_SYNC)
+      HAS_SYNC => HAS_SYNC
+    )
     port map (
       clk                => noc_clk,    -- noc_clk_int
       clk_tile           => tile_clk,    -- acc_clk
@@ -541,8 +542,6 @@ begin  -- architecture rtl
       rst_tile           => tile_rstn,   -- tile_rstn
       CONST_local_x      => this_local_x,
       CONST_local_y      => this_local_y,
-      CONST_local_chip_x => this_local_chip_x,
-      CONST_local_chip_y => this_local_chip_y,
       noc1_data_n_in     => noc1_data_n_in,
       noc1_data_s_in     => noc1_data_s_in,
       noc1_data_w_in     => noc1_data_w_in,

@@ -53,12 +53,12 @@ package esp_acc_regmap is
   constant P2P_BIT_SRC_IS_P2P : integer range 0 to 31 := 2;
   constant P2P_BIT_DST_IS_P2P : integer range 0 to 31 := 3;
   constant P2P_BIT_SRCS_YX : integer range 0 to 31 := 4;
-  constant P2P_BIT_MCAST_DESTS : integer range 0 to 31 := 28;
-  constant P2P_WIDTH_MCAST_DESTS : integer range 0 to 31 := 4;
+--  constant P2P_BIT_MCAST_DESTS : integer range 0 to 31 := 28; KL MOVE TO MCAST REG
+--  constant P2P_WIDTH_MCAST_DESTS : integer range 0 to 31 := 4; KL MOVE TO MCAST REG
 
    -- bank(10)       : P2P_CHIP_REG (point-to-point configuration)
   -- |31 18|17 15|14 12|11  9|8   6|5   3|2   0|
-  -- |empty|  Y  |  X  |  Y  |  X  |  Y  |  X  | 
+  -- |empty|  Y  |  X  |  Y  |  X  |  Y  |  X  |
   constant P2P_CHIP_REG : integer range 0 to MAXREGNUM - 1 := 10;
   constant P2P_BIT_SRCS_CHIP_YX : integer range 0 to 31 := 0;
 
@@ -71,36 +71,81 @@ package esp_acc_regmap is
   -- bank(13)       : SPANDEX_REG
   constant SPANDEX_REG : integer range 0 to MAXREGNUM - 1 := 13;
 
+  -- bank(14)       : MCAST_REG (multicast configuration)
+  -- |9                 6|5            5|4            0|
+  -- | MCAST PACKET_SIZE | MCAST PACKET | MCAST NDESTS |
+  constant MCAST_REG : integer range 0 to MAXREGNUM - 1 := 14;
+  constant MCAST_BIT_DESTS : integer range 0 to 31 := 0;
+  constant MCAST_WIDTH_DESTS : integer range 0 to 31 := 6;
+  constant MCAST_BIT_PACKET : integer range 0 to 31 := 6;
+  constant MCAST_BIT_PACKET_SIZE : integer range 0 to 31 := 7;
+  constant MCAST_WIDTH_PACKET_SIZE : integer range 0 to 31 := 4;
+
+  -- bank(17 to 96) : USR (user defined)
+
   -- YX_REGs are used to decode physical tile numbers from a source index,
   -- as specified by accelerators for P2P transactions
   -- |31 28|27 24|23 20|19 16|15 12|11  8|7   4|3   0|
   -- |  Y  |  X  |  Y  |  X  |  Y  |  X  |  Y  |  X  |
-
   -- LSBs of first YX_REG reserved for coordinates of local tile
-  -- bank(14)       :
-  constant YX_REG  : integer range 0 to MAXREGNUM - 1 := 14;
+  -- bank(96)
+  constant YX_REG    : integer range 0 to MAXREGNUM - 1 := 96;
 
-  -- bank(15)       :
-  constant YX_REG_2  : integer range 0 to MAXREGNUM - 1 := 15;
+  -- bank(97)
+  constant YX_REG_2  : integer range 0 to MAXREGNUM - 1 := 97;
 
-  -- bank(16)       :
-  constant YX_REG_3  : integer range 0 to MAXREGNUM - 1 := 16;
+  -- bank(98)
+  constant YX_REG_3  : integer range 0 to MAXREGNUM - 1 := 98;
+
+  -- bank(99)
+  constant YX_REG_4  : integer range 0 to MAXREGNUM - 1 := 99;
+
+  -- bank(100)
+  constant YX_REG_5  : integer range 0 to MAXREGNUM - 1 := 100;
+
+  -- bank(101)
+  constant YX_REG_6  : integer range 0 to MAXREGNUM - 1 := 101;
+
+  -- bank(102)
+  constant YX_REG_7  : integer range 0 to MAXREGNUM - 1 := 102;
+
+  -- bank(103)
+  constant YX_REG_8  : integer range 0 to MAXREGNUM - 1 := 103;
+
+  -- bank(104)
+  constant YX_REG_9  : integer range 0 to MAXREGNUM - 1 := 104;
 
   -- CHIP_YX_REGs are used to decode physical tile chip numbers from a source index,
   -- as specified by accelerators for P2P transactions
   -- |31 30|29 27|26 24|23 21|20 18|17 15|14 12|11  9|8   6|5   3|2   0|
   -- |X....|  Y  |  X  |  Y  |  X  |  Y  |  X  |  Y  |  X  |  Y  |  X  |
 
-  -- bank(17)
-  constant CHIP_YX_REG : integer range 0 to MAXREGNUM - 1 := 17;
+  -- bank(105)
+  constant CHIP_YX_REG : integer range 0 to MAXREGNUM - 1 := 105;
 
-  -- bank(18)
-  constant CHIP_YX_REG_2 : integer range 0 to MAXREGNUM - 1 := 18;
-  
-  -- bank(19)
-  constant CHIP_YX_REG_3 : integer range 0 to MAXREGNUM - 1 := 19;
+  -- bank(106)
+  constant CHIP_YX_REG_2 : integer range 0 to MAXREGNUM - 1 := 106;
 
-  -- bank(20 to 63) : USR (user defined)
+  -- bank(107)
+  constant CHIP_YX_REG_3 : integer range 0 to MAXREGNUM - 1 := 107;
+
+  -- bank(108)
+  constant CHIP_YX_REG_4  : integer range 0 to MAXREGNUM - 1 := 108;
+
+  -- bank(109)
+  constant CHIP_YX_REG_5  : integer range 0 to MAXREGNUM - 1 := 109;
+
+  -- bank(110)
+  constant CHIP_YX_REG_6  : integer range 0 to MAXREGNUM - 1 := 110;
+
+  -- bank(111)
+  constant CHIP_YX_REG_7  : integer range 0 to MAXREGNUM - 1 := 111;
+
+  -- bank(112)
+  constant CHIP_YX_REG_8  : integer range 0 to MAXREGNUM - 1 := 112;
+
+  -- bank(113)
+  constant CHIP_YX_REG_9  : integer range 0 to MAXREGNUM - 1 := 113;
 
   -- Re-enable the following 3 registers if adding an SRAM expanding the register bank
   -- -- bank(29)       : EXP_ADDR (bits 29:0 address an SRAM expanding the register bank)

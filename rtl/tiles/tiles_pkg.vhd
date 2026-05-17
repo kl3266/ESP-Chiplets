@@ -17,38 +17,38 @@ use work.socmap.all;
 
 package tiles_pkg is
 
-  component esp is
-    generic (
-      SIMULATION : boolean := false);
-    port (
-      rst                : in  std_logic;
-      sys_clk            : in    std_logic_vector(0 to MEM_ID_RANGE_MSB);
-      refclk             : in  std_logic;
-      uart_rxd           : in  std_logic;
-      uart_txd           : out std_logic;
-      uart_ctsn          : in  std_logic;
-      uart_rtsn          : out std_logic;
-      cpuerr             : out   std_logic;
-      ddr_ahbsi          : out ahb_slv_in_vector_type(0 to MEM_ID_RANGE_MSB);
-      ddr_ahbso          : in  ahb_slv_out_vector_type(0 to MEM_ID_RANGE_MSB);
-      eth0_apbi          : out apb_slv_in_type;
-      eth0_apbo          : in  apb_slv_out_type;
-      sgmii0_apbi        : out apb_slv_in_type;
-      sgmii0_apbo        : in  apb_slv_out_type;
-      eth0_ahbmi         : out ahb_mst_in_type;
-      eth0_ahbmo         : in  ahb_mst_out_type;
-      edcl_ahbmo         : in  ahb_mst_out_type;
-      dvi_apbi           : out apb_slv_in_type;
-      dvi_apbo           : in  apb_slv_out_type;
-      dvi_ahbmi          : out ahb_mst_in_type;
-      dvi_ahbmo          : in  ahb_mst_out_type;
-      mon_noc            : out monitor_noc_matrix(1 to 6, 0 to CFG_TILES_NUM-1);
-      mon_acc            : out monitor_acc_vector(0 to relu(accelerators_num-1));
-      mon_mem            : out monitor_mem_vector(0 to CFG_NMEM_TILE + CFG_NSLM_TILE + CFG_NSLMDDR_TILE - 1);
-      mon_l2             : out monitor_cache_vector(0 to relu(CFG_NL2 - 1));
-      mon_llc            : out monitor_cache_vector(0 to relu(CFG_NLLC - 1));
-      mon_dvfs           : out monitor_dvfs_vector(0 to CFG_TILES_NUM-1));
-  end component esp;
+--  component esp is
+--    generic (
+--      SIMULATION : boolean := false);
+--    port (
+--      rst                : in  std_logic;
+--      sys_clk            : in    std_logic_vector(0 to MEM_ID_RANGE_MSB);
+--      refclk             : in  std_logic;
+--      uart_rxd           : in  std_logic;
+--      uart_txd           : out std_logic;
+--      uart_ctsn          : in  std_logic;
+--      uart_rtsn          : out std_logic;
+--      cpuerr             : out   std_logic;
+--      ddr_ahbsi          : out ahb_slv_in_vector_type(0 to MEM_ID_RANGE_MSB);
+--      ddr_ahbso          : in  ahb_slv_out_vector_type(0 to MEM_ID_RANGE_MSB);
+--      eth0_apbi          : out apb_slv_in_type;
+--      eth0_apbo          : in  apb_slv_out_type;
+--      sgmii0_apbi        : out apb_slv_in_type;
+--      sgmii0_apbo        : in  apb_slv_out_type;
+--      eth0_ahbmi         : out ahb_mst_in_type;
+--      eth0_ahbmo         : in  ahb_mst_out_type;
+--      edcl_ahbmo         : in  ahb_mst_out_type;
+--      dvi_apbi           : out apb_slv_in_type;
+--      dvi_apbo           : in  apb_slv_out_type;
+--      dvi_ahbmi          : out ahb_mst_in_type;
+--      dvi_ahbmo          : in  ahb_mst_out_type;
+--      mon_noc            : out monitor_noc_matrix(1 to 6, 0 to CFG_TILES_NUM-1);
+--      mon_acc            : out monitor_acc_vector(0 to relu(accelerators_num-1));
+--      mon_mem            : out monitor_mem_vector(0 to CFG_NMEM_TILE + CFG_NSLM_TILE + CFG_NSLMDDR_TILE - 1);
+--      mon_l2             : out monitor_cache_vector(0 to relu(CFG_NL2 - 1));
+--      mon_llc            : out monitor_cache_vector(0 to relu(CFG_NLLC - 1));
+--      mon_dvfs           : out monitor_dvfs_vector(0 to CFG_TILES_NUM-1));
+--  end component esp;
 --  component esp_chiplet is
 --    generic (
 --      SIMULATION : boolean := false;
